@@ -98,6 +98,16 @@ export default function ChatPage() {
         const updatedMsgs = await fetchMessages(res.thread_id);
         setMessages(updatedMsgs);
       }
+    } catch (err: any) {
+      console.error('Failed to send message:', err);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: 'error-' + Date.now(),
+          role: 'assistant',
+          content: `⚠️ Error: ${err.message || 'Failed to communicate with agent. Please try again.'}`,
+        },
+      ]);
     } finally {
       setSending(false);
     }

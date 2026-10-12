@@ -1,6 +1,7 @@
 """Agent Runner orchestrating the ReAct execution loop."""
 
 import asyncio
+import json
 from typing import Any, Callable, Dict, List, Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -156,8 +157,29 @@ class AgentRunner:
 
             # Check if tools are requested
             if not llm_res.tool_calls:
-                final_content = llm_res.content or "Đã hoàn thành tác vụ."
+                final_content = llm_res.content or "Completed task."
                 break
+
+            # Record assistant message containing tool calls
+            messages.append(
+                {
+                    "role": "assistant",
+                    "content": llm_res.content or None,
+                    "tool_calls": [
+                        {
+                            "id": tc.id,
+                            "type": "function",
+                            "function": {
+                                "name": tc.name,
+                                "arguments": json.dumps(tc.arguments, ensure_ascii=False)
+                                if isinstance(tc.arguments, dict)
+                                else str(tc.arguments),
+                            },
+                        }
+                        for tc in llm_res.tool_calls
+                    ],
+                }
+            )
 
             # Execute tool calls
             for tc in llm_res.tool_calls:
@@ -165,7 +187,7 @@ class AgentRunner:
                 tool_output: Dict[str, Any] = (
                     await tool.execute(tool_ctx, **tc.arguments)
                     if tool
-                    else {"error": f"Tool '{tc.name}' không tồn tại hoặc không được phép."}
+                    else {"error": f"Tool '{tc.name}' not found or permitted."}
                 )
 
                 step_record = Step(
@@ -179,12 +201,15 @@ class AgentRunner:
                 db.add(step_record)
                 await db.commit()
 
-                # Append tool response for next iteration
+                # Append tool response compliant with modern OpenAI/Azure specs
                 messages.append(
                     {
-                        "role": "function",
+                        "role": "tool",
+                        "tool_call_id": tc.id,
                         "name": tc.name,
-                        "content": str(tool_output),
+                        "content": json.dumps(tool_output, ensure_ascii=False)
+                        if isinstance(tool_output, dict)
+                        else str(tool_output),
                     }
                 )
 
