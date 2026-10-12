@@ -25,13 +25,18 @@ class LoadSkillTool(BaseTool):
 
     async def execute(self, context: ToolContext, **kwargs: Any) -> Dict[str, Any]:
         skill_name = kwargs["skill_name"].strip()
+        clean_name = skill_name.split("/")[-1]
 
         # Potential search paths
         candidate_paths = [
             f"skills/shared/{skill_name}/SKILL.md",
             f"skills/shared/{skill_name}.md",
+            f"skills/shared/{clean_name}/SKILL.md",
+            f"skills/shared/{clean_name}.md",
             f"agents/{context.agent_key}/skills/{skill_name}/SKILL.md",
             f"agents/{context.agent_key}/skills/{skill_name}.md",
+            f"agents/{context.agent_key}/skills/{clean_name}/SKILL.md",
+            f"agents/{context.agent_key}/skills/{clean_name}.md",
         ]
 
         # Candidate search directories

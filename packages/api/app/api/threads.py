@@ -1,20 +1,28 @@
-"""API Router for Threads, Messages and Realtime SSE Streaming."""
-
 import asyncio
 import json
 from typing import Any, AsyncGenerator, Dict, List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query
+
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import Message, Run, Step, Thread
-from app.db.session import get_db
+from app.db.session import async_session_maker, get_db
 from app.services.agent_runner import agent_runner
 from app.services.gateway import IncomingMessagePayload, message_gateway
 
 router = APIRouter(tags=["threads"])
+
+
+async def _run_agent_task(run_id: str) -> None:
+    async with async_session_maker() as db:
+        try:
+            await agent_runner.execute_run(run_id, db)
+        except Exception as err:
+            import logging
+            logging.error(f"Background run execution failed: {err}")
 
 
 class SendMessageRequest(BaseModel):
@@ -80,6 +88,7 @@ async def get_thread_messages(thread_id: str, db: AsyncSession = Depends(get_db)
 async def send_message(
     project_id: str,
     req: SendMessageRequest,
+    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
     """Send a user message, normalize via gateway, and dispatch run."""
@@ -91,12 +100,31 @@ async def send_message(
     )
     result = await message_gateway.process_incoming_message(payload, db)
 
-    # Optional synchronous execution for immediate testing or non-worker mode
+    # If run_synchronously requested, execute directly
     if req.run_synchronously:
         exec_res = await agent_runner.execute_run(result["run_id"], db)
         return {**result, "execution": exec_res}
 
+    # Dispatch to background task
+    background_tasks.add_task(_run_agent_task, result["run_id"])
     return result
+
+
+@router.get("/threads/{thread_id}/status")
+async def get_thread_status(
+    thread_id: str, db: AsyncSession = Depends(get_db)
+) -> Dict[str, Any]:
+    """Get the latest run status for a thread."""
+    res = await db.execute(
+        select(Run).where(Run.thread_id == thread_id).order_by(Run.created_at.desc())
+    )
+    run = res.scalars().first()
+    return {
+        "thread_id": thread_id,
+        "run_id": run.id if run else None,
+        "status": run.status if run else "none",
+        "cost_usd": run.cost_usd if run else 0.0,
+    }
 
 
 @router.get("/threads/{thread_id}/stream")

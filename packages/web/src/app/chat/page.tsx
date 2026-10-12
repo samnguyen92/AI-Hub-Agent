@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Send, HelpCircle, Sparkles } from 'lucide-react';
+import { Send, HelpCircle, Sparkles, Loader2 } from 'lucide-react';
 import {
   fetchProjects,
   fetchThreads,
@@ -66,9 +66,19 @@ export default function ChatPage() {
 
   const handleSend = async (overrideAgent?: string) => {
     if (!inputContent.trim() || sending || !selectedProjectId) return;
-    setSending(true);
     const currentInput = inputContent;
     setInputContent('');
+    setSending(true);
+
+    // Optimistically add user message
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: 'opt-' + Date.now(),
+        role: 'user',
+        content: currentInput,
+      },
+    ]);
 
     try {
       let resolvedAgent = overrideAgent;
@@ -152,6 +162,25 @@ export default function ChatPage() {
             messages.map((m) => (
               <ChatMessageItem key={m.id} message={m} projectId={selectedProjectId} />
             ))
+          )}
+          {sending && (
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '10px',
+                padding: '10px 16px',
+                borderRadius: '10px',
+                background: 'rgba(99, 102, 241, 0.1)',
+                border: '1px solid rgba(99, 102, 241, 0.25)',
+                color: 'var(--text-secondary)',
+                fontSize: '13px',
+                maxWidth: 'fit-content',
+              }}
+            >
+              <Loader2 size={16} className="animate-spin" color="#818CF8" />
+              <span>Agent đang suy nghĩ &amp; xử lý tác vụ...</span>
+            </div>
           )}
           <div ref={messagesEndRef} />
         </div>
