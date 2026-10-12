@@ -120,7 +120,7 @@ async def test_agent_runner_includes_learned_rules_in_prompt() -> None:
         "[STYLE] Font chữ chủ đạo Inter",
     ]
     prompt = agent_runner._build_system_prompt("assistant", "/tmp/ws", notes=notes)
-    assert "=== QUY TẮC ĐÃ TỰ HỌC & ĐÚC KẾT (TỰ NÂNG CẤP - BẮT BUỘC TUÂN THỦ) ===" in prompt
+    assert "=== PERSISTENT LEARNED RULES (SELF-EVOLVED RULES - MUST COMPLY) ===" in prompt
     assert "Banner luôn có hiệu ứng overlay tối 40%" in prompt
-    assert "=== BỘ NHỚ DỰ ÁN (PROJECT NOTES ĐÃ DUYỆT) ===" in prompt
+    assert "=== PROJECT MEMORY & APPROVED NOTES ===" in prompt
     assert "[STYLE] Font chữ chủ đạo Inter" in prompt

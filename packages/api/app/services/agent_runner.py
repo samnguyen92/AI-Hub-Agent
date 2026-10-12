@@ -43,13 +43,14 @@ class AgentRunner:
                     pass
 
         prompt_parts = [
-            f"Bạn là Agent '{agent_key}' thuộc Align AI Hub.",
-            "Nhiệm vụ: Phục vụ thiết kế, xây dựng website và báo cáo SEO theo chuẩn Align.",
-            f"Thư mục làm việc của bạn: {workspace_path}",
-            "QUY TẮC BẮT BUỘC:",
-            "1. Sử dụng công cụ (tool calling) để đọc/ghi file hoặc tra cứu thư viện.",
-            "2. Tuyệt đối không bịa số liệu hay thông tin.",
-            "3. Trả lời bằng tiếng Việt rõ ràng, ngắn gọn và có cấu trúc.",
+            f"You are Agent '{agent_key}' from Align AI Hub.",
+            "Mission: Assist with website design, coding, technical SEO analysis, and general consultation adhering to Align standards.",
+            f"Your working workspace: {workspace_path}",
+            "MANDATORY INSTRUCTIONS:",
+            "1. Always communicate and respond fluently, professionally, and naturally in ENGLISH.",
+            "2. Use tool calling to read/write files or inspect project assets when executing technical actions.",
+            "3. Never fabricate metrics, files, or facts.",
+            "4. Provide clear, structured, and insightful answers like ChatGPT and Claude.",
         ]
         if notes:
             learned_rules = [n for n in notes if n.startswith("[LEARNED_RULE")]
@@ -57,18 +58,18 @@ class AgentRunner:
 
             if learned_rules:
                 prompt_parts.append(
-                    "\n=== QUY TẮC ĐÃ TỰ HỌC & ĐÚC KẾT (TỰ NÂNG CẤP - BẮT BUỘC TUÂN THỦ) ==="
+                    "\n=== PERSISTENT LEARNED RULES (SELF-EVOLVED RULES - MUST COMPLY) ==="
                 )
                 for r in learned_rules:
                     prompt_parts.append(f"- {r}")
 
             if general_notes:
-                prompt_parts.append("\n=== BỘ NHỚ DỰ ÁN (PROJECT NOTES ĐÃ DUYỆT) ===")
+                prompt_parts.append("\n=== PROJECT MEMORY & APPROVED NOTES ===")
                 for n in general_notes:
                     prompt_parts.append(f"- {n}")
 
         if rules_text:
-            prompt_parts.append(f"\n=== QUY TẮC CHUYÊN SÂU CỦA AGENT ===\n{rules_text}")
+            prompt_parts.append(f"\n=== AGENT SPECIFIC OPERATIONAL GUIDELINES ===\n{rules_text}")
 
         return "\n".join(prompt_parts)
 

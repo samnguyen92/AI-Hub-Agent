@@ -142,6 +142,6 @@ async def test_agent_runner_prompt_with_approved_notes() -> None:
         "Luôn có nút Gọi ngay ở header",
     ]
     prompt = agent_runner._build_system_prompt("design", "/tmp/ws", notes=notes)
-    assert "=== BỘ NHỚ DỰ ÁN (PROJECT NOTES ĐÃ DUYỆT) ===" in prompt
+    assert "=== PROJECT MEMORY & APPROVED NOTES ===" in prompt
     assert "Primary color #0A0D14" in prompt
     assert "Luôn có nút Gọi ngay ở header" in prompt
