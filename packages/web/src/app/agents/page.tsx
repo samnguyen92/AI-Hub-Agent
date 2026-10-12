@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Navbar from '@/components/layout/Navbar';
 import { Cpu, BookmarkCheck, CheckCircle2, XCircle, Plus, RefreshCw, FileText, Wrench } from 'lucide-react';
 
 interface AgentInfo {
@@ -130,7 +129,6 @@ export default function AgentsPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-main)', color: 'var(--text-main)' }}>
-      <Navbar />
       <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px' }}>
         <header style={{ marginBottom: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
