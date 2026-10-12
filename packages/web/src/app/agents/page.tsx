@@ -196,6 +196,7 @@ export default function AgentsPage() {
                     <option value="openai/gpt-4o-mini">openai/gpt-4o-mini (Nhanh, Tiết kiệm)</option>
                     <option value="anthropic/claude-3-5-sonnet">anthropic/claude-3-5-sonnet</option>
                     <option value="deepseek/deepseek-chat">deepseek/deepseek-chat</option>
+                    <option value="bytedance-seed/seedream-4.5">bytedance-seed/seedream-4.5 (Image Gen Model)</option>
                   </select>
                 </div>
 

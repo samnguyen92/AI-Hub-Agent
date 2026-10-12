@@ -3,6 +3,7 @@
 import React from 'react';
 import { MessageSquare, Plus } from 'lucide-react';
 import { Project, Thread } from '@/lib/api';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface ChatSidebarProps {
   projects: Project[];
@@ -23,6 +24,8 @@ export default function ChatSidebar({
   onSelectThread,
   onNewThread,
 }: ChatSidebarProps) {
+  const { t } = useLanguage();
+
   return (
     <div
       style={{
@@ -36,7 +39,7 @@ export default function ChatSidebar({
     >
       <div style={{ marginBottom: '16px' }}>
         <label style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase' }}>
-          Dự án hiện tại
+          {t('chat.current_project')}
         </label>
         <select
           id="select-active-project"
@@ -62,7 +65,7 @@ export default function ChatSidebar({
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-        <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)' }}>Cuộc trò chuyện</span>
+        <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)' }}>{t('chat.conversations')}</span>
         <button
           id="btn-new-thread"
           onClick={onNewThread}
@@ -78,14 +81,14 @@ export default function ChatSidebar({
             fontWeight: 600,
           }}
         >
-          <Plus size={14} /> Mới
+          <Plus size={14} /> {t('chat.new_chat')}
         </button>
       </div>
 
       <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '6px' }}>
         {threads.length === 0 ? (
           <p style={{ fontSize: '12px', color: 'var(--text-dim)', textAlign: 'center', marginTop: '20px' }}>
-            Chưa có cuộc trò chuyện nào.
+            {t('chat.empty_threads')}
           </p>
         ) : (
           threads.map((t) => (

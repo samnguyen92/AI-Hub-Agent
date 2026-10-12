@@ -15,6 +15,7 @@ import {
 } from '@/lib/api';
 import ChatSidebar from '@/components/chat/ChatSidebar';
 import ChatMessageItem from '@/components/chat/ChatMessageItem';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function ChatPage() {
   const searchParams = useSearchParams();
@@ -123,12 +124,14 @@ export default function ChatPage() {
     }
   };
 
+  const { t } = useLanguage();
+
   const agentBadges = [
-    { tag: '@assistant', color: '#818CF8', desc: 'Trợ lý Hội thoại' },
-    { tag: '@design', color: '#EC4899', desc: 'Thiết kế Mockup' },
-    { tag: '@code-builder', color: '#10B981', desc: 'Lập trình Code' },
-    { tag: '@site-analyzer', color: '#3B82F6', desc: 'Phân tích Website' },
-    { tag: '@seo-auditor', color: '#F59E0B', desc: 'Kiểm toán SEO' },
+    { tag: '@assistant', color: '#818CF8', desc: t('badge.assistant') },
+    { tag: '@design', color: '#EC4899', desc: t('badge.design') },
+    { tag: '@code-builder', color: '#10B981', desc: t('badge.code_builder') },
+    { tag: '@site-analyzer', color: '#3B82F6', desc: t('badge.site_analyzer') },
+    { tag: '@seo-auditor', color: '#F59E0B', desc: t('badge.seo_auditor') },
   ];
 
   return (
@@ -149,13 +152,13 @@ export default function ChatPage() {
             <div style={{ margin: 'auto', textAlign: 'center', maxWidth: '480px', color: 'var(--text-muted)' }}>
               <Sparkles size={36} color="var(--accent-primary)" style={{ margin: '0 auto 16px' }} />
               <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#ffffff', marginBottom: '8px' }}>
-                Trợ lý Align AI (GPT-6 Luna)
+                {t('chat.welcome_title')}
               </h3>
               <p style={{ fontSize: '14px', lineHeight: '1.6', marginBottom: '12px' }}>
-                Hội thoại tự nhiên, tư vấn ý tưởng và giải đáp như <b>ChatGPT / Claude</b>.
+                {t('chat.welcome_desc')}
               </p>
               <p style={{ fontSize: '12px', color: 'var(--text-dim)', lineHeight: '1.5' }}>
-                💡 Mẹo: Nhập tự do để chat cùng <b>@assistant</b>, tag chuyên sâu <code>@design</code>, <code>@code-builder</code>, hoặc gõ <code>/learn &lt;quy tắc&gt;</code> để dạy AI.
+                {t('chat.welcome_tip')}
               </p>
             </div>
           ) : (
@@ -179,7 +182,7 @@ export default function ChatPage() {
               }}
             >
               <Loader2 size={16} className="animate-spin" color="#818CF8" />
-              <span>Agent đang suy nghĩ &amp; xử lý tác vụ...</span>
+              <span>{t('chat.thinking')}</span>
             </div>
           )}
           <div ref={messagesEndRef} />
@@ -187,7 +190,7 @@ export default function ChatPage() {
 
         <div style={{ padding: '16px 24px 24px', borderTop: '1px solid var(--border-subtle)', background: 'var(--bg-secondary)' }}>
           <div style={{ display: 'flex', gap: '8px', marginBottom: '10px', alignItems: 'center' }}>
-            <span style={{ fontSize: '11px', color: 'var(--text-dim)', fontWeight: 600 }}>Chọn nhanh:</span>
+            <span style={{ fontSize: '11px', color: 'var(--text-dim)', fontWeight: 600 }}>{t('chat.quick_select')}</span>
             {agentBadges.map((badge) => (
               <button
                 key={badge.tag}
@@ -224,7 +227,7 @@ export default function ChatPage() {
                   handleSend();
                 }
               }}
-              placeholder="Trò chuyện tự nhiên cùng Trợ lý Align AI (hoặc tag @design, @code... hoặc gõ /learn <quy tắc>)..."
+              placeholder={t('chat.placeholder')}
               style={{
                 flex: 1,
                 padding: '12px 14px',
@@ -244,7 +247,7 @@ export default function ChatPage() {
               style={{ height: '48px', padding: '0 20px', opacity: sending || !inputContent.trim() ? 0.5 : 1 }}
             >
               <Send size={16} />
-              {sending ? 'Đang xử lý...' : 'Gửi'}
+              {sending ? '...' : t('chat.send')}
             </button>
           </div>
         </div>

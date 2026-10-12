@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
+import ChatMessageContent from '@/components/chat/ChatMessageContent';
 import ArtifactViewer, { ArtifactData } from '@/components/artifacts/ArtifactViewer';
 import { Eye, Layers, Lightbulb, Check, Sparkles } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface ChatMessageItemProps {
   message: {
@@ -46,6 +48,7 @@ export function parseArtifactFromMessage(content: string, projectId: string): Ar
 }
 
 export default function ChatMessageItem({ message, projectId }: ChatMessageItemProps) {
+  const { t } = useLanguage();
   const [showViewer, setShowViewer] = useState(false);
   const [showTeachInput, setShowTeachInput] = useState(false);
   const [teachRule, setTeachRule] = useState('');
@@ -109,7 +112,7 @@ export default function ChatMessageItem({ message, projectId }: ChatMessageItemP
           }}
         >
           {!isUser && <Sparkles size={12} color="#818CF8" />}
-          {isUser ? 'Bạn' : 'Align Assistant'}
+          {isUser ? t('chat.user') : t('chat.assistant')}
         </span>
 
         {!isUser && (
@@ -127,22 +130,20 @@ export default function ChatMessageItem({ message, projectId }: ChatMessageItemP
               padding: '2px 6px',
               borderRadius: '4px',
             }}
-            title="Dạy AI quy tắc/bài học kinh nghiệm từ câu trả lời này"
+            title={t('chat.teach_ai')}
           >
-            <Lightbulb size={12} color="#FBBF24" /> Dạy AI
+            <Lightbulb size={12} color="#FBBF24" /> {t('chat.teach_ai')}
           </button>
         )}
       </div>
 
-      <div style={{ fontSize: '14px', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>
-        {message.content}
-      </div>
+      <ChatMessageContent content={message.content} projectId={projectId} />
 
       {showTeachInput && (
         <form onSubmit={handleTeachRule} style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-subtle)', display: 'flex', gap: '8px' }}>
           <input
             type="text"
-            placeholder="Nhập quy tắc/bài học cần AI ghi nhớ (vd: 'Nút CTA luôn dùng chữ in hoa')..."
+            placeholder={t('chat.teach_placeholder')}
             value={teachRule}
             onChange={(e) => setTeachRule(e.target.value)}
             style={{ flex: 1, padding: '6px 10px', borderRadius: '6px', background: 'var(--bg-main)', border: '1px solid var(--border-subtle)', color: '#fff', fontSize: '12px' }}
@@ -152,14 +153,14 @@ export default function ChatMessageItem({ message, projectId }: ChatMessageItemP
             disabled={submitting || !teachRule.trim()}
             style={{ padding: '6px 12px', borderRadius: '6px', background: 'var(--accent-primary)', color: '#fff', border: 'none', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
           >
-            {submitting ? '...' : 'Lưu quy tắc'}
+            {submitting ? '...' : t('chat.save_rule')}
           </button>
         </form>
       )}
 
       {taughtSuccess && (
         <div style={{ marginTop: '8px', fontSize: '12px', color: '#10B981', display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <Check size={12} /> Đã dạy AI thành công! Quy tắc đã được nạp vào bộ nhớ vĩnh viễn của dự án.
+          <Check size={12} /> {t('chat.teach_success')}
         </div>
       )}
 

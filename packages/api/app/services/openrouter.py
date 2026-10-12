@@ -72,6 +72,17 @@ class OpenRouterClient:
             kwargs["tool_choice"] = "auto"
 
         response = await self.client.chat.completions.create(**kwargs)
+        if not response or not getattr(response, "choices", None) or len(response.choices) == 0:
+            err_msg = getattr(response, "error", None) or "Empty response received from LLM model"
+            return LLMResponse(
+                content=f"⚠️ Notice: The model did not return text ({err_msg}). Please try again.",
+                tool_calls=[],
+                prompt_tokens=0,
+                completion_tokens=0,
+                total_tokens=0,
+                estimated_cost_usd=0.0,
+            )
+
         choice = response.choices[0]
         usage = response.usage
 
@@ -110,5 +121,56 @@ class OpenRouterClient:
             estimated_cost_usd=0.00005,
         )
 
+    async def generate_image(
+        self,
+        prompt: str,
+        aspect_ratio: str = "16:9",
+        model: str = "bytedance-seed/seedream-4.5",
+    ) -> Dict[str, Any]:
+        """Generate high-fidelity image via OpenRouter images endpoint."""
+        if not self.api_key or self.api_key == "your_openrouter_api_key_here":
+            return {
+                "status": "mocked",
+                "image_url": "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1200&q=80",
+                "model": model,
+            }
+
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "HTTP-Referer": "https://hub.align.vn",
+            "X-Title": "Align AI Hub",
+            "Content-Type": "application/json",
+        }
+        payload = {
+            "model": model,
+            "prompt": prompt,
+            "aspect_ratio": aspect_ratio,
+        }
+
+        import httpx
+        async with httpx.AsyncClient(timeout=90.0) as client:
+            resp = await client.post(
+                "https://openrouter.ai/api/v1/images",
+                headers=headers,
+                json=payload,
+            )
+            if resp.status_code != 200:
+                raise RuntimeError(
+                    f"OpenRouter image generation failed ({resp.status_code}): {resp.text}"
+                )
+            data = resp.json()
+
+        items = data.get("data", [])
+        image_url = items[0].get("url") if items else data.get("url")
+        if not image_url:
+            raise RuntimeError(f"No image URL returned by provider: {data}")
+
+        return {
+            "status": "success",
+            "image_url": image_url,
+            "model": model,
+        }
+
 
 openrouter_client = OpenRouterClient()
+

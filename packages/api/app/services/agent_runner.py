@@ -24,7 +24,11 @@ class AgentRunner:
         self.max_cost_usd = max_cost_usd
 
     def _build_system_prompt(
-        self, agent_key: str, workspace_path: str, notes: Optional[List[str]] = None
+        self,
+        agent_key: str,
+        workspace_path: str,
+        project_id: str = "",
+        notes: Optional[List[str]] = None,
     ) -> str:
         """Construct the system prompt for the specified agent."""
         rules_text = ""
@@ -45,13 +49,15 @@ class AgentRunner:
 
         prompt_parts = [
             f"You are Agent '{agent_key}' from Align AI Hub.",
-            "Mission: Assist with website design, coding, technical SEO analysis, and general consultation adhering to Align standards.",
+            "Mission: Assist with website design, coding, image generation, technical SEO analysis, and general consultation adhering to Align standards.",
             f"Your working workspace: {workspace_path}",
-            "MANDATORY INSTRUCTIONS:",
-            "1. Always communicate and respond fluently, professionally, and naturally in ENGLISH.",
-            "2. Use tool calling to read/write files or inspect project assets when executing technical actions.",
-            "3. Never fabricate metrics, files, or facts.",
-            "4. Provide clear, structured, and insightful answers like ChatGPT and Claude.",
+            f"Current Project ID: {project_id}",
+            "MANDATORY GUIDELINES:",
+            "1. LANGUAGE: Respond naturally and fluently in the SAME LANGUAGE used by the user. If the user speaks Vietnamese, reply in Vietnamese. If the user speaks English, reply in English. Switch languages dynamically whenever requested.",
+            "2. VISUAL PREVIEWS & SCREENSHOTS: When you create or update a webpage or HTML mockup, ALWAYS call `render_html_to_png` to capture desktop and mobile screenshots. In your final response, ALWAYS embed the image using markdown so the user sees it directly: `![Desktop Preview](/api/backend/projects/" + project_id + "/files?path=screenshots/<prefix>-desktop.png)`.",
+            "3. IMAGE GENERATION: When the user asks to create, draw, or generate images, banners, car photos, or artwork, ALWAYS call the `generate_image` tool (powered by `bytedance-seed/seedream-4.5`). Once generated, embed the returned markdown image link directly in your response so it appears immediately.",
+            "4. TOOL USAGE: Use tool calling to inspect files, write assets, generate images, or render previews. Never fabricate non-existent file links or data.",
+            "5. STRUCTURE: Provide clear, structured, and insightful answers with high aesthetic standards.",
         ]
         if notes:
             learned_rules = [n for n in notes if n.startswith("[LEARNED_RULE")]
@@ -114,7 +120,10 @@ class AgentRunner:
             {
                 "role": "system",
                 "content": self._build_system_prompt(
-                    run.agent_key, workspace_path, approved_notes
+                    run.agent_key,
+                    workspace_path,
+                    thread.project_id,
+                    approved_notes,
                 ),
             }
         ]

@@ -16,8 +16,10 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { fetchDbHealth, fetchHealth, HealthResponse } from '@/lib/api';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function HomePage() {
+  const { t } = useLanguage();
   const [apiHealth, setApiHealth] = useState<HealthResponse | null>(null);
   const [dbHealth, setDbHealth] = useState<HealthResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -95,7 +97,7 @@ export default function HomePage() {
               Align AI Hub
             </h1>
             <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-              Hệ thống điều phối Multi-Agent nội bộ
+              {t('home.subtitle')}
             </p>
           </div>
         </div>
@@ -107,14 +109,14 @@ export default function HomePage() {
           disabled={loading}
         >
           <RefreshCw size={15} className={loading ? 'pulse' : ''} />
-          {loading ? 'Đang kiểm tra...' : 'Làm mới trạng thái'}
+          {loading ? t('home.refreshing') : t('home.refresh')}
         </button>
       </header>
 
       {/* System Status Section */}
       <section style={{ marginBottom: '48px' }}>
         <h2 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-dim)', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-          Trạng thái nền tảng (Foundation Status)
+          {t('home.foundation_status')}
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
           {/* API Status Card */}

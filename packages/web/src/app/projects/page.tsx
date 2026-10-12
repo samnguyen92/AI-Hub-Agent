@@ -4,8 +4,10 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { FolderKanban, Plus, ExternalLink, MessageSquare, Library, ArrowRight } from 'lucide-react';
 import { createProject, fetchProjects, Project } from '@/lib/api';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function ProjectsPage() {
+  const { t } = useLanguage();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -49,10 +51,10 @@ export default function ProjectsPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
         <div>
           <h1 style={{ fontSize: '24px', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '6px' }}>
-            Quản lý Dự án (Projects)
+            {t('projects.title')}
           </h1>
           <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-            Không gian làm việc biệt lập cho từng khách hàng hoặc nhiệm vụ
+            {t('projects.subtitle')}
           </p>
         </div>
         <button
@@ -61,7 +63,7 @@ export default function ProjectsPage() {
           onClick={() => setShowModal(true)}
         >
           <Plus size={16} />
-          Tạo dự án mới
+          {t('projects.new')}
         </button>
       </div>
 

@@ -20,6 +20,7 @@ import app.db.models  # noqa: F401 - register all tables to Base.metadata
 import app.tools.library_tools  # noqa: F401 - register library tools
 import app.tools.file_tools  # noqa: F401 - register file tools
 import app.tools.render_tools  # noqa: F401 - register render tools
+import app.tools.image_tools  # noqa: F401 - register image generation tools
 import app.tools.skill_tools  # noqa: F401 - register skill tools
 import app.tools.web_tools  # noqa: F401 - register web tools
 import app.tools.seo_tools  # noqa: F401 - register seo tools
