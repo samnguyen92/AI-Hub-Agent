@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SiteReport",
+  "type": "object",
+  "properties": {
+    "url": { "type": "string", "format": "uri" },
+    "scanned_pages_count": { "type": "integer" },
+    "lighthouse_scores": {
+      "type": "object",
+      "properties": {
+        "performance": { "type": "number" },
+        "accessibility": { "type": "number" },
+        "best_practices": { "type": "number" },
+        "seo": { "type": "number" }
+      },
+      "required": ["performance", "accessibility", "seo"]
+    },
+    "core_web_vitals": {
+      "type": "object",
+      "properties": {
+        "lcp": { "type": "string" },
+        "fid_or_inp": { "type": "string" },
+        "cls": { "type": "string" }
+      }
+    },
+    "sitemap_status": {
+      "type": "object",
+      "properties": {
+        "found": { "type": "boolean" },
+        "url_count": { "type": "integer" },
+        "issues": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "broken_links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source_url": { "type": "string" },
+          "target_url": { "type": "string" },
+          "status_code": { "type": "integer" }
+        }
+      }
+    }
+  },
+  "required": ["url", "scanned_pages_count", "lighthouse_scores"],
+  "additionalProperties": false
+}

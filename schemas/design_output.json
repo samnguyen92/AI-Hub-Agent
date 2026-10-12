@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DesignOutput",
+  "type": "object",
+  "properties": {
+    "artifact_name": {
+      "type": "string",
+      "description": "Tên định danh artifact (vd: homepage-mockup)"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Số phiên bản (v1, v2,...)"
+    },
+    "design_tokens": {
+      "type": "object",
+      "properties": {
+        "colors": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "typography": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "spacing": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      },
+      "required": ["colors", "typography"],
+      "description": "Bộ design tokens trích xuất hoặc áp dụng"
+    },
+    "html_file_path": {
+      "type": "string",
+      "description": "Đường dẫn file HTML mockup trong workspace"
+    },
+    "screenshots": {
+      "type": "object",
+      "properties": {
+        "desktop_png": { "type": "string" },
+        "mobile_png": { "type": "string" }
+      },
+      "description": "Đường dẫn file ảnh PNG đã render"
+    },
+    "changes_summary": {
+      "type": "string",
+      "description": "Tóm tắt các chi tiết đã thiết kế hoặc thay đổi so với phiên bản trước"
+    },
+    "review_checklist": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "item": { "type": "string" },
+          "status": { "type": "string", "enum": ["passed", "failed", "warning"] },
+          "note": { "type": "string" }
+        },
+        "required": ["item", "status"]
+      }
+    }
+  },
+  "required": ["artifact_name", "version", "design_tokens", "html_file_path", "changes_summary"],
+  "additionalProperties": false
+}

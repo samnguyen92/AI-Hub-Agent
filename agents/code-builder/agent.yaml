@@ -1,0 +1,20 @@
+key: code-builder
+name: Code Builder Agent
+description: "Chuyên gia lập trình chuyển đổi thiết kế/mockup thành mã HTML/CSS/JS sạch, kiểm tra responsive và visual diff."
+model: openai/gpt-4o
+skills:
+  - shared/align-style
+  - code-builder/image-to-html
+  - code-builder/responsive-checks
+tools:
+  - load_skill
+  - request_input
+  - list_files
+  - read_file
+  - write_file
+  - render_html_to_png
+  - run_checks
+  - compare_screenshots
+config:
+  max_steps: 20
+  max_cost_usd: 1.5

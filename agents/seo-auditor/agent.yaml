@@ -1,0 +1,20 @@
+key: seo-auditor
+name: SEO Auditor Agent
+description: "Chuyên gia kiểm định SEO toàn diện: Technical SEO, thẻ meta, indexability, phân tích dữ liệu Google Search Console và GA4."
+model: openai/gpt-4o-mini
+skills:
+  - shared/align-style
+  - seo-auditor/technical-seo-audit
+  - seo-auditor/search-console-analysis
+tools:
+  - load_skill
+  - request_input
+  - fetch_url
+  - check_sitemap
+  - import_report
+  - query_report
+  - read_file
+  - write_file
+config:
+  max_steps: 15
+  max_cost_usd: 0.8

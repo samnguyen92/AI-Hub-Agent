@@ -1,0 +1,121 @@
+"""API Router for human-in-the-loop approvals."""
+
+from typing import Any, Dict, List, Optional
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.db.models import Approval, Project, Run, Thread
+from app.db.session import get_db
+from app.services.workspace import workspace_service
+from app.tools.base import ToolContext, tool_registry
+
+router = APIRouter(prefix="/approvals", tags=["approvals"])
+
+
+class ApprovalResponse(BaseModel):
+    id: str
+    run_id: str
+    action_type: str
+    status: str
+    payload: Dict[str, Any]
+    comment: Optional[str] = None
+    created_at: str
+
+
+class ApprovalDecisionRequest(BaseModel):
+    action: str  # approve | reject
+    comment: Optional[str] = None
+
+
+@router.get("", response_model=List[ApprovalResponse])
+async def list_approvals(
+    project_id: Optional[str] = None,
+    status: Optional[str] = None,
+    db: AsyncSession = Depends(get_db),
+) -> List[ApprovalResponse]:
+    """List pending and historical approvals."""
+    q = select(Approval).order_by(Approval.created_at.desc())
+    if status and status != "all":
+        q = q.where(Approval.status == status)
+
+    res = await db.execute(q)
+    approvals = res.scalars().all()
+
+    return [
+        ApprovalResponse(
+            id=a.id,
+            run_id=a.run_id,
+            action_type=a.action_type,
+            status=a.status,
+            payload=a.payload,
+            comment=a.comment,
+            created_at=a.created_at.isoformat() if a.created_at else "",
+        )
+        for a in approvals
+    ]
+
+
+@router.post("/{approval_id}/respond", response_model=ApprovalResponse)
+async def respond_approval(
+    approval_id: str,
+    req: ApprovalDecisionRequest,
+    db: AsyncSession = Depends(get_db),
+) -> ApprovalResponse:
+    """Approve or reject a pending action."""
+    q = select(Approval).where(Approval.id == approval_id)
+    res = await db.execute(q)
+    approval = res.scalars().first()
+    if not approval:
+        raise HTTPException(status_code=404, detail="Approval record not found")
+
+    if approval.status != "pending":
+        raise HTTPException(status_code=400, detail="Approval has already been resolved")
+
+    approval.status = "approved" if req.action.lower() == "approve" else "rejected"
+    approval.comment = req.comment
+
+    # Fetch associated run and project
+    run_q = select(Run).where(Run.id == approval.run_id)
+    run = (await db.execute(run_q)).scalars().first()
+
+    if run:
+        if approval.status == "approved":
+            # If export_zip, execute the packaging
+            if approval.action_type == "export_zip":
+                th_q = select(Thread).where(Thread.id == run.thread_id)
+                th = (await db.execute(th_q)).scalars().first()
+                if th:
+                    ws_path = workspace_service.init_project_workspace(th.project_id)
+                    tool_ctx = ToolContext(
+                        project_id=th.project_id,
+                        run_id=run.id,
+                        workspace_path=ws_path,
+                        db=db,
+                        agent_key=run.agent_key,
+                    )
+                    zip_tool = tool_registry.get("export_zip")
+                    if zip_tool:
+                        zip_res = await zip_tool.execute(
+                            tool_ctx,
+                            archive_name=approval.payload.get("archive_name"),
+                            bypass_approval=True,
+                        )
+                        approval.payload["result"] = zip_res
+
+            run.status = "completed"
+        else:
+            run.status = "cancelled"
+
+    await db.commit()
+
+    return ApprovalResponse(
+        id=approval.id,
+        run_id=approval.run_id,
+        action_type=approval.action_type,
+        status=approval.status,
+        payload=approval.payload,
+        comment=approval.comment,
+        created_at=approval.created_at.isoformat() if approval.created_at else "",
+    )

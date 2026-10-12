@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CodeBuilderOutput",
+  "type": "object",
+  "properties": {
+    "project_name": {
+      "type": "string",
+      "description": "Tên component hoặc page được build"
+    },
+    "entry_file": {
+      "type": "string",
+      "description": "Đường dẫn file chính (vd: index.html)"
+    },
+    "generated_files": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Danh sách các files được tạo ra hoặc sửa đổi"
+    },
+    "lint_results": {
+      "type": "object",
+      "properties": {
+        "html_valid": { "type": "boolean" },
+        "css_lint_passed": { "type": "boolean" },
+        "a11y_violations": { "type": "integer" },
+        "details": { "type": "string" }
+      },
+      "required": ["html_valid", "css_lint_passed"]
+    },
+    "visual_diff": {
+      "type": "object",
+      "properties": {
+        "mismatch_percentage": { "type": "number" },
+        "diff_image_path": { "type": "string" }
+      }
+    },
+    "summary": {
+      "type": "string",
+      "description": "Báo cáo tóm tắt công việc đã thực hiện"
+    }
+  },
+  "required": ["project_name", "entry_file", "generated_files", "lint_results", "summary"],
+  "additionalProperties": false
+}
