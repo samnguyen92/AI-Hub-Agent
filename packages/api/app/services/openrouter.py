@@ -161,9 +161,19 @@ class OpenRouterClient:
             data = resp.json()
 
         items = data.get("data", [])
-        image_url = items[0].get("url") if items else data.get("url")
+        first = items[0] if items else {}
+        image_url = first.get("url")
+        b64 = first.get("b64_json")
+        media_type = first.get("media_type", "image/jpeg")
+
+        if not image_url and b64:
+            image_url = f"data:{media_type};base64,{b64}"
+
+        if not image_url and isinstance(data.get("url"), str):
+            image_url = data["url"]
+
         if not image_url:
-            raise RuntimeError(f"No image URL returned by provider: {data}")
+            raise RuntimeError("No image URL or base64 returned by provider")
 
         return {
             "status": "success",

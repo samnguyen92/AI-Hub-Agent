@@ -211,14 +211,15 @@ class AgentRunner:
                 await db.commit()
 
                 # Append tool response compliant with modern OpenAI/Azure specs
+                tool_str = json.dumps(tool_output, ensure_ascii=False) if isinstance(tool_output, dict) else str(tool_output)
+                if len(tool_str) > 12000:
+                    tool_str = tool_str[:12000] + "\n... [Output truncated to 12000 chars to avoid context overflow]"
                 messages.append(
                     {
                         "role": "tool",
                         "tool_call_id": tc.id,
                         "name": tc.name,
-                        "content": json.dumps(tool_output, ensure_ascii=False)
-                        if isinstance(tool_output, dict)
-                        else str(tool_output),
+                        "content": tool_str,
                     }
                 )
 

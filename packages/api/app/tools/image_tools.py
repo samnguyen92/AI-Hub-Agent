@@ -107,7 +107,7 @@ class GenerateImageTool(BaseTool):
                 "instruction": f"Include this image in your response using markdown: ![{prompt}]({web_url})",
             }
         except Exception as exc:
-            return {"error": f"Lỗi tạo hình ảnh với Seedream 4.5: {str(exc)}"}
+            return {"error": f"Lỗi tạo hình ảnh với Seedream 4.5: {str(exc)[:200]}"}
 
 
 image_tool = GenerateImageTool()
