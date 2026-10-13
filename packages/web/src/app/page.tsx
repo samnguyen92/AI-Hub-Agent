@@ -221,10 +221,10 @@ export default function HomePage() {
       <section>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '16px' }}>
           <h2 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Danh sách Agents trong Hub
+            {t('status.agent_list_title')}
           </h2>
           <span style={{ fontSize: '12px', color: 'var(--accent-primary)', fontWeight: 500 }}>
-            Độc lập &bull; Tương tác qua Thư viện chung
+            {t('status.agent_list_sub')}
           </span>
         </div>
 

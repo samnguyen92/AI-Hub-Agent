@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { FolderKanban, Plus, ExternalLink, MessageSquare, Library, ArrowRight } from 'lucide-react';
-import { createProject, fetchProjects, Project } from '@/lib/api';
+import { FolderKanban, Plus, ExternalLink, MessageSquare, Library, Trash2 } from 'lucide-react';
+import { createProject, deleteProject, cleanupDemoProjects, fetchProjects, Project } from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function ProjectsPage() {
@@ -14,6 +14,7 @@ export default function ProjectsPage() {
   const [name, setName] = useState('');
   const [sourceUrl, setSourceUrl] = useState('');
   const [creating, setCreating] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const loadProjects = async () => {
     setLoading(true);
@@ -46,9 +47,36 @@ export default function ProjectsPage() {
     }
   };
 
+  const handleDelete = async (projectId: string, projectName: string) => {
+    if (!window.confirm(`${t('projects.delete_confirm')}\n\nProject: ${projectName}`)) return;
+    setDeletingId(projectId);
+    try {
+      await deleteProject(projectId);
+      await loadProjects();
+    } catch (err) {
+      alert(`Error deleting project: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const handleCleanupDemos = async () => {
+    if (!window.confirm(t('projects.cleanup_confirm'))) return;
+    setLoading(true);
+    try {
+      const res = await cleanupDemoProjects();
+      alert(`Đã dọn dẹp thành công ${res.deleted_count} dự án thử nghiệm.`);
+      await loadProjects();
+    } catch (err) {
+      alert(`Lỗi khi dọn dẹp: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: '16px' }}>
         <div>
           <h1 style={{ fontSize: '24px', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '6px' }}>
             {t('projects.title')}
@@ -57,14 +85,33 @@ export default function ProjectsPage() {
             {t('projects.subtitle')}
           </p>
         </div>
-        <button
-          id="btn-create-project"
-          className="btn-primary"
-          onClick={() => setShowModal(true)}
-        >
-          <Plus size={16} />
-          {t('projects.new')}
-        </button>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <button
+            id="btn-cleanup-demos"
+            className="btn-secondary"
+            onClick={handleCleanupDemos}
+            style={{
+              padding: '9px 16px',
+              borderRadius: '8px',
+              fontSize: '13px',
+              fontWeight: 600,
+              background: 'rgba(239, 68, 68, 0.1)',
+              color: '#f87171',
+              border: '1px solid rgba(239, 68, 68, 0.25)',
+              cursor: 'pointer',
+            }}
+          >
+            {t('projects.cleanup_demos')}
+          </button>
+          <button
+            id="btn-create-project"
+            className="btn-primary"
+            onClick={() => setShowModal(true)}
+          >
+            <Plus size={16} />
+            {t('projects.new')}
+          </button>
+        </div>
       </div>
 
       {loading ? (
@@ -122,7 +169,7 @@ export default function ProjectsPage() {
                   }}
                 >
                   <MessageSquare size={14} color="var(--accent-primary)" />
-                  Mở Chat
+                  {t('projects.open_chat')}
                 </Link>
                 <Link
                   href={`/library?projectId=${p.id}`}
@@ -141,8 +188,26 @@ export default function ProjectsPage() {
                   }}
                 >
                   <Library size={14} />
-                  Thư viện
+                  {t('projects.library')}
                 </Link>
+                <button
+                  onClick={() => handleDelete(p.id, p.name)}
+                  disabled={deletingId === p.id}
+                  title={t('projects.delete')}
+                  style={{
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    background: 'rgba(239, 68, 68, 0.1)',
+                    color: '#f87171',
+                    border: '1px solid rgba(239, 68, 68, 0.2)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Trash2 size={14} />
+                </button>
               </div>
             </div>
           ))}
@@ -168,70 +233,16 @@ export default function ProjectsPage() {
             <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '20px' }}>Tạo dự án mới</h2>
             <form onSubmit={handleCreate}>
               <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px', color: 'var(--text-muted)' }}>
-                  Tên dự án *
-                </label>
-                <input
-                  id="input-project-name"
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Ví dụ: align.vn landing page"
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border-subtle)',
-                    background: 'rgba(255,255,255,0.03)',
-                    color: '#ffffff',
-                    fontSize: '14px',
-                    outline: 'none',
-                  }}
-                />
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px', color: 'var(--text-muted)' }}>Tên dự án *</label>
+                <input id="input-project-name" type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="Ví dụ: align.vn landing page" style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border-subtle)', background: 'rgba(255,255,255,0.03)', color: '#fff', fontSize: '14px', outline: 'none' }} />
               </div>
-
               <div style={{ marginBottom: '24px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px', color: 'var(--text-muted)' }}>
-                  URL tham chiếu (tùy chọn)
-                </label>
-                <input
-                  id="input-project-url"
-                  type="url"
-                  value={sourceUrl}
-                  onChange={(e) => setSourceUrl(e.target.value)}
-                  placeholder="https://example.com"
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border-subtle)',
-                    background: 'rgba(255,255,255,0.03)',
-                    color: '#ffffff',
-                    fontSize: '14px',
-                    outline: 'none',
-                  }}
-                />
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px', color: 'var(--text-muted)' }}>URL tham chiếu (tùy chọn)</label>
+                <input id="input-project-url" type="url" value={sourceUrl} onChange={(e) => setSourceUrl(e.target.value)} placeholder="https://example.com" style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border-subtle)', background: 'rgba(255,255,255,0.03)', color: '#fff', fontSize: '14px', outline: 'none' }} />
               </div>
-
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  style={{
-                    padding: '8px 16px',
-                    borderRadius: '6px',
-                    background: 'transparent',
-                    border: '1px solid var(--border-subtle)',
-                    color: 'var(--text-muted)',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Hủy
-                </button>
-                <button id="btn-submit-project" type="submit" className="btn-primary" disabled={creating}>
-                  {creating ? 'Đang tạo...' : 'Tạo dự án'}
-                </button>
+                <button type="button" onClick={() => setShowModal(false)} style={{ padding: '8px 16px', borderRadius: '6px', background: 'transparent', border: '1px solid var(--border-subtle)', color: 'var(--text-muted)', cursor: 'pointer' }}>Hủy</button>
+                <button id="btn-submit-project" type="submit" className="btn-primary" disabled={creating}>{creating ? 'Đang tạo...' : 'Tạo dự án'}</button>
               </div>
             </form>
           </div>

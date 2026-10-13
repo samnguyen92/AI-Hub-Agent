@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Send, HelpCircle, Sparkles, Loader2 } from 'lucide-react';
 import {
@@ -17,7 +17,7 @@ import ChatSidebar from '@/components/chat/ChatSidebar';
 import ChatMessageItem from '@/components/chat/ChatMessageItem';
 import { useLanguage } from '@/context/LanguageContext';
 
-export default function ChatPage() {
+function ChatInner() {
   const searchParams = useSearchParams();
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
@@ -253,5 +253,13 @@ export default function ChatPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ChatPage() {
+  return (
+    <Suspense fallback={<div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-muted)' }}>Loading...</div>}>
+      <ChatInner />
+    </Suspense>
   );
 }

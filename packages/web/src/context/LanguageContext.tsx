@@ -61,9 +61,45 @@ const translations: Record<Language, Record<string, string>> = {
     'projects.title': 'Quản lý Dự án (Projects)',
     'projects.subtitle': 'Không gian làm việc biệt lập cho từng khách hàng hoặc nhiệm vụ',
     'projects.new': '+ Tạo dự án mới',
+    'projects.cleanup_demos': '🧹 Dọn dẹp demo',
+    'projects.cleanup_confirm': 'Bạn có chắc chắn muốn dọn dẹp các dự án thử nghiệm không? Các dự án chính sẽ được bảo lưu.',
     'projects.empty': 'Chưa có dự án nào được tạo',
     'projects.open_chat': 'Mở Chat',
     'projects.library': 'Thư viện',
+    'projects.delete': 'Xóa',
+    'projects.delete_confirm': 'Bạn có chắc chắn muốn xóa vĩnh viễn dự án này cùng toàn bộ dữ liệu workspace?',
+
+    // Status
+    'status.agent_list_title': 'DANH SÁCH AGENTS TRONG HUB',
+    'status.agent_list_sub': 'Độc lập • Tương tác qua Thư viện chung',
+
+    // Library
+    'library.title': 'Thư viện (Library)',
+    'library.subtitle': 'Nơi lưu trữ quy tắc chung, huấn luyện và tài nguyên hình ảnh, artifact của dự án',
+    'library.tab_global': '🌐 Thư viện chung (Global Rules & Training)',
+    'library.tab_project': '📁 Thư viện theo dự án (Project Assets)',
+    'library.upload_btn': 'Tải file lên',
+    'library.uploading': 'Đang tải lên...',
+    'library.artifacts_section': 'ARTIFACTS CÓ PHIÊN BẢN',
+    'library.no_artifacts': 'Chưa có artifact nào được lưu cho dự án này.',
+    'library.items_section': 'HÌNH ẢNH & TÀI LIỆU',
+    'library.no_items': 'Chưa có hình ảnh hoặc tài liệu nào.',
+    'library.preview': 'Xem trước',
+    'library.global_rules_title': 'QUY TẮC & TRI THỨC TOÀN CỤC (LEARNED RULES)',
+    'library.global_rules_sub': 'Các quy tắc đã học qua lệnh /learn được áp dụng chung cho TẤT CẢ các dự án.',
+
+    // Approvals
+    'approvals.title': 'Cổng Phê Duyệt (Approval Gate)',
+    'approvals.subtitle': 'Kiểm soát và phê duyệt các hành động có rủi ro hoặc xuất bản tài nguyên từ AI Agent',
+    'approvals.telegram_btn': 'Kết nối Telegram Bot',
+    'approvals.telegram_code_title': 'Mã kết nối Telegram Bot',
+    'approvals.telegram_instruction': 'Mở Telegram và gửi tin nhắn đến bot:',
+    'approvals.tab_all': 'TẤT CẢ',
+    'approvals.tab_pending': 'CHỜ DUYỆT',
+    'approvals.tab_approved': 'ĐÃ DUYỆT',
+    'approvals.tab_rejected': 'TỪ CHỐI',
+    'approvals.action': 'Hành động:',
+    'approvals.package': 'Tệp đóng gói:',
 
     // Common
     'common.lang': 'Tiếng Việt',
@@ -93,9 +129,9 @@ const translations: Record<Language, Record<string, string>> = {
     'chat.teach_placeholder': 'Enter rule/guideline for AI to memorize (e.g. "Always use uppercase for CTA buttons")...',
     'chat.save_rule': 'Save Rule',
     'chat.teach_success': 'Rule saved successfully! Added to permanent project memory.',
-    'chat.welcome_title': 'Align AI Assistant (GPT-6 Luna & Seedream 4.5)',
+    'chat.welcome_title': 'Align AI Assistant (GPT-6 Luna & GPT-5.4 Image)',
     'chat.welcome_desc': 'Natural bilingual chat, visual design ideation, code packaging, and problem-solving like ChatGPT / Claude.',
-    'chat.welcome_tip': '💡 Tip: Chat freely with @assistant, tag @design for Seedream 4.5 image generation or @code-builder for coding.',
+    'chat.welcome_tip': '💡 Tip: Chat freely with @assistant, tag @design for GPT-5.4 image generation or @code-builder for coding.',
     'chat.user': 'You',
     'chat.assistant': 'Align Assistant',
 
@@ -118,9 +154,45 @@ const translations: Record<Language, Record<string, string>> = {
     'projects.title': 'Project Management',
     'projects.subtitle': 'Isolated workspace for each client or task',
     'projects.new': '+ Create New Project',
+    'projects.cleanup_demos': '🧹 Clean up Demos',
+    'projects.cleanup_confirm': 'Are you sure you want to clean up disposable test projects? Main projects will be preserved.',
     'projects.empty': 'No projects created yet',
     'projects.open_chat': 'Open Chat',
     'projects.library': 'Library',
+    'projects.delete': 'Delete',
+    'projects.delete_confirm': 'Are you sure you want to permanently delete this project and its workspace?',
+
+    // Status
+    'status.agent_list_title': 'AGENTS IN HUB',
+    'status.agent_list_sub': 'Autonomous • Collaborating via Shared Library',
+
+    // Library
+    'library.title': 'Library',
+    'library.subtitle': 'Manage global rules, training materials, and project image/artifact assets',
+    'library.tab_global': '🌐 Global Library (Rules & Training)',
+    'library.tab_project': '📁 Project Library (Assets & Artifacts)',
+    'library.upload_btn': 'Upload File',
+    'library.uploading': 'Uploading...',
+    'library.artifacts_section': 'VERSIONED ARTIFACTS',
+    'library.no_artifacts': 'No versioned artifacts stored for this project yet.',
+    'library.items_section': 'IMAGES & DOCUMENTS',
+    'library.no_items': 'No images or documents found.',
+    'library.preview': 'Preview',
+    'library.global_rules_title': 'GLOBAL LEARNED RULES (ALL PROJECTS)',
+    'library.global_rules_sub': 'Rules learned via /learn command applied across ALL projects in the hub.',
+
+    // Approvals
+    'approvals.title': 'Approval Gate',
+    'approvals.subtitle': 'Control and approve high-risk actions or asset exports from AI Agents',
+    'approvals.telegram_btn': 'Connect Telegram Bot',
+    'approvals.telegram_code_title': 'Telegram Bot Link Code',
+    'approvals.telegram_instruction': 'Open Telegram and send message to the bot:',
+    'approvals.tab_all': 'ALL',
+    'approvals.tab_pending': 'PENDING',
+    'approvals.tab_approved': 'APPROVED',
+    'approvals.tab_rejected': 'REJECTED',
+    'approvals.action': 'Action:',
+    'approvals.package': 'Package:',
 
     // Common
     'common.lang': 'English',

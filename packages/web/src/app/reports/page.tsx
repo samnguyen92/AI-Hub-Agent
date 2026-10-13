@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { BarChart3, Globe, ShieldAlert, FileSpreadsheet, RefreshCw } from 'lucide-react';
 import { fetchProjects, Project } from '@/lib/api';
 import LighthouseScoreCards from '@/components/reports/LighthouseScoreCards';
 import AuditIssuesTable, { AuditIssue } from '@/components/reports/AuditIssuesTable';
 
-export default function ReportsPage() {
+function ReportsInner() {
   const searchParams = useSearchParams();
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
@@ -179,5 +179,13 @@ export default function ReportsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ReportsPage() {
+  return (
+    <Suspense fallback={<div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-muted)' }}>Loading...</div>}>
+      <ReportsInner />
+    </Suspense>
   );
 }

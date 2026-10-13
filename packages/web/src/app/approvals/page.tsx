@@ -13,8 +13,10 @@ import {
   Bot,
 } from 'lucide-react';
 import { fetchApprovals, respondApproval, generateTelegramLinkCode, ApprovalItem } from '@/lib/api';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function ApprovalsPage() {
+  const { t } = useLanguage();
   const [approvals, setApprovals] = useState<ApprovalItem[]>([]);
   const [filter, setFilter] = useState<string>('all');
   const [loading, setLoading] = useState(true);
@@ -46,12 +48,12 @@ export default function ApprovalsPage() {
 
   const renderBadge = (status: string) => {
     if (status === 'approved') {
-      return <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700, background: 'rgba(16, 185, 129, 0.2)', color: '#10B981' }}><CheckCircle size={12} /> ĐÃ DUYỆT</span>;
+      return <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700, background: 'rgba(16, 185, 129, 0.2)', color: '#10B981' }}><CheckCircle size={12} /> {t('approvals.tab_approved')}</span>;
     }
     if (status === 'rejected') {
-      return <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700, background: 'rgba(239, 68, 68, 0.2)', color: '#EF4444' }}><XCircle size={12} /> TỪ CHỐI</span>;
+      return <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700, background: 'rgba(239, 68, 68, 0.2)', color: '#EF4444' }}><XCircle size={12} /> {t('approvals.tab_rejected')}</span>;
     }
-    return <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700, background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}><Clock size={12} /> CHỜ DUYỆT</span>;
+    return <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700, background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}><Clock size={12} /> {t('approvals.tab_pending')}</span>;
   };
 
   return (
@@ -60,10 +62,10 @@ export default function ApprovalsPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
         <div>
           <h1 style={{ fontSize: '24px', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '6px' }}>
-            Cổng Phê Duyệt (Approval Gate)
+            {t('approvals.title')}
           </h1>
           <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-            Kiểm soát và phê duyệt các hành động có rủi ro hoặc xuất bản tài nguyên từ AI Agent
+            {t('approvals.subtitle')}
           </p>
         </div>
 
@@ -72,7 +74,7 @@ export default function ApprovalsPage() {
           className="btn-primary"
           style={{ background: 'rgba(99, 102, 241, 0.2)', color: 'var(--accent-primary)', border: '1px solid rgba(99, 102, 241, 0.4)' }}
         >
-          <Bot size={16} /> Kết nối Telegram Bot
+          <Bot size={16} /> {t('approvals.telegram_btn')}
         </button>
       </div>
 
@@ -82,7 +84,7 @@ export default function ApprovalsPage() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, fontSize: '14px', marginBottom: '4px' }}>
-                <KeyRound size={16} color="var(--accent-primary)" /> Mã kết nối Telegram Bot
+                <KeyRound size={16} color="var(--accent-primary)" /> {t('approvals.telegram_code_title')}
               </div>
               <p style={{ fontSize: '13px', color: 'var(--text-dim)' }}>{telegramInfo.instructions}</p>
             </div>
@@ -95,23 +97,28 @@ export default function ApprovalsPage() {
 
       {/* Filter Tabs */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
-        {['all', 'pending', 'approved', 'rejected'].map((f) => (
+        {[
+          { key: 'all', label: t('approvals.tab_all') },
+          { key: 'pending', label: t('approvals.tab_pending') },
+          { key: 'approved', label: t('approvals.tab_approved') },
+          { key: 'rejected', label: t('approvals.tab_rejected') },
+        ].map((f) => (
           <button
-            key={f}
-            onClick={() => setFilter(f)}
+            key={f.key}
+            onClick={() => setFilter(f.key)}
             style={{
               padding: '6px 14px',
               borderRadius: '6px',
               fontSize: '12px',
               fontWeight: 600,
-              background: filter === f ? 'var(--accent-primary)' : 'rgba(255, 255, 255, 0.05)',
+              background: filter === f.key ? 'var(--accent-primary)' : 'rgba(255, 255, 255, 0.05)',
               color: '#ffffff',
               border: 'none',
               cursor: 'pointer',
               textTransform: 'uppercase',
             }}
           >
-            {f === 'all' ? 'Tất cả' : f === 'pending' ? 'Chờ duyệt' : f === 'approved' ? 'Đã duyệt' : 'Từ chối'}
+            {f.label}
           </button>
         ))}
       </div>

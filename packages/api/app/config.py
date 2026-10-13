@@ -1,6 +1,6 @@
 """Application configuration loaded from environment variables."""
 
-from typing import List
+from typing import List, Optional
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -37,6 +37,11 @@ class Settings(BaseSettings):
     # Storage
     workspaces_root: str = Field(
         default="/workspaces", description="Root folder for project workspaces"
+    )
+
+    # Telegram Bot
+    telegram_bot_token: Optional[str] = Field(
+        default=None, description="Telegram bot API token from @BotFather"
     )
 
     model_config = SettingsConfigDict(

@@ -125,7 +125,7 @@ class OpenRouterClient:
         self,
         prompt: str,
         aspect_ratio: str = "16:9",
-        model: str = "bytedance-seed/seedream-4.5",
+        model: str = "openai/gpt-5.4-image-2",
     ) -> Dict[str, Any]:
         """Generate high-fidelity image via OpenRouter images endpoint."""
         if not self.api_key or self.api_key == "your_openrouter_api_key_here":

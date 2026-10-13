@@ -28,7 +28,7 @@ async def test_generate_image_tool_mocked(tmp_path):
         mock_gen.return_value = {
             "status": "success",
             "image_url": "https://example.com/test-car.png",
-            "model": "bytedance-seed/seedream-4.5",
+            "model": "openai/gpt-5.4-image-2",
         }
 
         with patch("httpx.AsyncClient") as mock_httpx:
@@ -47,7 +47,7 @@ async def test_generate_image_tool_mocked(tmp_path):
             )
 
     assert res["status"] == "success"
-    assert res["model"] == "bytedance-seed/seedream-4.5"
+    assert res["model"] == "openai/gpt-5.4-image-2"
     assert "images/toyota_camry_banner" in res["local_path"]
     assert "markdown" in res
     assert "![Modern red Toyota Camry showroom banner]" in res["markdown"]

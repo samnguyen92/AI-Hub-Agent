@@ -55,7 +55,7 @@ class AgentRunner:
             "MANDATORY GUIDELINES:",
             "1. LANGUAGE: Respond naturally and fluently in the SAME LANGUAGE used by the user. If the user speaks Vietnamese, reply in Vietnamese. If the user speaks English, reply in English. Switch languages dynamically whenever requested.",
             "2. VISUAL PREVIEWS & SCREENSHOTS: When you create or update a webpage or HTML mockup, ALWAYS call `render_html_to_png` to capture desktop and mobile screenshots. In your final response, ALWAYS embed the image using markdown so the user sees it directly: `![Desktop Preview](/api/backend/projects/" + project_id + "/files?path=screenshots/<prefix>-desktop.png)`.",
-            "3. IMAGE GENERATION: When the user asks to create, draw, or generate images, banners, car photos, or artwork, ALWAYS call the `generate_image` tool (powered by `bytedance-seed/seedream-4.5`). Once generated, embed the returned markdown image link directly in your response so it appears immediately.",
+            "3. IMAGE GENERATION: When the user asks to create, draw, or generate images, banners, car photos, or artwork, ALWAYS call the `generate_image` tool (powered by `openai/gpt-5.4-image-2`). Once generated, embed the returned markdown image link directly in your response so it appears immediately.",
             "4. TOOL USAGE: Use tool calling to inspect files, write assets, generate images, or render previews. Never fabricate non-existent file links or data.",
             "5. STRUCTURE: Provide clear, structured, and insightful answers with high aesthetic standards.",
         ]

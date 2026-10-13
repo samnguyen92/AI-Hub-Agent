@@ -15,12 +15,12 @@ from app.tools.file_tools import safe_resolve_path
 
 
 class GenerateImageTool(BaseTool):
-    """Tool to generate professional AI images using bytedance-seed/seedream-4.5."""
+    """Tool to generate professional AI images using openai/gpt-5.4-image-2."""
 
     name = "generate_image"
     description = (
-        "Tạo hình ảnh chuyên nghiệp độ phân giải cao sử dụng model ByteDance Seedream 4.5 "
-        "(bytedance-seed/seedream-4.5). Dùng để tạo banner, ảnh phối cảnh xe hơi, sản phẩm, poster."
+        "Tạo hình ảnh chuyên nghiệp độ phân giải cao sử dụng model OpenAI GPT-5.4 Image "
+        "(openai/gpt-5.4-image-2). Dùng để tạo banner, ảnh phối cảnh xe hơi, sản phẩm, poster."
     )
     parameters_schema = {
         "type": "object",
@@ -34,6 +34,11 @@ class GenerateImageTool(BaseTool):
                 "description": "Tỉ lệ khung hình ('16:9', '1:1', '4:3', '9:16'). Mặc định là '16:9'.",
                 "default": "16:9",
             },
+            "model": {
+                "type": "string",
+                "description": "Model tạo hình ảnh (mặc định 'openai/gpt-5.4-image-2', hoặc 'bytedance-seed/seedream-4.5').",
+                "default": "openai/gpt-5.4-image-2",
+            },
             "filename": {
                 "type": "string",
                 "description": "Tên file lưu trong thư mục images/ (không cần phần mở rộng .png).",
@@ -46,6 +51,7 @@ class GenerateImageTool(BaseTool):
     async def execute(self, context: ToolContext, **kwargs: Any) -> Dict[str, Any]:
         prompt = kwargs.get("prompt", "").strip()
         aspect_ratio = kwargs.get("aspect_ratio", "16:9")
+        model = kwargs.get("model", "openai/gpt-5.4-image-2")
         raw_name = kwargs.get("filename", "generated_image")
 
         safe_name = re.sub(r"[^a-zA-Z0-9_-]", "_", raw_name).strip("_") or "image"
@@ -60,7 +66,7 @@ class GenerateImageTool(BaseTool):
             res = await openrouter_client.generate_image(
                 prompt=prompt,
                 aspect_ratio=aspect_ratio,
-                model="bytedance-seed/seedream-4.5",
+                model=model,
             )
             image_url = res.get("image_url", "")
 
@@ -87,7 +93,7 @@ class GenerateImageTool(BaseTool):
                 lib_item = LibraryItem(
                     project_id=context.project_id,
                     type="generated_image",
-                    tag="seedream-4.5",
+                    tag=model.split("/")[-1],
                     description=prompt[:200],
                     path=rel_path,
                 )
@@ -99,7 +105,7 @@ class GenerateImageTool(BaseTool):
             web_url = f"/api/backend/projects/{context.project_id}/files?path={rel_path}"
             return {
                 "status": "success",
-                "model": "bytedance-seed/seedream-4.5",
+                "model": model,
                 "prompt": prompt,
                 "local_path": rel_path,
                 "url": web_url,
@@ -107,7 +113,7 @@ class GenerateImageTool(BaseTool):
                 "instruction": f"Include this image in your response using markdown: ![{prompt}]({web_url})",
             }
         except Exception as exc:
-            return {"error": f"Lỗi tạo hình ảnh với Seedream 4.5: {str(exc)[:200]}"}
+            return {"error": f"Lỗi tạo hình ảnh với {model}: {str(exc)[:200]}"}
 
 
 image_tool = GenerateImageTool()

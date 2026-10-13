@@ -111,10 +111,40 @@ async def get_project_file(
     try:
         full_path = safe_resolve_path(project.workspace_path, path)
         if not os.path.exists(full_path) or not os.path.isfile(full_path):
+            # Fallback: search common subdirectories (mockups/, images/, screenshots/)
+            for sub in ("mockups", "images", "screenshots"):
+                candidate = safe_resolve_path(project.workspace_path, f"{sub}/{path}")
+                if os.path.exists(candidate) and os.path.isfile(candidate):
+                    full_path = candidate
+                    break
+        if not os.path.exists(full_path) or not os.path.isfile(full_path):
             raise HTTPException(status_code=404, detail=f"File not found: {path}")
         return FileResponse(full_path)
     except PermissionError:
         raise HTTPException(status_code=403, detail="Path traversal forbidden")
+
+
+@router.delete("/{project_id}")
+async def delete_project(
+    project_id: str, db: AsyncSession = Depends(get_db)
+) -> Dict[str, Any]:
+    """Delete a project and wipe its workspace."""
+    from app.services.project_service import project_service
+
+    success = await project_service.delete_project(project_id, db)
+    if not success:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return {"status": "deleted", "id": project_id}
+
+
+@router.post("/cleanup-demos")
+async def cleanup_demo_projects(
+    db: AsyncSession = Depends(get_db),
+) -> Dict[str, Any]:
+    """Batch clean disposable test and demo projects."""
+    from app.services.project_service import project_service
+
+    return await project_service.cleanup_demo_projects(db)
 
 
 class ProjectNoteResponse(BaseModel):
@@ -140,8 +170,12 @@ async def list_project_notes(
     status: Optional[str] = None,
     db: AsyncSession = Depends(get_db),
 ) -> List[ProjectNoteResponse]:
-    """List memory notes for a given project."""
-    q = select(ProjectNote).where(ProjectNote.project_id == project_id)
+    """List memory notes for a given project, or global learned rules."""
+    q = select(ProjectNote)
+    if project_id == "global":
+        q = q.where(ProjectNote.content.like("[LEARNED_RULE%"))
+    else:
+        q = q.where(ProjectNote.project_id == project_id)
     if status:
         q = q.where(ProjectNote.status == status)
     q = q.order_by(ProjectNote.created_at.desc())
