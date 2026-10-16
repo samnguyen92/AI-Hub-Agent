@@ -13,6 +13,7 @@ from app.config import settings
 from app.db.models import Approval, Message, Project, TelegramLink, Thread, User
 from app.db.session import get_db
 from app.services.agent_runner import agent_runner
+from app.services.gate_service import gate_service
 
 router = APIRouter(prefix="/telegram", tags=["telegram"])
 
@@ -78,16 +79,26 @@ async def telegram_webhook(
         cb_data = cb.get("data", "")
         chat_id = str(cb["message"]["chat"]["id"])
 
-        if cb_data.startswith("approve:") or cb_data.startswith("reject:"):
+        if cb_data.startswith("approve:") or cb_data.startswith("reject:") or cb_data.startswith("rework:"):
             action, app_id = cb_data.split(":", 1)
             q = select(Approval).where(Approval.id == app_id)
             approval = (await db.execute(q)).scalars().first()
             if approval and approval.status == "pending":
-                approval.status = "approved" if action == "approve" else "rejected"
-                await db.commit()
+                if approval.action_type.startswith("gate_"):
+                    await gate_service.answer_gate(
+                        db=db,
+                        approval_id=app_id,
+                        action=action,
+                        comment="Quyết định thực hiện qua Telegram Bot",
+                    )
+                else:
+                    approval.status = "approved" if action == "approve" else ("rework" if action == "rework" else "rejected")
+                    await db.commit()
+
+                status_label = "ĐỒNG Ý (Approved)" if action == "approve" else ("YÊU CẦU SỬA (Rework)" if action == "rework" else "TỪ CHỐI (Rejected)")
                 await send_telegram_message(
                     chat_id,
-                    f"✅ Đã {action.upper()} phê duyệt: <code>{app_id}</code>",
+                    f"✅ Đã ghi nhận quyết định: <b>{status_label}</b> cho Cổng <code>{app_id}</code>",
                 )
         return {"ok": True}
 
