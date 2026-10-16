@@ -24,6 +24,7 @@ import app.tools.image_tools  # noqa: F401 - register image generation tools
 import app.tools.skill_tools  # noqa: F401 - register skill tools
 import app.tools.web_tools  # noqa: F401 - register web tools
 import app.tools.seo_tools  # noqa: F401 - register seo tools
+import app.tools.design_tools  # noqa: F401 - register design & a11y tools
 import app.tools.report_tools  # noqa: F401 - register report tools
 import app.tools.memory_tools  # noqa: F401 - register memory tools
 

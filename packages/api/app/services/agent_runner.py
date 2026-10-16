@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.models import Agent, Message, ProjectNote, Run, Step, Thread
 from app.services.openrouter import openrouter_client
 from app.services.workspace import workspace_service
+from app.standards.writing import get_writing_system_prompt
 from app.tools.base import ToolContext, tool_registry
 
 
@@ -58,6 +59,7 @@ class AgentRunner:
             "3. IMAGE GENERATION: When the user asks to create, draw, or generate images, banners, car photos, or artwork, ALWAYS call the `generate_image` tool (powered by `openai/gpt-5.4-image-2`). Once generated, embed the returned markdown image link directly in your response so it appears immediately.",
             "4. TOOL USAGE: Use tool calling to inspect files, write assets, generate images, or render previews. Never fabricate non-existent file links or data.",
             "5. STRUCTURE: Provide clear, structured, and insightful answers with high aesthetic standards.",
+            "\n" + get_writing_system_prompt(),
         ]
         if notes:
             learned_rules = [n for n in notes if n.startswith("[LEARNED_RULE")]
