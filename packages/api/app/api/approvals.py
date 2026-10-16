@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import Approval, Project, Run, Thread
 from app.db.session import get_db
+from app.services.gate_service import gate_service
 from app.services.workspace import workspace_service
 from app.tools.base import ToolContext, tool_registry
 
@@ -25,7 +26,7 @@ class ApprovalResponse(BaseModel):
 
 
 class ApprovalDecisionRequest(BaseModel):
-    action: str  # approve | reject
+    action: str  # approve | rework | reject
     comment: Optional[str] = None
 
 
@@ -73,42 +74,66 @@ async def respond_approval(
     if approval.status != "pending":
         raise HTTPException(status_code=400, detail="Approval has already been resolved")
 
-    approval.status = "approved" if req.action.lower() == "approve" else "rejected"
-    approval.comment = req.comment
+    # Check if this is a Gate approval
+    if approval.action_type.startswith("gate_"):
+        try:
+            approval = await gate_service.answer_gate(
+                db=db,
+                approval_id=approval_id,
+                action=req.action,
+                comment=req.comment,
+            )
+        except ValueError as val_err:
+            raise HTTPException(status_code=400, detail=str(val_err))
 
-    # Fetch associated run and project
-    run_q = select(Run).where(Run.id == approval.run_id)
-    run = (await db.execute(run_q)).scalars().first()
+        # Update run status
+        run_q = select(Run).where(Run.id == approval.run_id)
+        run = (await db.execute(run_q)).scalars().first()
+        if run:
+            if approval.status == "approved":
+                run.status = "completed"
+            elif approval.status == "rework":
+                run.status = "rework_needed"
+            else:
+                run.status = "cancelled"
+            await db.commit()
+    else:
+        # Traditional tool approvals (e.g. export_zip)
+        approval.status = "approved" if req.action.lower() == "approve" else "rejected"
+        approval.comment = req.comment
 
-    if run:
-        if approval.status == "approved":
-            # If export_zip, execute the packaging
-            if approval.action_type == "export_zip":
-                th_q = select(Thread).where(Thread.id == run.thread_id)
-                th = (await db.execute(th_q)).scalars().first()
-                if th:
-                    ws_path = workspace_service.init_project_workspace(th.project_id)
-                    tool_ctx = ToolContext(
-                        project_id=th.project_id,
-                        run_id=run.id,
-                        workspace_path=ws_path,
-                        db=db,
-                        agent_key=run.agent_key,
-                    )
-                    zip_tool = tool_registry.get("export_zip")
-                    if zip_tool:
-                        zip_res = await zip_tool.execute(
-                            tool_ctx,
-                            archive_name=approval.payload.get("archive_name"),
-                            bypass_approval=True,
+        # Fetch associated run and project
+        run_q = select(Run).where(Run.id == approval.run_id)
+        run = (await db.execute(run_q)).scalars().first()
+
+        if run:
+            if approval.status == "approved":
+                if approval.action_type == "export_zip":
+                    th_q = select(Thread).where(Thread.id == run.thread_id)
+                    th = (await db.execute(th_q)).scalars().first()
+                    if th:
+                        ws_path = workspace_service.init_project_workspace(th.project_id)
+                        tool_ctx = ToolContext(
+                            project_id=th.project_id,
+                            run_id=run.id,
+                            workspace_path=ws_path,
+                            db=db,
+                            agent_key=run.agent_key,
                         )
-                        approval.payload["result"] = zip_res
+                        zip_tool = tool_registry.get("export_zip")
+                        if zip_tool:
+                            zip_res = await zip_tool.execute(
+                                tool_ctx,
+                                archive_name=approval.payload.get("archive_name"),
+                                bypass_approval=True,
+                            )
+                            approval.payload["result"] = zip_res
 
-            run.status = "completed"
-        else:
-            run.status = "cancelled"
+                run.status = "completed"
+            else:
+                run.status = "cancelled"
 
-    await db.commit()
+        await db.commit()
 
     return ApprovalResponse(
         id=approval.id,

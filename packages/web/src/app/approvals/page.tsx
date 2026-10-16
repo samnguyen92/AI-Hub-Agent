@@ -5,6 +5,7 @@ import {
   ShieldCheck,
   CheckCircle,
   XCircle,
+  RotateCcw,
   Clock,
   Send,
   FileArchive,
@@ -14,6 +15,7 @@ import {
 } from 'lucide-react';
 import { fetchApprovals, respondApproval, generateTelegramLinkCode, ApprovalItem } from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
+import GateCard from '@/components/GateCard';
 
 export default function ApprovalsPage() {
   const { t } = useLanguage();
@@ -36,8 +38,8 @@ export default function ApprovalsPage() {
     loadApprovals();
   }, [filter]);
 
-  const handleDecision = async (id: string, action: 'approve' | 'reject') => {
-    await respondApproval(id, action);
+  const handleDecision = async (id: string, action: 'approve' | 'rework' | 'reject', comment?: string) => {
+    await respondApproval(id, action, comment);
     await loadApprovals();
   };
 
@@ -50,10 +52,13 @@ export default function ApprovalsPage() {
     if (status === 'approved') {
       return <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700, background: 'rgba(16, 185, 129, 0.2)', color: '#10B981' }}><CheckCircle size={12} /> {t('approvals.tab_approved')}</span>;
     }
+    if (status === 'rework') {
+      return <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700, background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}><RotateCcw size={12} /> Yêu cầu sửa</span>;
+    }
     if (status === 'rejected') {
       return <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700, background: 'rgba(239, 68, 68, 0.2)', color: '#EF4444' }}><XCircle size={12} /> {t('approvals.tab_rejected')}</span>;
     }
-    return <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700, background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}><Clock size={12} /> {t('approvals.tab_pending')}</span>;
+    return <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700, background: 'rgba(56, 189, 248, 0.2)', color: '#38BDF8' }}><Clock size={12} /> {t('approvals.tab_pending')}</span>;
   };
 
   return (
@@ -96,11 +101,12 @@ export default function ApprovalsPage() {
       )}
 
       {/* Filter Tabs */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
         {[
           { key: 'all', label: t('approvals.tab_all') },
           { key: 'pending', label: t('approvals.tab_pending') },
           { key: 'approved', label: t('approvals.tab_approved') },
+          { key: 'rework', label: t('approvals.tab_rework') },
           { key: 'rejected', label: t('approvals.tab_rejected') },
         ].map((f) => (
           <button
@@ -132,8 +138,19 @@ export default function ApprovalsPage() {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          {approvals.map((appr) => (
-            <div key={appr.id} className="glass-panel" style={{ padding: '20px' }}>
+          {approvals.map((appr) => {
+            if (appr.action_type.startsWith('gate_') || appr.payload?.gate_type) {
+              return (
+                <GateCard
+                  key={appr.id}
+                  gate={appr}
+                  onRespond={handleDecision}
+                />
+              );
+            }
+
+            return (
+              <div key={appr.id} className="glass-panel" style={{ padding: '20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
@@ -193,7 +210,8 @@ export default function ApprovalsPage() {
                 </div>
               )}
             </div>
-          ))}
+          );
+        })}
         </div>
       )}
     </div>
