@@ -1,14 +1,19 @@
 """API Router for Project operations."""
 
+import os
 from typing import Any, Dict, List, Optional
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Cookie, Depends, Header, HTTPException, Request
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import Project, ProjectNote, User
+from app.api.auth import get_current_user, verify_project_ownership
+from app.db.models import Project, User
 from app.db.session import get_db
+from app.services.auth_service import auth_service
 from app.services.workspace import workspace_service
+from app.tools.file_tools import safe_resolve_path
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 
@@ -16,7 +21,6 @@ router = APIRouter(prefix="/projects", tags=["projects"])
 class ProjectCreateRequest(BaseModel):
     name: str
     source_url: Optional[str] = None
-    owner_github_login: str = "demo-user"
 
 
 class ProjectResponse(BaseModel):
@@ -27,9 +31,16 @@ class ProjectResponse(BaseModel):
 
 
 @router.get("", response_model=List[ProjectResponse])
-async def list_projects(db: AsyncSession = Depends(get_db)) -> List[ProjectResponse]:
-    """Retrieve all active projects."""
-    res = await db.execute(select(Project).order_by(Project.created_at.desc()))
+async def list_projects(
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> List[ProjectResponse]:
+    """Retrieve active projects owned by user or all projects for admin."""
+    q = select(Project)
+    if user.role != "admin":
+        q = q.where(Project.owner_id == user.id)
+    q = q.order_by(Project.created_at.desc())
+    res = await db.execute(q)
     projects = res.scalars().all()
     return [
         ProjectResponse(
@@ -44,17 +55,11 @@ async def list_projects(db: AsyncSession = Depends(get_db)) -> List[ProjectRespo
 
 @router.post("", response_model=ProjectResponse)
 async def create_project(
-    req: ProjectCreateRequest, db: AsyncSession = Depends(get_db)
+    req: ProjectCreateRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ) -> ProjectResponse:
-    """Create a new project workspace and database record."""
-    # Ensure default user exists
-    user_res = await db.execute(select(User).where(User.github_login == req.owner_github_login))
-    user = user_res.scalars().first()
-    if not user:
-        user = User(github_login=req.owner_github_login, role="admin")
-        db.add(user)
-        await db.flush()
-
+    """Create a new project workspace and record belonging to current user."""
     project = Project(
         owner_id=user.id,
         name=req.name,
@@ -76,18 +81,12 @@ async def create_project(
     )
 
 
-from fastapi.responses import FileResponse
-from app.tools.file_tools import safe_resolve_path
-import os
-
-
 @router.get("/{project_id}", response_model=ProjectResponse)
-async def get_project(project_id: str, db: AsyncSession = Depends(get_db)) -> ProjectResponse:
-    """Get project by ID."""
-    res = await db.execute(select(Project).where(Project.id == project_id))
-    project = res.scalars().first()
-    if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
+async def get_project(
+    project_id: str,
+    project: Project = Depends(verify_project_ownership),
+) -> ProjectResponse:
+    """Get project by ID if authorized."""
     return ProjectResponse(
         id=project.id,
         name=project.name,
@@ -96,45 +95,70 @@ async def get_project(project_id: str, db: AsyncSession = Depends(get_db)) -> Pr
     )
 
 
+def _resolve_project_file_path(workspace_path: str, path: str) -> str:
+    """Resolve file path within workspace or common asset subdirectories."""
+    full_path = safe_resolve_path(workspace_path, path)
+    if not os.path.exists(full_path) or not os.path.isfile(full_path):
+        for sub in ("mockups", "images", "screenshots"):
+            candidate = safe_resolve_path(workspace_path, f"{sub}/{path}")
+            if os.path.exists(candidate) and os.path.isfile(candidate):
+                return candidate
+    if not os.path.exists(full_path) or not os.path.isfile(full_path):
+        raise HTTPException(status_code=404, detail=f"File not found: {path}")
+    return full_path
+
+
 @router.get("/{project_id}/files")
 async def get_project_file(
     project_id: str,
     path: str,
+    request: Request,
+    signature: Optional[str] = None,
+    expires: Optional[int] = None,
+    authorization: Optional[str] = Header(None),
+    session_token: Optional[str] = Cookie(None),
     db: AsyncSession = Depends(get_db),
 ) -> FileResponse:
-    """Safely return file from workspace for preview/rendering."""
-    res = await db.execute(select(Project).where(Project.id == project_id))
-    project = res.scalars().first()
-    if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
+    """Safely return file from workspace using signed URL or session auth."""
+    is_signed = False
+    if signature and expires:
+        is_signed = auth_service.verify_file_signature(project_id, path, signature, expires)
+
+    if is_signed:
+        q = select(Project).where(Project.id == project_id)
+        project = (await db.execute(q)).scalars().first()
+        if not project:
+            raise HTTPException(status_code=404, detail="Project not found")
+    else:
+        user = await get_current_user(request, authorization, session_token, db)
+        project = await verify_project_ownership(project_id, user, db)
 
     try:
-        full_path = safe_resolve_path(project.workspace_path, path)
-        if not os.path.exists(full_path) or not os.path.isfile(full_path):
-            # Fallback: search common subdirectories (mockups/, images/, screenshots/)
-            for sub in ("mockups", "images", "screenshots"):
-                candidate = safe_resolve_path(project.workspace_path, f"{sub}/{path}")
-                if os.path.exists(candidate) and os.path.isfile(candidate):
-                    full_path = candidate
-                    break
-        if not os.path.exists(full_path) or not os.path.isfile(full_path):
-            raise HTTPException(status_code=404, detail=f"File not found: {path}")
-        return FileResponse(full_path)
+        full_path = _resolve_project_file_path(project.workspace_path, path)
+        return FileResponse(
+            full_path,
+            headers={
+                "Content-Security-Policy": "sandbox allow-scripts",
+                "X-Content-Type-Options": "nosniff",
+            },
+        )
     except PermissionError:
         raise HTTPException(status_code=403, detail="Path traversal forbidden")
 
 
 @router.delete("/{project_id}")
 async def delete_project(
-    project_id: str, db: AsyncSession = Depends(get_db)
+    project_id: str,
+    project: Project = Depends(verify_project_ownership),
+    db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
-    """Delete a project and wipe its workspace."""
+    """Delete a project and wipe its workspace if owner or admin."""
     from app.services.project_service import project_service
 
-    success = await project_service.delete_project(project_id, db)
+    success = await project_service.delete_project(project.id, db)
     if not success:
         raise HTTPException(status_code=404, detail="Project not found")
-    return {"status": "deleted", "id": project_id}
+    return {"status": "deleted", "id": project.id}
 
 
 @router.post("/cleanup-demos")
@@ -143,141 +167,4 @@ async def cleanup_demo_projects() -> Dict[str, Any]:
     raise HTTPException(
         status_code=410,
         detail="Endpoint này đã bị vô hiệu hoá để đảm bảo an toàn dữ liệu.",
-    )
-
-
-class ProjectNoteResponse(BaseModel):
-    id: str
-    project_id: str
-    content: str
-    status: str
-    source_run_id: Optional[str] = None
-    created_at: str
-
-
-class NoteRespondRequest(BaseModel):
-    action: str  # approve or reject
-
-
-class NoteCreateRequest(BaseModel):
-    content: str
-
-
-@router.get("/{project_id}/notes", response_model=List[ProjectNoteResponse])
-async def list_project_notes(
-    project_id: str,
-    status: Optional[str] = None,
-    db: AsyncSession = Depends(get_db),
-) -> List[ProjectNoteResponse]:
-    """List memory notes for a given project, or global learned rules."""
-    q = select(ProjectNote)
-    if project_id == "global":
-        q = q.where(ProjectNote.content.like("[LEARNED_RULE%"))
-    else:
-        q = q.where(ProjectNote.project_id == project_id)
-    if status:
-        q = q.where(ProjectNote.status == status)
-    q = q.order_by(ProjectNote.created_at.desc())
-    res = await db.execute(q)
-    notes = res.scalars().all()
-    return [
-        ProjectNoteResponse(
-            id=n.id,
-            project_id=n.project_id,
-            content=n.content,
-            status=n.status,
-            source_run_id=n.source_run_id,
-            created_at=n.created_at.isoformat() if n.created_at else "",
-        )
-        for n in notes
-    ]
-
-
-@router.post("/{project_id}/notes", response_model=ProjectNoteResponse)
-async def create_project_note(
-    project_id: str,
-    req: NoteCreateRequest,
-    db: AsyncSession = Depends(get_db),
-) -> ProjectNoteResponse:
-    """Manually add an approved note to project memory."""
-    note = ProjectNote(
-        project_id=project_id,
-        content=req.content.strip(),
-        status="approved",
-    )
-    db.add(note)
-    await db.commit()
-    await db.refresh(note)
-    return ProjectNoteResponse(
-        id=note.id,
-        project_id=note.project_id,
-        content=note.content,
-        status=note.status,
-        source_run_id=note.source_run_id,
-        created_at=note.created_at.isoformat() if note.created_at else "",
-    )
-
-
-@router.post("/{project_id}/notes/{note_id}/respond", response_model=ProjectNoteResponse)
-async def respond_to_note(
-    project_id: str,
-    note_id: str,
-    req: NoteRespondRequest,
-    db: AsyncSession = Depends(get_db),
-) -> ProjectNoteResponse:
-    """Approve or reject a proposed project note."""
-    if req.action not in ("approve", "reject"):
-        raise HTTPException(status_code=400, detail="Action must be 'approve' or 'reject'")
-
-    res = await db.execute(
-        select(ProjectNote).where(
-            ProjectNote.id == note_id,
-            ProjectNote.project_id == project_id,
-        )
-    )
-    note = res.scalars().first()
-    if not note:
-        raise HTTPException(status_code=404, detail="Project note not found")
-
-    note.status = "approved" if req.action == "approve" else "rejected"
-    await db.commit()
-    await db.refresh(note)
-    return ProjectNoteResponse(
-        id=note.id,
-        project_id=note.project_id,
-        content=note.content,
-        status=note.status,
-        source_run_id=note.source_run_id,
-        created_at=note.created_at.isoformat() if note.created_at else "",
-    )
-
-
-class LearnRuleRequest(BaseModel):
-    rule: str
-    category: str = "general"
-
-
-@router.post("/{project_id}/learn", response_model=ProjectNoteResponse)
-async def teach_project_rule(
-    project_id: str,
-    req: LearnRuleRequest,
-    db: AsyncSession = Depends(get_db),
-) -> ProjectNoteResponse:
-    """Explicitly teach the AI a permanent project rule or preference."""
-    content = f"[LEARNED_RULE:{req.category.upper()}] {req.rule.strip()}"
-    note = ProjectNote(
-        project_id=project_id,
-        content=content,
-        status="approved",
-    )
-    db.add(note)
-    await db.commit()
-    await db.refresh(note)
-    return ProjectNoteResponse(
-        id=note.id,
-        project_id=note.project_id,
-        content=note.content,
-        status=note.status,
-        source_run_id=note.source_run_id,
-        created_at=note.created_at.isoformat() if note.created_at else "",
     )

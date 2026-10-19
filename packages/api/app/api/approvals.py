@@ -6,12 +6,9 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import Approval, Message, Project, Run, Thread
+from app.api.auth import get_current_user
+from app.db.models import Approval, Project, Run, Thread, User
 from app.db.session import get_db
-from app.services.gate_service import gate_service
-from app.services.workspace import workspace_service
-from app.tools.base import ToolContext, tool_registry
-from app.tools.file_tools import perform_export
 
 router = APIRouter(prefix="/approvals", tags=["approvals"])
 
@@ -35,12 +32,23 @@ class ApprovalDecisionRequest(BaseModel):
 async def list_approvals(
     project_id: Optional[str] = None,
     status: Optional[str] = None,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> List[ApprovalResponse]:
-    """List pending and historical approvals."""
-    q = select(Approval).order_by(Approval.created_at.desc())
+    """List pending and historical approvals for authorized projects."""
+    q = (
+        select(Approval)
+        .join(Run, Approval.run_id == Run.id)
+        .join(Thread, Run.thread_id == Thread.id)
+        .join(Project, Thread.project_id == Project.id)
+        .order_by(Approval.created_at.desc())
+    )
     if status and status != "all":
         q = q.where(Approval.status == status)
+    if project_id:
+        q = q.where(Project.id == project_id)
+    if current_user.role != "admin":
+        q = q.where(Project.owner_id == current_user.id)
 
     res = await db.execute(q)
     approvals = res.scalars().all()
@@ -63,90 +71,24 @@ async def list_approvals(
 async def respond_approval(
     approval_id: str,
     req: ApprovalDecisionRequest,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> ApprovalResponse:
-    """Approve or reject a pending action."""
-    q = select(Approval).where(Approval.id == approval_id)
-    res = await db.execute(q)
-    approval = res.scalars().first()
-    if not approval:
-        raise HTTPException(status_code=404, detail="Approval record not found")
+    """Approve, rework, or reject a pending Gate or tool action via ApprovalService."""
+    from app.services.approval_service import approval_service
 
-    if approval.status != "pending":
-        raise HTTPException(status_code=400, detail="Approval has already been resolved")
-
-    # Check if this is a Gate approval
-    if approval.action_type.startswith("gate_"):
-        try:
-            approval = await gate_service.answer_gate(
-                db=db,
-                approval_id=approval_id,
-                action=req.action,
-                comment=req.comment,
-            )
-        except ValueError as val_err:
-            raise HTTPException(status_code=400, detail=str(val_err))
-
-        # Update run status and handle resume/rework
-        run_q = select(Run).where(Run.id == approval.run_id)
-        run = (await db.execute(run_q)).scalars().first()
-        if run:
-            if approval.status == "approved":
-                if run.checkpoint_state:
-                    approval_note = Message(
-                        thread_id=run.thread_id,
-                        role="user",
-                        content=f"[CỔNG ĐÃ DUYỆT]: Người dùng đã phê duyệt cổng '{approval.payload.get('title', '')}'. Tiếp tục thực hiện.",
-                    )
-                    db.add(approval_note)
-                    run.status = "queued"
-                else:
-                    run.status = "completed"
-            elif approval.status == "rework":
-                run.status = "rework_needed"
-                child_run = Run(
-                    thread_id=run.thread_id,
-                    agent_key=run.agent_key,
-                    parent_run_id=run.id,
-                    status="queued",
-                )
-                db.add(child_run)
-                rework_msg = Message(
-                    thread_id=run.thread_id,
-                    role="user",
-                    content=f"[YÊU CẦU SỬA ĐỔI / REWORK]: {req.comment or 'Vui lòng chỉnh sửa lại theo yêu cầu.'}",
-                )
-                db.add(rework_msg)
-            else:
-                run.status = "cancelled"
-            await db.commit()
-    else:
-        # Traditional tool approvals (e.g. export_zip)
-        approval.status = "approved" if req.action.lower() == "approve" else "rejected"
-        approval.comment = req.comment
-
-        run_q = select(Run).where(Run.id == approval.run_id)
-        run = (await db.execute(run_q)).scalars().first()
-
-        if run:
-            if approval.status == "approved":
-                if approval.action_type == "export_zip":
-                    th_q = select(Thread).where(Thread.id == run.thread_id)
-                    th = (await db.execute(th_q)).scalars().first()
-                    if th:
-                        ws_path = workspace_service.init_project_workspace(th.project_id)
-                        arch_name = approval.payload.get("archive_name") or "project_export.zip"
-                        zip_res = perform_export(ws_path, arch_name, th.project_id)
-                        approval.payload["result"] = zip_res
-
-                if run.checkpoint_state:
-                    run.status = "queued"
-                else:
-                    run.status = "completed"
-            else:
-                run.status = "cancelled"
-
-        await db.commit()
+    try:
+        approval = await approval_service.decide(
+            approval_id=approval_id,
+            decision=req.action,
+            db=db,
+            user=current_user,
+            comment=req.comment,
+        )
+    except PermissionError as p_err:
+        raise HTTPException(status_code=403, detail=str(p_err))
+    except ValueError as v_err:
+        raise HTTPException(status_code=400, detail=str(v_err))
 
     return ApprovalResponse(
         id=approval.id,

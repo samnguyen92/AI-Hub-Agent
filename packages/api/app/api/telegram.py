@@ -81,24 +81,29 @@ async def telegram_webhook(
 
         if cb_data.startswith("approve:") or cb_data.startswith("reject:") or cb_data.startswith("rework:"):
             action, app_id = cb_data.split(":", 1)
-            q = select(Approval).where(Approval.id == app_id)
-            approval = (await db.execute(q)).scalars().first()
-            if approval and approval.status == "pending":
-                if approval.action_type.startswith("gate_"):
-                    await gate_service.answer_gate(
-                        db=db,
-                        approval_id=app_id,
-                        action=action,
-                        comment="Quyết định thực hiện qua Telegram Bot",
-                    )
-                else:
-                    approval.status = "approved" if action == "approve" else ("rework" if action == "rework" else "rejected")
-                    await db.commit()
-
+            from app.services.approval_service import approval_service
+            try:
+                await approval_service.decide(
+                    approval_id=app_id,
+                    decision=action,
+                    db=db,
+                    telegram_chat_id=chat_id,
+                    comment="Quyết định thực hiện qua Telegram Bot",
+                )
                 status_label = "ĐỒNG Ý (Approved)" if action == "approve" else ("YÊU CẦU SỬA (Rework)" if action == "rework" else "TỪ CHỐI (Rejected)")
                 await send_telegram_message(
                     chat_id,
                     f"✅ Đã ghi nhận quyết định: <b>{status_label}</b> cho Cổng <code>{app_id}</code>",
+                )
+            except PermissionError as pe:
+                await send_telegram_message(
+                    chat_id,
+                    f"❌ Từ chối quyền truy cập: {str(pe)}",
+                )
+            except Exception as e:
+                await send_telegram_message(
+                    chat_id,
+                    f"⚠️ Không thể xử lý phê duyệt: {str(e)}",
                 )
         return {"ok": True}
 

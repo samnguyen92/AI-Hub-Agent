@@ -39,6 +39,19 @@ class Settings(BaseSettings):
         default="/workspaces", description="Root folder for project workspaces"
     )
 
+    # Authentication & Session
+    auth_mode: str = Field(
+        default="dev", description="Authentication mode: dev, token, or strict"
+    )
+    auth_secret_key: str = Field(
+        default="align-ai-hub-super-secret-key-change-in-prod-2026",
+        description="HMAC secret key for signing cookies and URLs",
+    )
+    admin_api_token: str = Field(
+        default="align-admin-secret-token",
+        description="Static admin token for CLI and worker access",
+    )
+
     # Telegram Bot
     telegram_bot_token: Optional[str] = Field(
         default=None, description="Telegram bot API token from @BotFather"
