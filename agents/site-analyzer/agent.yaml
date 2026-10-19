@@ -1,21 +1,31 @@
 key: site-analyzer
 name: Site Analyzer Agent
 description: "Chuyên gia thu thập dữ liệu website, kiểm tra sitemap/robots.txt, đo Core Web Vitals và phát hiện liên kết gãy."
-model: openai/gpt-4o-mini
+model: openai/gpt-6-luna
+rules_path: agents/site-analyzer/rules.md
 skills:
   - shared/align-style
+  - shared/write-report
   - site-analyzer/crawl-site
   - site-analyzer/lighthouse-audit
 tools:
-  - load_skill
-  - request_input
+  - list_library
+  - read_item
+  - save_artifact
+  - take_screenshot
+  - audit_web_design
   - fetch_url
   - crawl_site
   - check_sitemap
   - run_lighthouse
-  - take_screenshot
   - read_file
   - write_file
+  - load_skill
+  - request_input
+  - propose_note
+  - list_notes
+  - learn_rule
+  - open_gate
 config:
   max_steps: 10
   max_cost_usd: 0.5

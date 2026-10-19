@@ -98,26 +98,6 @@ class ToolRegistry:
                 "propose_note",
                 "list_notes",
                 "learn_rule",
-                "open_gate",
-            ],
-            "code-builder": [
-                "list_library",
-                "read_item",
-                "save_artifact",
-                "read_file",
-                "write_file",
-                "list_files",
-                "apply_patch",
-                "generate_image",
-                "render_html_to_png",
-                "run_checks",
-                "compare_screenshots",
-                "load_skill",
-                "request_input",
-                "export_zip",
-                "propose_note",
-                "list_notes",
-                "learn_rule",
                 "audit_web_design",
                 "open_gate",
             ],
@@ -183,19 +163,26 @@ class ToolRegistry:
         """Retrieve a tool by name."""
         return self._tools.get(name)
 
+    def get_allowed_tool_names(self, agent_key: str) -> List[str]:
+        """Return list of allowed tool names for an agent loaded from agent.yaml (SSOT)."""
+        try:
+            from app.services.agent_loader import agent_loader
+            declared = agent_loader.get_allowed_tool_names(agent_key)
+            if declared:
+                return declared
+        except Exception:
+            pass
+        return list(self._agent_permissions.get(agent_key, []))
+
     def get_tools_for_agent(self, agent_key: str) -> List[BaseTool]:
         """Return list of allowed tools for a specific agent."""
-        allowed_names = self._agent_permissions.get(agent_key, [])
+        allowed_names = self.get_allowed_tool_names(agent_key)
         return [self._tools[name] for name in allowed_names if name in self._tools]
 
     def get_openai_schemas_for_agent(self, agent_key: str) -> List[Dict[str, Any]]:
         """Return OpenAI function schemas for an agent."""
         tools = self.get_tools_for_agent(agent_key)
         return [tool.to_openai_schema() for tool in tools]
-
-    def get_allowed_tool_names(self, agent_key: str) -> List[str]:
-        """Return list of allowed tool names for an agent."""
-        return list(self._agent_permissions.get(agent_key, []))
 
 
 tool_registry = ToolRegistry()

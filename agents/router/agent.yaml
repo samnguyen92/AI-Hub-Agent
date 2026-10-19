@@ -1,0 +1,10 @@
+key: router
+name: Router Agent
+description: "Điều phối viên phân loại ý định người dùng và điều hướng chính xác đến Agent chuyên trách."
+model: openai/gpt-6-luna
+rules_path: agents/router/rules.md
+skills: []
+tools: []
+config:
+  max_steps: 1
+  max_cost_usd: 0.1

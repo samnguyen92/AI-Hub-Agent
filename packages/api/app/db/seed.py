@@ -36,6 +36,12 @@ DEFAULT_AGENTS = [
         "config": {"max_steps": 15, "max_cost_usd": 0.8},
     },
     {
+        "key": "quality-auditor",
+        "model": "openai/gpt-6-luna",
+        "rules_path": "agents/quality-auditor/rules.md",
+        "config": {"max_steps": 15, "max_cost_usd": 1.0},
+    },
+    {
         "key": "router",
         "model": "openai/gpt-6-luna",
         "rules_path": "agents/router/rules.md",
@@ -45,19 +51,38 @@ DEFAULT_AGENTS = [
 
 
 async def seed_agents(db: AsyncSession) -> None:
-    """Insert or update default system agents to openai/gpt-6-luna."""
-    for agent_data in DEFAULT_AGENTS:
-        res = await db.execute(select(Agent).where(Agent.key == agent_data["key"]))
+    """Insert or update default agents without overwriting user model customizations (BUG-05 fix)."""
+    try:
+        from app.services.agent_loader import agent_loader
+        manifests = {m["key"]: m for m in agent_loader.get_all_agents()}
+    except Exception:
+        manifests = {}
+
+    all_keys = list(dict.fromkeys(list(manifests.keys()) + [a["key"] for a in DEFAULT_AGENTS]))
+
+    for key in all_keys:
+        m = manifests.get(key, {})
+        default = next((a for a in DEFAULT_AGENTS if a["key"] == key), {})
+
+        model = m.get("model") or default.get("model", "openai/gpt-6-luna")
+        rules_path = m.get("rules_path") or default.get("rules_path", f"agents/{key}/rules.md")
+        config = m.get("config") or default.get("config", {"max_steps": 15, "max_cost_usd": 1.0})
+
+        res = await db.execute(select(Agent).where(Agent.key == key))
         existing = res.scalars().first()
         if not existing:
             new_agent = Agent(
-                key=agent_data["key"],
-                model=agent_data["model"],
-                rules_path=agent_data["rules_path"],
-                config=agent_data["config"],
+                key=key,
+                model=model,
+                rules_path=rules_path,
+                config=config,
             )
             db.add(new_agent)
         else:
-            existing.model = agent_data["model"]
-            existing.rules_path = agent_data["rules_path"]
+            # Preserve user-customized model
+            if not existing.model:
+                existing.model = model
+            existing.rules_path = rules_path
+            if not existing.config:
+                existing.config = config
     await db.commit()

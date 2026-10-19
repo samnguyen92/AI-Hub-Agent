@@ -124,11 +124,12 @@ class AgentRunner:
     ) -> Tuple[Optional[str], int]:
         """Execute tool calls, handle error containment and check for pause requests."""
         paused_status: Optional[str] = None
+        allowed_tools = tool_registry.get_allowed_tool_names(tool_ctx.agent_key)
 
         for idx, tc in enumerate(tool_calls):
             tool = tool_registry.get(tc.name)
             try:
-                if tool:
+                if tool and tc.name in allowed_tools:
                     allowed_props = tool.parameters_schema.get("properties", {})
                     filtered_args = (
                         {k: v for k, v in tc.arguments.items() if k in allowed_props}
@@ -138,7 +139,7 @@ class AgentRunner:
                     tool_output: Dict[str, Any] = await tool.execute(tool_ctx, **filtered_args)
                     consecutive_errors = 0
                 else:
-                    tool_output = {"error": f"Tool '{tc.name}' not found or permitted."}
+                    tool_output = {"error": f"Tool '{tc.name}' not found or not permitted for agent '{tool_ctx.agent_key}'."}
                     consecutive_errors += 1
             except Exception as exc:
                 tool_output = {"error": f"Lỗi thực thi công cụ '{tc.name}': {str(exc)}"}

@@ -1,21 +1,34 @@
 key: design
 name: Design Agent
 description: "Chuyên gia UI/UX tạo mockup, wireframe, design tokens và checklist tuân thủ phong cách Align."
-model: openai/gpt-4o
+model: openai/gpt-6-luna
+rules_path: agents/design/rules.md
 skills:
   - shared/align-style
+  - shared/write-report
   - design/analyze-brief
   - design/style-tokens
   - design/homepage-mockup
   - design/design-review-checklist
 tools:
-  - load_skill
-  - request_input
-  - list_files
+  - list_library
+  - read_item
+  - save_artifact
   - read_file
   - write_file
+  - list_files
+  - generate_image
+  - view_image
   - render_html_to_png
   - take_screenshot
+  - audit_web_design
+  - load_skill
+  - request_input
+  - export_zip
+  - propose_note
+  - list_notes
+  - learn_rule
+  - open_gate
 config:
   max_steps: 15
   max_cost_usd: 1.0

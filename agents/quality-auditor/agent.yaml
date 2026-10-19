@@ -1,0 +1,28 @@
+key: quality-auditor
+name: Quality Auditor Agent
+description: "Chuyên gia kiểm định độc lập: rà soát chất lượng thiết kế, kiểm tra tuân thủ Align style, khả năng truy cập WCAG và độ chuẩn xác của mã nguồn."
+model: openai/gpt-6-luna
+rules_path: agents/quality-auditor/rules.md
+skills:
+  - shared/align-style
+  - shared/write-report
+tools:
+  - list_library
+  - read_item
+  - list_files
+  - read_file
+  - audit_web_design
+  - take_screenshot
+  - run_checks
+  - compare_screenshots
+  - fetch_url
+  - check_sitemap
+  - open_gate
+  - propose_note
+  - list_notes
+  - learn_rule
+  - load_skill
+  - request_input
+config:
+  max_steps: 15
+  max_cost_usd: 1.0

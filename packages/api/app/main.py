@@ -35,6 +35,9 @@ import app.tools.memory_tools  # noqa: F401 - register memory tools
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan manager initializing db schema on startup."""
+    from app.services.agent_loader import agent_loader
+    agent_loader.validate_agents()
+
     async with engine.begin() as conn:
         # Auto-create tables in development
         await conn.run_sync(Base.metadata.create_all)

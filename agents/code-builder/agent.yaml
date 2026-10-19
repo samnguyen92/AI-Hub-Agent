@@ -1,20 +1,33 @@
 key: code-builder
 name: Code Builder Agent
 description: "Chuyên gia lập trình chuyển đổi thiết kế/mockup thành mã HTML/CSS/JS sạch, kiểm tra responsive và visual diff."
-model: openai/gpt-4o
+model: openai/gpt-6-luna
+rules_path: agents/code-builder/rules.md
 skills:
   - shared/align-style
+  - shared/write-report
   - code-builder/image-to-html
   - code-builder/responsive-checks
 tools:
-  - load_skill
-  - request_input
-  - list_files
+  - list_library
+  - read_item
+  - save_artifact
   - read_file
   - write_file
+  - list_files
+  - apply_patch
+  - generate_image
   - render_html_to_png
   - run_checks
   - compare_screenshots
+  - audit_web_design
+  - load_skill
+  - request_input
+  - export_zip
+  - propose_note
+  - list_notes
+  - learn_rule
+  - open_gate
 config:
   max_steps: 20
   max_cost_usd: 1.5

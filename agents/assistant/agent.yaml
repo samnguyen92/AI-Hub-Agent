@@ -2,6 +2,7 @@ key: assistant
 name: Align AI Assistant
 description: "Trợ lý hội thoại toàn năng giống ChatGPT/Claude: giải thích, tư vấn, phân tích ý tưởng và điều phối công việc mượt mà."
 model: openai/gpt-6-luna
+rules_path: agents/assistant/rules.md
 skills:
   - shared/align-style
   - shared/write-report
@@ -11,8 +12,12 @@ tools:
   - list_files
   - read_file
   - write_file
+  - generate_image
   - propose_note
   - list_notes
+  - learn_rule
+  - load_skill
+  - request_input
 config:
   max_steps: 10
   max_cost_usd: 0.5
