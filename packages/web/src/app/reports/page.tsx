@@ -2,16 +2,59 @@
 
 import React, { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { BarChart3, Globe, ShieldAlert, FileSpreadsheet, RefreshCw } from 'lucide-react';
-import { fetchProjects, Project } from '@/lib/api';
+import { Globe, ShieldAlert, FileSpreadsheet, AlertCircle, Sparkles } from 'lucide-react';
+import { fetchProjects, fetchLibrary, Project, LibrarySummary } from '@/lib/api';
 import LighthouseScoreCards from '@/components/reports/LighthouseScoreCards';
 import AuditIssuesTable, { AuditIssue } from '@/components/reports/AuditIssuesTable';
+
+const DEMO_LIGHTHOUSE = {
+  performance: 0.88,
+  accessibility: 0.95,
+  best_practices: 0.92,
+  seo: 0.90,
+};
+
+const DEMO_CWV = {
+  lcp: '1.9s (Good)',
+  fid_or_inp: '38ms (Good)',
+  cls: '0.01 (Good)',
+};
+
+const DEMO_ISSUES: AuditIssue[] = [
+  {
+    id: 'SEO-01',
+    title: 'Thiếu thuộc tính alt trên 3 ảnh sản phẩm trang chủ',
+    severity: 'medium',
+    affected_url: 'https://align.vn/',
+    evidence: '<img src="/assets/hero-bg.png"> không có alt attribute.',
+    recommendation: 'Bổ sung thuộc tính alt mô tả rõ ngữ cảnh của hình ảnh để tăng khả năng tiếp cận và SEO hình ảnh.',
+    suggested_patch: '<img src="/assets/hero-bg.png" alt="Align AI Hub Platform Showcase">',
+  },
+  {
+    id: 'SEO-02',
+    title: 'Thẻ Meta Description quá ngắn (< 70 ký tự)',
+    severity: 'high',
+    affected_url: 'https://align.vn/about',
+    evidence: 'Độ dài hiện tại: 52 ký tự ("Align - Giải pháp thiết kế và phát triển website.").',
+    recommendation: 'Viết lại thẻ meta description độ dài 130 - 155 ký tự kèm kêu gọi hành động (CTA) để cải thiện CTR.',
+    suggested_patch: '<meta name="description" content="Align cung cấp giải pháp thiết kế website AI hiện đại, tối ưu SEO kỹ thuật và chuyển đổi vượt trội.">'
+  },
+];
+
+const DEMO_QUERIES = [
+  { query: 'thiết kế web ai', clicks: 420, impressions: 5800, ctr: '7.2%', pos: 3.2 },
+  { query: 'hub ai agent', clicks: 280, impressions: 4100, ctr: '6.8%', pos: 2.1 },
+  { query: 'tối ưu seo website', clicks: 190, impressions: 6200, ctr: '3.1%', pos: 5.4 },
+];
 
 function ReportsInner() {
   const searchParams = useSearchParams();
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'site' | 'seo' | 'analytics'>('site');
+  const [library, setLibrary] = useState<LibrarySummary | null>(null);
+  const [showDemo, setShowDemo] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     fetchProjects().then((data) => {
@@ -22,61 +65,24 @@ function ReportsInner() {
     });
   }, [searchParams]);
 
-  // Sample data demonstrating Site Report & SEO Audit
-  const sampleLighthouse = {
-    performance: 0.88,
-    accessibility: 0.95,
-    best_practices: 0.92,
-    seo: 0.90,
-  };
+  useEffect(() => {
+    if (!selectedProjectId) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    fetchLibrary(selectedProjectId)
+      .then((lib) => setLibrary(lib))
+      .catch(() => setLibrary(null))
+      .finally(() => setLoading(false));
+  }, [selectedProjectId]);
 
-  const sampleCwv = {
-    lcp: '1.9s (Good)',
-    fid_or_inp: '38ms (Good)',
-    cls: '0.01 (Good)',
-  };
-
-  const sampleIssues: AuditIssue[] = [
-    {
-      id: 'SEO-01',
-      title: 'Thiếu thuộc tính alt trên 3 ảnh sản phẩm trang chủ',
-      severity: 'medium',
-      affected_url: 'https://align.vn/',
-      evidence: '<img src="/assets/hero-bg.png"> không có alt attribute.',
-      recommendation: 'Bổ sung thuộc tính alt mô tả rõ ngữ cảnh của hình ảnh để tăng khả năng tiếp cận và SEO hình ảnh.',
-      suggested_patch: '<img src="/assets/hero-bg.png" alt="Align AI Hub Platform Showcase">',
-    },
-    {
-      id: 'SEO-02',
-      title: 'Thẻ Meta Description quá ngắn (< 70 ký tự)',
-      severity: 'high',
-      affected_url: 'https://align.vn/about',
-      evidence: 'Độ dài hiện tại: 52 ký tự ("Align - Giải pháp thiết kế và phát triển website.").',
-      recommendation: 'Viết lại thẻ meta description độ dài 130 - 155 ký tự kèm kêu gọi hành động (CTA) để cải thiện tỷ lệ CTR.',
-      suggested_patch: '<meta name="description" content="Align cung cấp giải pháp thiết kế website AI hiện đại, tối ưu SEO kỹ thuật và chuyển đổi vượt trội cho doanh nghiệp. Khám phá ngay!">'
-    },
-    {
-      id: 'SEO-03',
-      title: 'Trang có 2 thẻ H1 đồng cấp',
-      severity: 'low',
-      affected_url: 'https://align.vn/pricing',
-      evidence: 'Tìm thấy cả <h1>Bảng giá dịch vụ</h1> và <h1>Các gói cao cấp</h1> trên cùng một trang.',
-      recommendation: 'Chuyển tiêu đề thứ hai thành thẻ <h2> để giữ nguyên phân cấp Heading duy nhất.',
-      suggested_patch: '<h2>Các gói cao cấp</h2>',
-    },
-  ];
-
-  const sampleQueries = [
-    { query: 'thiết kế web ai', clicks: 420, impressions: 5800, ctr: '7.2%', pos: 3.2 },
-    { query: 'hub ai agent', clicks: 280, impressions: 4100, ctr: '6.8%', pos: 2.1 },
-    { query: 'tối ưu seo website', clicks: 190, impressions: 6200, ctr: '3.1%', pos: 5.4 },
-    { query: 'align platform demo', clicks: 95, impressions: 980, ctr: '9.7%', pos: 1.2 },
-  ];
+  const hasRealReports = Boolean(library && (library.artifacts.length > 0 || library.items.length > 0));
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px' }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <div>
           <h1 style={{ fontSize: '24px', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '6px' }}>
             Báo cáo Site & SEO Audit
@@ -101,13 +107,31 @@ function ReportsInner() {
             }}
           >
             {projects.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
+              <option key={p.id} value={p.id}>{p.name}</option>
             ))}
           </select>
         </div>
       </div>
+
+      {!hasRealReports && !showDemo && !loading && (
+        <div className="glass-panel" style={{ padding: '32px', textAlign: 'center', marginBottom: '24px' }}>
+          <AlertCircle size={36} color="var(--accent-primary)" style={{ margin: '0 auto 12px' }} />
+          <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '8px' }}>Chưa có báo cáo audit cho dự án này</h3>
+          <p style={{ fontSize: '13px', color: 'var(--text-muted)', maxWidth: '560px', margin: '0 auto 16px' }}>
+            Dự án hiện chưa có dữ liệu báo cáo thực tế. Bạn có thể yêu cầu Agent @site-analyzer hoặc @seo-auditor chạy kiểm định, hoặc bật chế độ xem mẫu minh hoạ.
+          </p>
+          <button onClick={() => setShowDemo(true)} className="btn-primary" style={{ margin: '0 auto' }}>
+            <Sparkles size={16} /> Bật chế độ xem mẫu minh hoạ
+          </button>
+        </div>
+      )}
+
+      {showDemo && !hasRealReports && (
+        <div style={{ padding: '10px 16px', background: 'rgba(99,102,241,0.12)', border: '1px solid var(--accent-primary)', borderRadius: '8px', marginBottom: '20px', fontSize: '13px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>💡 <b>Chế độ mẫu:</b> Đang hiển thị số liệu minh hoạ cấu trúc báo cáo. Dữ liệu thực sẽ xuất hiện khi chạy audit.</span>
+          <button onClick={() => setShowDemo(false)} style={{ background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '12px', textDecoration: 'underline' }}>Tắt</button>
+        </div>
+      )}
 
       {/* Navigation Tabs */}
       <div style={{ display: 'flex', gap: '10px', marginBottom: '24px' }}>
@@ -123,7 +147,7 @@ function ReportsInner() {
           className="btn-primary"
           style={{ background: activeTab === 'seo' ? 'var(--accent-primary)' : 'rgba(255,255,255,0.05)', color: '#fff' }}
         >
-          <ShieldAlert size={16} /> SEO Audit Issues ({sampleIssues.length})
+          <ShieldAlert size={16} /> SEO Audit Issues ({(showDemo || hasRealReports) ? DEMO_ISSUES.length : 0})
         </button>
         <button
           onClick={() => setActiveTab('analytics')}
@@ -135,19 +159,19 @@ function ReportsInner() {
       </div>
 
       {/* Tab Contents */}
-      {activeTab === 'site' && (
+      {(hasRealReports || showDemo) && activeTab === 'site' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <LighthouseScoreCards scores={sampleLighthouse} cwv={sampleCwv} />
+          <LighthouseScoreCards scores={DEMO_LIGHTHOUSE} cwv={DEMO_CWV} />
         </div>
       )}
 
-      {activeTab === 'seo' && (
+      {(hasRealReports || showDemo) && activeTab === 'seo' && (
         <div>
-          <AuditIssuesTable issues={sampleIssues} />
+          <AuditIssuesTable issues={DEMO_ISSUES} />
         </div>
       )}
 
-      {activeTab === 'analytics' && (
+      {(hasRealReports || showDemo) && activeTab === 'analytics' && (
         <div className="glass-panel" style={{ padding: '20px' }}>
           <h3 style={{ fontSize: '15px', fontWeight: 700, marginBottom: '16px' }}>
             Top Queries & Hiệu suất Tìm kiếm (Search Console)
@@ -164,7 +188,7 @@ function ReportsInner() {
                 </tr>
               </thead>
               <tbody>
-                {sampleQueries.map((q, idx) => (
+                {DEMO_QUERIES.map((q, idx) => (
                   <tr key={idx} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
                     <td style={{ padding: '12px 10px', fontWeight: 600 }}>{q.query}</td>
                     <td style={{ padding: '12px 10px', color: 'var(--accent-primary)', fontWeight: 700 }}>{q.clicks}</td>

@@ -61,7 +61,7 @@ class FetchUrlTool(BaseTool):
 
         try:
             headers = {"User-Agent": "AlignHubBot/1.0 (+https://align.vn)"}
-            async with httpx.AsyncClient(headers=headers, verify=False) as client:
+            async with httpx.AsyncClient(headers=headers) as client:
                 res = await safe_fetch(client, url)
 
             meta = extract_metadata(res.text) if "text/html" in res.headers.get("content-type", "") else {}
@@ -117,7 +117,7 @@ class CrawlSiteTool(BaseTool):
         headers = {"User-Agent": "AlignHubCrawler/1.0"}
 
         try:
-            async with httpx.AsyncClient(headers=headers, verify=False) as client:
+            async with httpx.AsyncClient(headers=headers) as client:
                 while queue and len(visited) < max_p:
                     curr = queue.pop(0)
                     if curr in visited:
@@ -177,7 +177,7 @@ class CheckSitemapTool(BaseTool):
         res_data: Dict[str, Any] = {"found": False, "url_count": 0, "issues": []}
 
         try:
-            async with httpx.AsyncClient(headers=headers, verify=False) as client:
+            async with httpx.AsyncClient(headers=headers) as client:
                 try:
                     r_res = await safe_fetch(client, robots_url)
                     res_data["robots_txt_status"] = r_res.status_code

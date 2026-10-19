@@ -57,6 +57,11 @@ class Settings(BaseSettings):
         default=None, description="Telegram bot API token from @BotFather"
     )
 
+    # Google PageSpeed Insights
+    pagespeed_api_key: Optional[str] = Field(
+        default=None, description="Google PageSpeed Insights API key"
+    )
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
