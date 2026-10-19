@@ -11,7 +11,7 @@ from app.db.models import Approval, ProjectNote, Run, Thread
 class GateService:
     """Manages the lifecycle of quality gates (Intake, Plan, Result)."""
 
-    VALID_GATES = {"intake", "plan", "result"}
+    VALID_GATES = {"intake", "plan", "result", "design", "code", "launch"}
     VALID_ACTIONS = {"approve", "rework", "reject"}
 
     def validate_gate_payload(self, gate_type: str, payload: Dict[str, Any]) -> List[str]:

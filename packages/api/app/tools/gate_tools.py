@@ -19,8 +19,8 @@ class OpenGateTool(BaseTool):
         "properties": {
             "gate_type": {
                 "type": "string",
-                "enum": ["intake", "plan", "result"],
-                "description": "Loại cổng: 'intake' (làm rõ), 'plan' (kế hoạch), 'result' (kết quả)",
+                "enum": ["intake", "plan", "result", "design", "code", "launch"],
+                "description": "Loại cổng: 'intake', 'plan', 'result', 'design', 'code', 'launch'",
             },
             "title": {"type": "string", "description": "Tiêu đề của Cổng"},
             "slug": {"type": "string", "description": "Slug định danh (vd: 'hero-redesign')"},
