@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { FolderKanban, Plus, ExternalLink, MessageSquare, Library, Trash2 } from 'lucide-react';
-import { createProject, deleteProject, cleanupDemoProjects, fetchProjects, Project } from '@/lib/api';
+import { createProject, deleteProject, fetchProjects, Project } from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function ProjectsPage() {
@@ -60,20 +60,6 @@ export default function ProjectsPage() {
     }
   };
 
-  const handleCleanupDemos = async () => {
-    if (!window.confirm(t('projects.cleanup_confirm'))) return;
-    setLoading(true);
-    try {
-      const res = await cleanupDemoProjects();
-      alert(`Đã dọn dẹp thành công ${res.deleted_count} dự án thử nghiệm.`);
-      await loadProjects();
-    } catch (err) {
-      alert(`Lỗi khi dọn dẹp: ${err instanceof Error ? err.message : String(err)}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: '16px' }}>
@@ -86,23 +72,6 @@ export default function ProjectsPage() {
           </p>
         </div>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-          <button
-            id="btn-cleanup-demos"
-            className="btn-secondary"
-            onClick={handleCleanupDemos}
-            style={{
-              padding: '9px 16px',
-              borderRadius: '8px',
-              fontSize: '13px',
-              fontWeight: 600,
-              background: 'rgba(239, 68, 68, 0.1)',
-              color: '#f87171',
-              border: '1px solid rgba(239, 68, 68, 0.25)',
-              cursor: 'pointer',
-            }}
-          >
-            {t('projects.cleanup_demos')}
-          </button>
           <button
             id="btn-create-project"
             className="btn-primary"

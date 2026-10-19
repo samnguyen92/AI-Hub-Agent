@@ -195,11 +195,16 @@ class AgentRunner:
             # Execute tool calls
             for tc in llm_res.tool_calls:
                 tool = tool_registry.get(tc.name)
-                tool_output: Dict[str, Any] = (
-                    await tool.execute(tool_ctx, **tc.arguments)
-                    if tool
-                    else {"error": f"Tool '{tc.name}' not found or permitted."}
-                )
+                if tool:
+                    allowed_props = tool.parameters_schema.get("properties", {})
+                    filtered_args = (
+                        {k: v for k, v in tc.arguments.items() if k in allowed_props}
+                        if isinstance(allowed_props, dict)
+                        else tc.arguments
+                    )
+                    tool_output: Dict[str, Any] = await tool.execute(tool_ctx, **filtered_args)
+                else:
+                    tool_output: Dict[str, Any] = {"error": f"Tool '{tc.name}' not found or permitted."}
 
                 step_record = Step(
                     run_id=run.id,

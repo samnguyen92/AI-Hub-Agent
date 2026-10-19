@@ -138,13 +138,12 @@ async def delete_project(
 
 
 @router.post("/cleanup-demos")
-async def cleanup_demo_projects(
-    db: AsyncSession = Depends(get_db),
-) -> Dict[str, Any]:
-    """Batch clean disposable test and demo projects."""
-    from app.services.project_service import project_service
-
-    return await project_service.cleanup_demo_projects(db)
+async def cleanup_demo_projects() -> Dict[str, Any]:
+    """Disabled endpoint for safety reasons."""
+    raise HTTPException(
+        status_code=410,
+        detail="Endpoint này đã bị vô hiệu hoá để đảm bảo an toàn dữ liệu.",
+    )
 
 
 class ProjectNoteResponse(BaseModel):

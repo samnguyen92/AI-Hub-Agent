@@ -151,6 +151,35 @@ from sqlalchemy import select
 from app.db.models import Approval, Run
 
 
+def perform_export(workspace_path: str, arch_name: str, project_id: str) -> Dict[str, Any]:
+    """Internal function to build ZIP archive once approved."""
+    if not arch_name.endswith(".zip"):
+        arch_name += ".zip"
+    try:
+        rel_zip = f"exports/{arch_name}"
+        full_zip = safe_resolve_path(workspace_path, rel_zip)
+        os.makedirs(os.path.dirname(full_zip), exist_ok=True)
+
+        with zipfile.ZipFile(full_zip, "w", zipfile.ZIP_DEFLATED) as zf:
+            for root, dirs, files in os.walk(workspace_path):
+                if ".git" in dirs:
+                    dirs.remove(".git")
+                if "exports" in dirs:
+                    dirs.remove("exports")
+                for file in files:
+                    full_f = os.path.join(root, file)
+                    rel_f = os.path.relpath(full_f, workspace_path)
+                    zf.write(full_f, rel_f)
+
+        return {
+            "status": "exported",
+            "archive_path": rel_zip,
+            "download_url": f"/projects/{project_id}/files?path={rel_zip}",
+        }
+    except Exception as exc:
+        return {"error": f"Lỗi đóng gói ZIP: {str(exc)}"}
+
+
 class ExportZipTool(BaseTool):
     """Tool to package workspace into a ZIP archive, gated by approval."""
 
@@ -163,10 +192,6 @@ class ExportZipTool(BaseTool):
                 "type": "string",
                 "description": "Tên file ZIP (vd: website_release.zip)",
             },
-            "bypass_approval": {
-                "type": "boolean",
-                "description": "Bỏ qua cổng phê duyệt nếu người dùng đã chấp thuận trước",
-            },
         },
     }
 
@@ -174,10 +199,9 @@ class ExportZipTool(BaseTool):
         arch_name = kwargs.get("archive_name") or "project_export.zip"
         if not arch_name.endswith(".zip"):
             arch_name += ".zip"
-        bypass = kwargs.get("bypass_approval", False)
 
-        if not bypass and context.db:
-            # Create Approval record
+        # Export always requires approval through Gate/Approval mechanism
+        if context.db:
             approval = Approval(
                 run_id=context.run_id,
                 action_type="export_zip",
@@ -185,7 +209,6 @@ class ExportZipTool(BaseTool):
                 status="pending",
             )
             context.db.add(approval)
-            # Update Run status
             q = select(Run).where(Run.id == context.run_id)
             run = (await context.db.execute(q)).scalars().first()
             if run:
@@ -194,35 +217,13 @@ class ExportZipTool(BaseTool):
 
             return {
                 "status": "waiting_approval",
+                "pause": True,
                 "approval_id": approval.id,
                 "action": "export_zip",
                 "message": f"Hành động xuất ZIP '{arch_name}' đã được gửi vào hàng đợi phê duyệt.",
             }
 
-        # Directly build ZIP
-        try:
-            rel_zip = f"exports/{arch_name}"
-            full_zip = safe_resolve_path(context.workspace_path, rel_zip)
-            os.makedirs(os.path.dirname(full_zip), exist_ok=True)
-
-            with zipfile.ZipFile(full_zip, "w", zipfile.ZIP_DEFLATED) as zf:
-                for root, dirs, files in os.walk(context.workspace_path):
-                    if ".git" in dirs:
-                        dirs.remove(".git")
-                    if "exports" in dirs:
-                        dirs.remove("exports")
-                    for file in files:
-                        full_f = os.path.join(root, file)
-                        rel_f = os.path.relpath(full_f, context.workspace_path)
-                        zf.write(full_f, rel_f)
-
-            return {
-                "status": "exported",
-                "archive_path": rel_zip,
-                "download_url": f"/projects/{context.project_id}/files?path={rel_zip}",
-            }
-        except Exception as exc:
-            return {"error": f"Lỗi đóng gói ZIP: {str(exc)}"}
+        return perform_export(context.workspace_path, arch_name, context.project_id)
 
 
 # Register tools

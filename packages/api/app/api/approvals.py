@@ -11,6 +11,7 @@ from app.db.session import get_db
 from app.services.gate_service import gate_service
 from app.services.workspace import workspace_service
 from app.tools.base import ToolContext, tool_registry
+from app.tools.file_tools import perform_export
 
 router = APIRouter(prefix="/approvals", tags=["approvals"])
 
@@ -113,21 +114,9 @@ async def respond_approval(
                     th = (await db.execute(th_q)).scalars().first()
                     if th:
                         ws_path = workspace_service.init_project_workspace(th.project_id)
-                        tool_ctx = ToolContext(
-                            project_id=th.project_id,
-                            run_id=run.id,
-                            workspace_path=ws_path,
-                            db=db,
-                            agent_key=run.agent_key,
-                        )
-                        zip_tool = tool_registry.get("export_zip")
-                        if zip_tool:
-                            zip_res = await zip_tool.execute(
-                                tool_ctx,
-                                archive_name=approval.payload.get("archive_name"),
-                                bypass_approval=True,
-                            )
-                            approval.payload["result"] = zip_res
+                        arch_name = approval.payload.get("archive_name") or "project_export.zip"
+                        zip_res = perform_export(ws_path, arch_name, th.project_id)
+                        approval.payload["result"] = zip_res
 
                 run.status = "completed"
             else:
