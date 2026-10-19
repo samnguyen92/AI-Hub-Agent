@@ -54,6 +54,8 @@ class TelegramLink(Base):
     telegram_id: Mapped[Optional[str]] = mapped_column(String(64), unique=True, index=True, nullable=True)
     link_code: Mapped[Optional[str]] = mapped_column(String(16), unique=True, index=True, nullable=True)
     is_confirmed: Mapped[bool] = mapped_column(Boolean, default=False)
+    expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    attempts: Mapped[int] = mapped_column(Integer, default=0)
     linked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
 
     user: Mapped["User"] = relationship("User", back_populates="telegram_links")
@@ -69,6 +71,7 @@ class Project(Base):
     )
     owner_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     name: Mapped[str] = mapped_column(String(120), index=True)
+    is_demo: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
     source_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     workspace_path: Mapped[str] = mapped_column(String(500))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
@@ -187,7 +190,9 @@ class Run(Base):
     parent_run_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True)
     status: Mapped[str] = mapped_column(
         String(30), default="queued", index=True
-    )  # queued, running, completed, failed, waiting_approval
+    )  # queued, running, completed, failed, waiting_approval, waiting_gate_*, etc.
+    checkpoint_state: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSONB, nullable=True)
+    error_detail: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     cost_usd: Mapped[float] = mapped_column(Float, default=0.0)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
 
@@ -278,3 +283,17 @@ class ProjectNote(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
 
     project: Mapped["Project"] = relationship("Project", back_populates="notes")
+
+
+class GlobalRule(Base):
+    """Global system rule applied across all projects."""
+
+    __tablename__ = "global_rules"
+
+    id: Mapped[str] = mapped_column(
+        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
+    )
+    text: Mapped[str] = mapped_column(Text)
+    priority: Mapped[int] = mapped_column(Integer, default=10)
+    enabled: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
