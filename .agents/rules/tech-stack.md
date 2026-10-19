@@ -6,7 +6,8 @@ Tất cả các thành phần trong dự án phải tuân theo danh mục công 
 - **Python**: >= 3.11
 - **Web Framework**: FastAPI (>= 0.110.0), Uvicorn
 - **ORM & DB Access**: SQLAlchemy 2.0 (asyncio hỗ trợ asyncpg/psycopg3), Alembic
-- **Validation**: Pydantic v2
+- **Validation & Schemas**: Pydantic v2, PyYAML, jsonschema
+- **Rate Limiting & Security**: slowapi
 - **HTTP Client**: HTTPX (hỗ trợ async, chống SSRF)
 - **HTML Parsing**: Selectolax / BeautifulSoup4
 - **Data Analysis**: Pandas (xử lý CSV Search Console, GA4)
@@ -18,6 +19,7 @@ Tất cả các thành phần trong dự án phải tuân theo danh mục công 
 - **Framework**: Next.js 14+ (App Router)
 - **Language**: TypeScript (Strict mode)
 - **UI Components & Styling**: CSS Modules / Vanilla CSS / TailwindCSS theo cấu trúc quy củ
+- **Markdown & Formatting**: react-markdown, remark-gfm
 - **Icons**: Lucide React
 - **Streaming & Realtime**: Native EventSource (Server-Sent Events) hoặc WebSocket
 
