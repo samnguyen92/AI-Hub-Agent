@@ -1,10 +1,24 @@
 """Design audit and visual verification tools conforming to Mandate-style QA standards."""
 
 import os
+import re
 from typing import Any, Dict, List
 from app.services.sandbox import sandbox_client
 from app.tools.base import BaseTool, ToolContext, tool_registry
 from app.tools.file_tools import safe_resolve_path
+
+
+def _local_static_audit(html: str) -> Dict[str, Any]:
+    """Fallback local audit for syntax, responsive meta, and accessibility."""
+    issues: List[str] = []
+    if "<!doctype html>" not in html.lower():
+        issues.append("Thiếu khai báo <!DOCTYPE html>")
+    if "viewport" not in html.lower():
+        issues.append("Thiếu thẻ meta viewport cho responsive")
+    missing_alts = len(re.findall(r"<img(?![^>]*\balt=)[^>]*>", html, re.I))
+    if missing_alts > 0:
+        issues.append(f"Có {missing_alts} hình ảnh thiếu thuộc tính alt")
+    return {"issues": issues, "a11y_status": "warning" if missing_alts > 0 else "passed"}
 
 
 class AuditWebDesignTool(BaseTool):
@@ -46,16 +60,23 @@ class AuditWebDesignTool(BaseTool):
             mobile_rel = f"screenshots/{prefix}-mobile.png"
             full_desktop = safe_resolve_path(context.workspace_path, desktop_rel)
             full_mobile = safe_resolve_path(context.workspace_path, mobile_rel)
+            os.makedirs(os.path.dirname(full_desktop), exist_ok=True)
 
-            # 1. Capture visual previews
-            render_res = await sandbox_client.render_html(html_content, full_desktop, full_mobile)
+            # 1. Capture visual previews via sandbox (with graceful fallback)
+            try:
+                render_res = await sandbox_client.render_html(html_content, full_desktop, full_mobile)
+            except Exception as r_err:
+                render_res = {"status": "skipped", "message": f"Sandbox preview offline: {r_err}"}
 
             # 2. Run structural & accessibility checks
-            checks_res = await sandbox_client.run_checks(html_content)
+            try:
+                checks_res = await sandbox_client.run_checks(html_content)
+            except Exception:
+                checks_res = _local_static_audit(html_content)
 
-            # 3. Formulate Mandate-style findings
+            # 3. Formulate findings
             issues: List[str] = checks_res.get("issues", [])
-            blocking_faults = [iss for iss in issues if "viewport" in iss or "doctype" in iss]
+            blocking_faults = [iss for iss in issues if "viewport" in iss.lower() or "doctype" in iss.lower()]
             advisory = [iss for iss in issues if iss not in blocking_faults]
 
             score = max(0, 100 - (len(blocking_faults) * 25) - (len(advisory) * 10))
@@ -74,5 +95,5 @@ class AuditWebDesignTool(BaseTool):
         except Exception as exc:
             return {"error": f"Lỗi audit thiết kế: {str(exc)}"}
 
-# Register the tool
+
 tool_registry.register(AuditWebDesignTool())
