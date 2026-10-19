@@ -99,6 +99,7 @@ class RequestInputTool(BaseTool):
 
         return {
             "status": "waiting_input",
+            "pause": True,
             "question": question,
             "options": options,
             "message": "Đã gửi câu hỏi yêu cầu người dùng phản hồi.",

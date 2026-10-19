@@ -45,6 +45,28 @@ services:
       timeout: 5s
       retries: 3
 
+  worker:
+    build:
+      context: ./packages/api
+      dockerfile: Dockerfile
+    container_name: hub_ai_worker
+    restart: always
+    command: python -m app.worker
+    depends_on:
+      postgres:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-hub_ai_agent}
+    volumes:
+      - ./packages/api:/app
+      - ./agents:/app/agents
+      - ./skills:/app/skills
+      - workspace_data:/workspaces
+
   web:
     build:
       context: ./packages/web

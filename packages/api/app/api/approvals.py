@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import Approval, Project, Run, Thread
+from app.db.models import Approval, Message, Project, Run, Thread
 from app.db.session import get_db
 from app.services.gate_service import gate_service
 from app.services.workspace import workspace_service
@@ -87,14 +87,36 @@ async def respond_approval(
         except ValueError as val_err:
             raise HTTPException(status_code=400, detail=str(val_err))
 
-        # Update run status
+        # Update run status and handle resume/rework
         run_q = select(Run).where(Run.id == approval.run_id)
         run = (await db.execute(run_q)).scalars().first()
         if run:
             if approval.status == "approved":
-                run.status = "completed"
+                if run.checkpoint_state:
+                    approval_note = Message(
+                        thread_id=run.thread_id,
+                        role="user",
+                        content=f"[CỔNG ĐÃ DUYỆT]: Người dùng đã phê duyệt cổng '{approval.payload.get('title', '')}'. Tiếp tục thực hiện.",
+                    )
+                    db.add(approval_note)
+                    run.status = "queued"
+                else:
+                    run.status = "completed"
             elif approval.status == "rework":
                 run.status = "rework_needed"
+                child_run = Run(
+                    thread_id=run.thread_id,
+                    agent_key=run.agent_key,
+                    parent_run_id=run.id,
+                    status="queued",
+                )
+                db.add(child_run)
+                rework_msg = Message(
+                    thread_id=run.thread_id,
+                    role="user",
+                    content=f"[YÊU CẦU SỬA ĐỔI / REWORK]: {req.comment or 'Vui lòng chỉnh sửa lại theo yêu cầu.'}",
+                )
+                db.add(rework_msg)
             else:
                 run.status = "cancelled"
             await db.commit()
@@ -103,7 +125,6 @@ async def respond_approval(
         approval.status = "approved" if req.action.lower() == "approve" else "rejected"
         approval.comment = req.comment
 
-        # Fetch associated run and project
         run_q = select(Run).where(Run.id == approval.run_id)
         run = (await db.execute(run_q)).scalars().first()
 
@@ -118,7 +139,10 @@ async def respond_approval(
                         zip_res = perform_export(ws_path, arch_name, th.project_id)
                         approval.payload["result"] = zip_res
 
-                run.status = "completed"
+                if run.checkpoint_state:
+                    run.status = "queued"
+                else:
+                    run.status = "completed"
             else:
                 run.status = "cancelled"
 

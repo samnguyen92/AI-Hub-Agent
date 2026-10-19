@@ -78,7 +78,8 @@ class OpenGateTool(BaseTool):
         formatted_md = gate_service.format_gate_markdown(approval.payload)
 
         return {
-            "status": "gate_opened",
+            "status": f"waiting_gate_{gate_type}",
+            "pause": True,
             "gate_id": approval.id,
             "gate_type": gate_type,
             "title": title,
