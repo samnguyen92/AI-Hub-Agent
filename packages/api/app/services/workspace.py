@@ -15,8 +15,9 @@ class WorkspaceService:
 
     def get_project_path(self, project_id: str) -> str:
         """Return the absolute path of a project workspace."""
-        path = os.path.abspath(os.path.join(self.root_dir, project_id))
-        if not path.startswith(os.path.abspath(self.root_dir)):
+        root = os.path.realpath(self.root_dir)
+        path = os.path.realpath(os.path.join(root, project_id))
+        if os.path.commonpath((root, path)) != root:
             raise ValueError("Path traversal attempt detected in project_id")
         return path
 

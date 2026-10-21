@@ -18,6 +18,7 @@
   - Python: Type annotations đầy đủ (Pydantic v2 cho schema, SQLAlchemy 2.0 type mapping).
   - TypeScript: Strict mode, cấm dùng `any` bừa bãi.
 - **Docstrings & Comments**: Mỗi file / class / API endpoint phải có chú thích ngắn gọn mục đích và cách dùng.
+- **Test Data Cleanup**: Các bài test (pytest) BẮT BUỘC phải dọn dẹp sạch sẽ project/user tạo ra, không được commit project rác làm ô nhiễm database và giao diện Web UI.
 
 ## 3. Điều cấm kỵ (Strict Don'ts)
 - ❌ **KHÔNG tự bịa API, library hay dependencies** mà không có trong tech-stack hoặc chưa được xác nhận.
@@ -25,6 +26,7 @@
 - ❌ **KHÔNG hardcode secrets, token, API keys, credentials** vào code. Luôn đọc từ environment variables.
 - ❌ **KHÔNG bỏ qua error handling** hoặc `except Exception: pass`.
 - ❌ **KHÔNG thực hiện hành động ghi đè nguy hiểm** (force push, drop database, rm -rf ngoài thư mục chỉ định).
+- ❌ **KHÔNG để sót dữ liệu test rác** trong database sau khi chạy kiểm thử.
 
 ## 4. Hành vi của AI khi làm việc
 - **Thắc mắc phải hỏi ngay**: Nếu yêu cầu không rõ, business logic mơ hồ hoặc có nhiều phương án kỹ thuật khả thi, PHẢI dùng công cụ hỏi người dùng làm rõ trước khi code.
@@ -40,8 +42,13 @@ docker compose up -d
 docker compose logs -f api
 docker compose logs -f web
 
-# Backend Tests
+# Backend Tests (Tự động cleanup sau test)
 pytest packages/api/tests/
+
+# Dọn dẹp thủ công toàn bộ demo/test project rác trong database
+python packages/api/scripts/cleanup_test_data.py
+# Hoặc chạy trong docker:
+docker exec hub_ai_api python scripts/cleanup_test_data.py
 
 # Database migration (Alembic)
 alembic upgrade head

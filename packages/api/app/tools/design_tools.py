@@ -64,7 +64,9 @@ class AuditWebDesignTool(BaseTool):
 
             # 1. Capture visual previews via sandbox (with graceful fallback)
             try:
-                render_res = await sandbox_client.render_html(html_content, full_desktop, full_mobile)
+                render_res = await sandbox_client.render_workspace_html(
+                    full_html, full_desktop, full_mobile
+                )
             except Exception as r_err:
                 render_res = {"status": "skipped", "message": f"Sandbox preview offline: {r_err}"}
 
@@ -90,6 +92,8 @@ class AuditWebDesignTool(BaseTool):
                 "blocking_faults": blocking_faults,
                 "advisory_notes": advisory,
                 "a11y_status": checks_res.get("a11y_status", "passed"),
+                "motion_status": checks_res.get("motion_status", "not_checked"),
+                "motion_families": checks_res.get("motion_families", []),
                 "render_status": render_res.get("status", "success"),
             }
         except Exception as exc:

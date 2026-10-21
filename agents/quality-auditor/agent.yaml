@@ -6,6 +6,7 @@ rules_path: agents/quality-auditor/rules.md
 skills:
   - shared/align-style
   - shared/write-report
+  - quality-auditor/design-quality-rubric
 tools:
   - list_library
   - read_item
@@ -15,6 +16,7 @@ tools:
   - take_screenshot
   - run_checks
   - compare_screenshots
+  - inspect_screenshots
   - fetch_url
   - check_sitemap
   - open_gate

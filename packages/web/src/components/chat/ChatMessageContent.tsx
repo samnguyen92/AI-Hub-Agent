@@ -64,6 +64,18 @@ export default function ChatMessageContent({ content, projectId }: ChatMessageCo
             li: ({ ...props }) => <li style={{ margin: '2px 0' }} {...props} />,
             a: ({ href, children, ...props }) => {
               const url = href || '';
+              const fileUrl = url.split('?')[0].toLowerCase();
+              if (
+                url.startsWith('/api/backend/projects/') &&
+                (fileUrl.endsWith('.zip') || fileUrl.endsWith('.html'))
+              ) {
+                const downloadUrl = `${apiBase}${url.replace('/api/backend', '')}`;
+                return (
+                  <a href={downloadUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--accent-primary)', textDecoration: 'underline' }} {...props}>
+                    {children || (fileUrl.endsWith('.zip') ? 'Tải file ZIP' : 'Mở file HTML')} <ExternalLink size={11} style={{ display: 'inline' }} />
+                  </a>
+                );
+              }
               if (url.startsWith('sandbox:') || url.endsWith('.html')) {
                 const parts = url.split('/');
                 const filename = parts[parts.length - 1] || 'index.html';

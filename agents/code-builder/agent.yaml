@@ -8,6 +8,7 @@ skills:
   - shared/write-report
   - code-builder/image-to-html
   - code-builder/responsive-checks
+  - code-builder/motion-implementation
 tools:
   - list_library
   - read_item
@@ -20,6 +21,7 @@ tools:
   - render_html_to_png
   - run_checks
   - compare_screenshots
+  - inspect_screenshots
   - audit_web_design
   - load_skill
   - request_input

@@ -132,6 +132,7 @@ function ChatInner() {
     { tag: '@code-builder', color: '#10B981', desc: t('badge.code_builder') },
     { tag: '@site-analyzer', color: '#3B82F6', desc: t('badge.site_analyzer') },
     { tag: '@seo-auditor', color: '#F59E0B', desc: t('badge.seo_auditor') },
+    { tag: '@quality-auditor', color: '#A78BFA', desc: 'Quality audit' },
   ];
 
   return (

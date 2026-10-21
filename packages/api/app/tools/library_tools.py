@@ -2,10 +2,11 @@
 
 import os
 from typing import Any, Dict
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import Artifact, LibraryItem
+from app.db.reference_models import DesignReference
 from app.services.workspace import workspace_service
 from app.tools.base import BaseTool, ToolContext, tool_registry
 
@@ -20,23 +21,49 @@ class ListLibraryTool(BaseTool):
         "properties": {
             "type_filter": {
                 "type": "string",
-                "description": "Lọc theo loại: upload, artifact, url_snapshot (tùy chọn)",
-            }
+                "description": "Lọc loại asset; dùng 'reference' để tìm website tham khảo đã lưu.",
+            },
+            "search_query": {
+                "type": "string",
+                "description": "Tìm references theo title, URL, notes hoặc tag.",
+            },
         },
     }
 
     async def execute(self, context: ToolContext, **kwargs: Any) -> Dict[str, Any]:
         type_filter = kwargs.get("type_filter")
+        search_query = str(kwargs.get("search_query") or "").strip()
         query = select(LibraryItem).where(LibraryItem.project_id == context.project_id)
-        if type_filter:
+        if type_filter and type_filter != "reference":
             query = query.where(LibraryItem.type == type_filter)
 
-        res = await context.db.execute(query)
-        items = res.scalars().all()
+        if type_filter == "reference":
+            items = []
+        else:
+            res = await context.db.execute(query)
+            items = res.scalars().all()
 
         art_query = select(Artifact).where(Artifact.project_id == context.project_id)
         art_res = await context.db.execute(art_query)
-        artifacts = art_res.scalars().all()
+        artifacts = art_res.scalars().all() if type_filter != "reference" else []
+        ref_query = (
+            select(DesignReference)
+            .where(DesignReference.project_id == context.project_id)
+            .order_by(DesignReference.captured_at.desc())
+            .limit(20)
+        )
+        if search_query:
+            pattern = f"%{search_query}%"
+            ref_query = ref_query.where(
+                or_(
+                    DesignReference.title.ilike(pattern),
+                    DesignReference.source_url.ilike(pattern),
+                    DesignReference.notes.ilike(pattern),
+                    DesignReference.tags.contains([search_query.lower()]),
+                )
+            )
+        ref_res = await context.db.execute(ref_query)
+        references = ref_res.scalars().all() if not type_filter or type_filter == "reference" else []
 
         return {
             "library_items": [
@@ -46,6 +73,20 @@ class ListLibraryTool(BaseTool):
             "artifacts": [
                 {"artifact_id": a.artifact_id, "version": a.version, "path": a.path}
                 for a in artifacts
+            ],
+            "references": [
+                {
+                    "id": ref.id,
+                    "title": ref.title,
+                    "source_url": ref.source_url,
+                    "notes": ref.notes,
+                    "tags": ref.tags or [],
+                    "desktop_path": ref.desktop_path,
+                    "mobile_path": ref.mobile_path,
+                    "snapshot_path": ref.snapshot_path,
+                    "page_summary": ref.page_summary,
+                }
+                for ref in references
             ],
         }
 

@@ -92,8 +92,6 @@ services:
       dockerfile: Dockerfile
     container_name: hub_ai_sandbox
     restart: always
-    ports:
-      - "8001:8001"
     volumes:
       - workspace_data:/workspaces
     healthcheck:

@@ -8,6 +8,7 @@ from sqlalchemy import engine_from_config, pool
 from app.config import settings
 from app.db.session import Base
 import app.db.models  # noqa: F401 - ensure all models are registered
+import app.db.reference_models  # noqa: F401 - register design references
 
 config = context.config
 

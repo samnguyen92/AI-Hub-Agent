@@ -31,3 +31,10 @@
 - **Path Traversal Protection**: Mọi thao tác đọc/ghi file trong workspace bắt buộc phải validate đường dẫn chuẩn (`os.path.abspath`, kiểm tra `startswith` của root thư mục cho phép).
 - **Chống SSRF**: Bất kỳ tool nào fetch URL từ bên ngoài phải lọc IP nội bộ (`127.0.0.1`, `10.0.0.0/8`, `192.168.0.0/16`, `169.254.169.254`, v.v.).
 - **Không thực thi mã tùy ý**: Không sử dụng `eval()`, `exec()` hoặc shell command injection từ input người dùng.
+
+## 5. Quy chuẩn Viết Test & Dọn dẹp Dữ liệu Test (Test Data Cleanup)
+- **Cơ chế tự dọn dẹp (Self-cleaning tests)**: Mọi test case (Unit, Integration, E2E) khi thao tác với Database hoặc tạo Project/User/Workspace bắt buộc phải tự dọn dẹp sau khi kết thúc.
+- **Không lưu dữ liệu test/demo vào Database chính**: Tuyệt đối không để sót các project test/demo (như "Gate Design Proj", "Perm Test Proj", "Petking...", "Project Alpha", v.v.) trong database gây rác và làm tràn lan danh sách trên giao diện Quản lý Dự án (Web UI).
+- **Fixture tự động**: `conftest.py` phải trang bị autouse fixture ghi nhận snapshot ID và tự động purge mọi Project và User sinh ra trong quá trình test.
+- **Dọn dẹp an toàn thư mục workspace**: Thư mục workspace sinh ra trong lúc test phải được xóa sạch sau test; cấm gọi xóa nhầm thư mục hệ thống như `/tmp`, `/` hoặc các thư mục quan trọng.
+- **Script bảo trì**: Khi phát hiện dữ liệu test rác tồn đọng từ các lần chạy trước, sử dụng script `python packages/api/scripts/cleanup_test_data.py` để purge triệt để.

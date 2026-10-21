@@ -2,11 +2,13 @@
 
 import asyncio
 from datetime import datetime, timedelta, timezone
+from html import escape
 import logging
+from typing import Any, Dict
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import Run
+from app.db.models import Project, Run, TelegramLink, Thread
 from app.db.session import async_session_maker
 from app.services.agent_runner import agent_runner
 
@@ -49,7 +51,8 @@ async def pick_and_execute_job(db: AsyncSession) -> bool:
     await db.commit()
 
     try:
-        await agent_runner.execute_run(run_id, db)
+        result = await agent_runner.execute_run(run_id, db)
+        await _notify_telegram_if_needed(run_id, result, db)
         logger.info(f"Run {run_id} finished execution")
     except Exception as exc:
         logger.error(f"Error processing run {run_id}: {exc}", exc_info=True)
@@ -58,12 +61,40 @@ async def pick_and_execute_job(db: AsyncSession) -> bool:
         fresh_run = res_ref.scalars().first()
         if fresh_run and fresh_run.status not in [
             "completed", "waiting_approval", "waiting_gate_intake",
-            "waiting_gate_plan", "waiting_gate_result", "waiting_input",
+            "waiting_gate_plan", "waiting_gate_result", "waiting_gate_design",
+            "waiting_gate_code", "waiting_gate_launch", "waiting_input",
         ]:
             fresh_run.status = "failed"
             fresh_run.error_detail = str(exc)
             await db.commit()
     return True
+
+
+async def _notify_telegram_if_needed(run_id: str, result: Dict[str, Any], db: AsyncSession) -> None:
+    """Send completed Telegram-originated run output to the linked chat."""
+    run = (await db.execute(select(Run).where(Run.id == run_id))).scalars().first()
+    if not run:
+        return
+    thread = (await db.execute(select(Thread).where(Thread.id == run.thread_id))).scalars().first()
+    if not thread or thread.channel != "telegram":
+        return
+    project = (await db.execute(select(Project).where(Project.id == thread.project_id))).scalars().first()
+    if not project:
+        return
+    link = (
+        await db.execute(
+            select(TelegramLink).where(
+                TelegramLink.user_id == project.owner_id,
+                TelegramLink.is_confirmed.is_(True),
+            )
+        )
+    ).scalars().first()
+    if not link or not link.telegram_id:
+        return
+    message = result.get("output") or f"Run đã tạm dừng với trạng thái: {result.get('status', run.status)}"
+    from app.api.telegram import send_telegram_message
+
+    await send_telegram_message(link.telegram_id, escape(str(message))[:4000])
 
 
 async def run_worker_loop(poll_interval: float = 1.0) -> None:

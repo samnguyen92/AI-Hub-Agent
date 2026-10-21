@@ -1,7 +1,8 @@
 """Telegram Bot API integration with webhook, account linking and approvals."""
 
-import random
-import string
+import hmac
+import secrets
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from pydantic import BaseModel
@@ -10,10 +11,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import httpx
 
 from app.config import settings
-from app.db.models import Approval, Message, Project, TelegramLink, Thread, User
+from app.api.auth import get_current_user
+from app.db.models import Approval, Project, TelegramLink, Thread, User
 from app.db.session import get_db
-from app.services.agent_runner import agent_runner
-from app.services.gate_service import gate_service
+from app.services.gateway import IncomingMessagePayload, message_gateway
 
 router = APIRouter(prefix="/telegram", tags=["telegram"])
 
@@ -25,22 +26,18 @@ class LinkCodeResponse(BaseModel):
 
 @router.post("/link-code", response_model=LinkCodeResponse)
 async def generate_link_code(
-    user_id: Optional[str] = None,
+    user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> LinkCodeResponse:
-    """Generate a one-time 6-digit linking code for Telegram account connection."""
-    # Find or use default admin user
-    if not user_id:
-        user_res = await db.execute(select(User).limit(1))
-        user = user_res.scalars().first()
-        if not user:
-            user = User(github_login="demo-user", role="admin")
-            db.add(user)
-            await db.flush()
-        user_id = user.id
-
-    code = "ALIGN-" + "".join(random.choices(string.digits, k=5))
-    link_record = TelegramLink(user_id=user_id, link_code=code, is_confirmed=False)
+    """Generate an expiring one-time code for the authenticated user."""
+    alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+    code = "ALIGN-" + "".join(secrets.choice(alphabet) for _ in range(10))
+    link_record = TelegramLink(
+        user_id=user.id,
+        link_code=code,
+        is_confirmed=False,
+        expires_at=datetime.now(timezone.utc) + timedelta(minutes=10),
+    )
     db.add(link_record)
     await db.commit()
 
@@ -71,6 +68,11 @@ async def telegram_webhook(
     x_telegram_bot_api_secret_token: Optional[str] = Header(None),
 ) -> Dict[str, Any]:
     """Handle incoming Telegram webhook updates."""
+    expected_secret = settings.telegram_webhook_secret
+    if not expected_secret or not x_telegram_bot_api_secret_token or not hmac.compare_digest(
+        x_telegram_bot_api_secret_token, expected_secret
+    ):
+        raise HTTPException(status_code=401, detail="Invalid Telegram webhook secret")
     data = await request.json()
 
     # 1. Handle Inline Button Callback (Approvals)
@@ -132,7 +134,10 @@ async def telegram_webhook(
             return {"ok": True}
 
         code_input = parts[1].strip()
-        link_q = select(TelegramLink).where(TelegramLink.link_code == code_input)
+        link_q = select(TelegramLink).where(
+            TelegramLink.link_code == code_input,
+            TelegramLink.expires_at > datetime.now(timezone.utc),
+        )
         link = (await db.execute(link_q)).scalars().first()
         if not link:
             await send_telegram_message(chat_id, "❌ Mã liên kết không hợp lệ hoặc đã hết hạn.")
@@ -156,24 +161,26 @@ async def telegram_webhook(
     p_q = select(Project).where(Project.owner_id == linked.user_id).limit(1)
     project = (await db.execute(p_q)).scalars().first()
     if not project:
-        p_q2 = select(Project).limit(1)
-        project = (await db.execute(p_q2)).scalars().first()
-
-    if not project:
-        await send_telegram_message(chat_id, "Không tìm thấy dự án nào trong hệ thống.")
+        await send_telegram_message(chat_id, "Bạn cần tạo một project trong Hub trước khi chat qua Telegram.")
         return {"ok": True}
 
     # Create thread and run agent
     th_q = select(Thread).where(Thread.project_id == project.id, Thread.channel == "telegram").limit(1)
     thread = (await db.execute(th_q)).scalars().first()
     if not thread:
-        thread = Thread(project_id=project.id, agent_key="design", channel="telegram", title="Telegram Session")
+        thread = Thread(project_id=project.id, agent_key="assistant", channel="telegram", title="Telegram Session")
         db.add(thread)
         await db.flush()
 
-    user_msg = Message(thread_id=thread.id, role="user", content=text)
-    db.add(user_msg)
-    await db.commit()
+    result = await message_gateway.process_incoming_message(
+        IncomingMessagePayload(
+            project_id=project.id,
+            thread_id=thread.id,
+            channel="telegram",
+            content=text,
+        ),
+        db,
+    )
 
     await send_telegram_message(chat_id, f"🤖 Đang gửi lệnh tới Hub Agent...")
-    return {"ok": True, "thread_id": thread.id}
+    return {"ok": True, "thread_id": thread.id, "run_id": result["run_id"]}

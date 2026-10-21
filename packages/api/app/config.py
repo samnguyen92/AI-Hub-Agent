@@ -1,5 +1,6 @@
 """Application configuration loaded from environment variables."""
 
+import secrets
 from typing import List, Optional
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -27,6 +28,9 @@ class Settings(BaseSettings):
     default_model: str = Field(
         default="openai/gpt-6-luna", description="Default model name"
     )
+    openrouter_vision_model: str = Field(
+        default="", description="Optional OpenRouter model ID with image input support"
+    )
 
     # CORS
     cors_origins: str = Field(
@@ -44,17 +48,20 @@ class Settings(BaseSettings):
         default="dev", description="Authentication mode: dev, token, or strict"
     )
     auth_secret_key: str = Field(
-        default="align-ai-hub-super-secret-key-change-in-prod-2026",
+        default_factory=lambda: secrets.token_urlsafe(48),
         description="HMAC secret key for signing cookies and URLs",
     )
     admin_api_token: str = Field(
-        default="align-admin-secret-token",
+        default="",
         description="Static admin token for CLI and worker access",
     )
 
     # Telegram Bot
     telegram_bot_token: Optional[str] = Field(
         default=None, description="Telegram bot API token from @BotFather"
+    )
+    telegram_webhook_secret: Optional[str] = Field(
+        default=None, description="Secret token configured on the Telegram webhook"
     )
 
     # Google PageSpeed Insights

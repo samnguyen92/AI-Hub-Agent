@@ -2,27 +2,19 @@ import asyncio
 import json
 from typing import Any, AsyncGenerator, Dict, List, Optional
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import Message, Run, Step, Thread
-from app.db.session import async_session_maker, get_db
+from app.api.auth import get_current_user, verify_project_ownership
+from app.db.models import Message, Run, Thread, User
+from app.db.session import get_db
 from app.services.agent_runner import agent_runner
 from app.services.gateway import IncomingMessagePayload, message_gateway
 
 router = APIRouter(tags=["threads"])
-
-
-async def _run_agent_task(run_id: str) -> None:
-    async with async_session_maker() as db:
-        try:
-            await agent_runner.execute_run(run_id, db)
-        except Exception as err:
-            import logging
-            logging.error(f"Background run execution failed: {err}")
 
 
 class SendMessageRequest(BaseModel):
@@ -48,8 +40,9 @@ class MessageResponse(BaseModel):
 
 
 @router.get("/projects/{project_id}/threads", response_model=List[ThreadResponse])
-async def list_threads(project_id: str, db: AsyncSession = Depends(get_db)) -> List[ThreadResponse]:
+async def list_threads(project_id: str, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)) -> List[ThreadResponse]:
     """Retrieve all conversation threads in a project."""
+    await verify_project_ownership(project_id, user, db)
     res = await db.execute(
         select(Thread).where(Thread.project_id == project_id).order_by(Thread.created_at.desc())
     )
@@ -67,8 +60,9 @@ async def list_threads(project_id: str, db: AsyncSession = Depends(get_db)) -> L
 
 
 @router.get("/threads/{thread_id}/messages", response_model=List[MessageResponse])
-async def get_thread_messages(thread_id: str, db: AsyncSession = Depends(get_db)) -> List[MessageResponse]:
+async def get_thread_messages(thread_id: str, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)) -> List[MessageResponse]:
     """Get all messages within a specific thread."""
+    await _authorize_thread(thread_id, user, db)
     res = await db.execute(
         select(Message).where(Message.thread_id == thread_id).order_by(Message.created_at.asc())
     )
@@ -88,33 +82,39 @@ async def get_thread_messages(thread_id: str, db: AsyncSession = Depends(get_db)
 async def send_message(
     project_id: str,
     req: SendMessageRequest,
-    background_tasks: BackgroundTasks,
+    user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
     """Send a user message, normalize via gateway, and dispatch run."""
+    await verify_project_ownership(project_id, user, db)
     payload = IncomingMessagePayload(
         project_id=project_id,
         thread_id=req.thread_id,
         content=req.content,
         agent_override=req.agent_override,
+        run_synchronously=req.run_synchronously,
     )
-    result = await message_gateway.process_incoming_message(payload, db)
+    try:
+        result = await message_gateway.process_incoming_message(payload, db)
+    except PermissionError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     # If run_synchronously requested, execute directly
     if req.run_synchronously:
         exec_res = await agent_runner.execute_run(result["run_id"], db)
         return {**result, "execution": exec_res}
 
-    # Dispatch to background task
-    background_tasks.add_task(_run_agent_task, result["run_id"])
+    # The database worker is the sole executor for queued runs.
     return result
-
 
 @router.get("/threads/{thread_id}/status")
 async def get_thread_status(
-    thread_id: str, db: AsyncSession = Depends(get_db)
+    thread_id: str, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ) -> Dict[str, Any]:
     """Get the latest run status for a thread."""
+    await _authorize_thread(thread_id, user, db)
     res = await db.execute(
         select(Run).where(Run.thread_id == thread_id).order_by(Run.created_at.desc())
     )
@@ -128,8 +128,9 @@ async def get_thread_status(
 
 
 @router.get("/threads/{thread_id}/stream")
-async def stream_thread(thread_id: str, db: AsyncSession = Depends(get_db)) -> StreamingResponse:
+async def stream_thread(thread_id: str, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)) -> StreamingResponse:
     """Stream thread updates to client via Server-Sent Events (SSE)."""
+    await _authorize_thread(thread_id, user, db)
 
     async def event_generator() -> AsyncGenerator[str, None]:
         # Polling generator emitting new assistant messages
@@ -149,3 +150,12 @@ async def stream_thread(thread_id: str, db: AsyncSession = Depends(get_db)) -> S
         yield "event: ping\ndata: {}\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+
+async def _authorize_thread(thread_id: str, user: User, db: AsyncSession) -> Thread:
+    """Verify the thread exists and belongs to an accessible project."""
+    thread = (await db.execute(select(Thread).where(Thread.id == thread_id))).scalars().first()
+    if not thread:
+        raise HTTPException(status_code=404, detail="Thread not found")
+    await verify_project_ownership(thread.project_id, user, db)
+    return thread

@@ -2,6 +2,7 @@
 
 import json
 import os
+import time
 from typing import Any, Callable, Dict, List, Optional, Tuple
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -72,7 +73,7 @@ class AgentRunner:
 
     async def _load_context(
         self, run: Run, db: AsyncSession
-    ) -> Tuple[Thread, str, Optional[str], int, float, List[Dict[str, Any]], List[Dict[str, Any]], int, float]:
+    ) -> Tuple[Thread, str, Optional[str], int, float, float, List[Dict[str, Any]], List[Dict[str, Any]], int, float]:
         """Load context, configuration, and previous checkpoint or history for run."""
         thread_q = select(Thread).where(Thread.id == run.thread_id)
         thread = (await db.execute(thread_q)).scalars().first()
@@ -88,6 +89,7 @@ class AgentRunner:
         agent_cfg = agent_rec.config if (agent_rec and isinstance(agent_rec.config, dict)) else {}
         max_steps = int(agent_cfg.get("max_steps", self.max_steps))
         max_cost_usd = float(agent_cfg.get("max_cost_usd", self.max_cost_usd))
+        max_minutes = float(agent_cfg.get("max_minutes", 10))
 
         if run.checkpoint_state and isinstance(run.checkpoint_state, dict) and "messages" in run.checkpoint_state:
             messages = list(run.checkpoint_state["messages"])
@@ -109,7 +111,7 @@ class AgentRunner:
             for msg in (await db.execute(msg_q)).scalars().all():
                 messages.append({"role": msg.role, "content": msg.content})
 
-        return (thread, workspace_path, target_model, max_steps, max_cost_usd, tools, messages, start_step, total_cost)
+        return (thread, workspace_path, target_model, max_steps, max_cost_usd, max_minutes, tools, messages, start_step, total_cost)
 
     async def _execute_tool_calls(
         self,
@@ -121,9 +123,10 @@ class AgentRunner:
         messages: List[Dict[str, Any]],
         db: AsyncSession,
         consecutive_errors: int = 0,
-    ) -> Tuple[Optional[str], int]:
+    ) -> Tuple[Optional[str], int, float]:
         """Execute tool calls, handle error containment and check for pause requests."""
         paused_status: Optional[str] = None
+        tool_cost_usd = 0.0
         allowed_tools = tool_registry.get_allowed_tool_names(tool_ctx.agent_key)
 
         for idx, tc in enumerate(tool_calls):
@@ -137,6 +140,7 @@ class AgentRunner:
                         else tc.arguments
                     )
                     tool_output: Dict[str, Any] = await tool.execute(tool_ctx, **filtered_args)
+                    tool_cost_usd += float(tool_output.get("llm_cost_usd", 0.0))
                     consecutive_errors = 0
                 else:
                     tool_output = {"error": f"Tool '{tc.name}' not found or not permitted for agent '{tool_ctx.agent_key}'."}
@@ -167,7 +171,7 @@ class AgentRunner:
                     })
                 break
 
-        return (paused_status, consecutive_errors)
+        return (paused_status, consecutive_errors, tool_cost_usd)
 
     async def execute_run(
         self,
@@ -186,7 +190,7 @@ class AgentRunner:
 
         (
             thread, workspace_path, target_model, max_steps, max_cost_usd,
-            tools, messages, start_step, total_cost
+            max_minutes, tools, messages, start_step, total_cost
         ) = await self._load_context(run, db)
 
         tool_ctx = ToolContext(
@@ -196,9 +200,14 @@ class AgentRunner:
         paused_status: Optional[str] = None
         consecutive_errors = 0
         current_step = start_step
+        started_at = time.monotonic()
 
         for step_idx in range(start_step, max_steps + 1):
             current_step = step_idx
+            if time.monotonic() - started_at >= max_minutes * 60:
+                final_content = "Đã dừng: Chạm giới hạn thời gian thực thi (max_minutes)."
+                run.status = "limit_reached"
+                break
             if total_cost >= max_cost_usd:
                 final_content = "Đã tạm dừng: Chạm giới hạn ngân sách (max_cost_usd)."
                 run.status = "limit_reached"
@@ -230,9 +239,10 @@ class AgentRunner:
                 ],
             })
 
-            paused_status, consecutive_errors = await self._execute_tool_calls(
+            paused_status, consecutive_errors, tool_cost_usd = await self._execute_tool_calls(
                 llm_res.tool_calls, step_idx, run.id, llm_res.total_tokens, tool_ctx, messages, db, consecutive_errors
             )
+            total_cost += tool_cost_usd
             if paused_status:
                 break
             if consecutive_errors >= 3:

@@ -73,6 +73,10 @@ class ToolRegistry:
                 "view_image",
                 "render_html_to_png",
                 "take_screenshot",
+                "capture_reference",
+                "inspect_screenshots",
+                "package_design",
+                "fetch_url",
                 "load_skill",
                 "request_input",
                 "export_zip",
@@ -92,6 +96,7 @@ class ToolRegistry:
                 "render_html_to_png",
                 "run_checks",
                 "compare_screenshots",
+                "inspect_screenshots",
                 "load_skill",
                 "request_input",
                 "export_zip",
@@ -146,6 +151,7 @@ class ToolRegistry:
                 "take_screenshot",
                 "run_checks",
                 "compare_screenshots",
+                "inspect_screenshots",
                 "fetch_url",
                 "check_sitemap",
                 "open_gate",
@@ -165,13 +171,11 @@ class ToolRegistry:
 
     def get_allowed_tool_names(self, agent_key: str) -> List[str]:
         """Return list of allowed tool names for an agent loaded from agent.yaml (SSOT)."""
-        try:
-            from app.services.agent_loader import agent_loader
-            declared = agent_loader.get_allowed_tool_names(agent_key)
-            if declared:
-                return declared
-        except Exception:
-            pass
+        from app.services.agent_loader import agent_loader
+
+        declared = agent_loader.get_allowed_tool_names(agent_key)
+        if declared:
+            return declared
         return list(self._agent_permissions.get(agent_key, []))
 
     def get_tools_for_agent(self, agent_key: str) -> List[BaseTool]:

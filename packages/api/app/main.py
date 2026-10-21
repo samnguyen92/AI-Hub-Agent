@@ -10,6 +10,7 @@ from app.api.approvals import router as approvals_router
 from app.api.auth import router as auth_router
 from app.api.health import router as health_router
 from app.api.library import router as library_router
+from app.api.library_references import router as library_references_router
 from app.api.notes import router as notes_router
 from app.api.projects import router as projects_router
 from app.api.router import router as router_api
@@ -19,6 +20,7 @@ from app.config import settings
 from app.db.seed import seed_agents
 from app.db.session import Base, async_session_maker, engine
 import app.db.models  # noqa: F401 - register all tables to Base.metadata
+import app.db.reference_models  # noqa: F401 - register design reference table
 import app.tools.library_tools  # noqa: F401 - register library tools
 import app.tools.file_tools  # noqa: F401 - register file tools
 import app.tools.render_tools  # noqa: F401 - register render tools
@@ -30,6 +32,9 @@ import app.tools.design_tools  # noqa: F401 - register design & a11y tools
 import app.tools.gate_tools  # noqa: F401 - register gate tools
 import app.tools.report_tools  # noqa: F401 - register report tools
 import app.tools.memory_tools  # noqa: F401 - register memory tools
+import app.tools.reference_tools  # noqa: F401 - register design reference tool
+import app.tools.design_package_tools  # noqa: F401 - register design packaging tool
+import app.tools.vision_tools  # noqa: F401 - register optional screenshot vision tool
 
 
 @asynccontextmanager
@@ -38,9 +43,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     from app.services.agent_loader import agent_loader
     agent_loader.validate_agents()
 
-    async with engine.begin() as conn:
-        # Auto-create tables in development
-        await conn.run_sync(Base.metadata.create_all)
+    if settings.environment.lower() in ("development", "dev", "test"):
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
     async with async_session_maker() as db:
         await seed_agents(db)
     yield
@@ -70,6 +75,7 @@ def create_app() -> FastAPI:
     app.include_router(notes_router)
     app.include_router(threads_router)
     app.include_router(library_router)
+    app.include_router(library_references_router)
     app.include_router(router_api)
     app.include_router(approvals_router)
     app.include_router(telegram_router)

@@ -10,6 +10,9 @@ skills:
   - design/style-tokens
   - design/homepage-mockup
   - design/design-review-checklist
+  - design/reference-analysis
+  - design/motion-design
+  - design/multi-page-site
 tools:
   - list_library
   - read_item
@@ -21,6 +24,10 @@ tools:
   - view_image
   - render_html_to_png
   - take_screenshot
+  - capture_reference
+  - inspect_screenshots
+  - package_design
+  - fetch_url
   - audit_web_design
   - load_skill
   - request_input

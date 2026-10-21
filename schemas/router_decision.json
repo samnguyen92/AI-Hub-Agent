@@ -5,7 +5,7 @@
   "properties": {
     "agent": {
       "type": "string",
-      "enum": ["design", "code-builder", "site-analyzer", "seo-auditor", "unclear"],
+      "enum": ["assistant", "design", "code-builder", "site-analyzer", "seo-auditor", "quality-auditor"],
       "description": "Agent được lựa chọn để xử lý yêu cầu"
     },
     "skill_hint": {

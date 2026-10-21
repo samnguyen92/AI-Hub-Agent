@@ -17,6 +17,7 @@ from app.db.models import (
     LibraryItem,
     ProjectNote,
 )
+from app.config import settings
 
 
 class ProjectService:
@@ -41,6 +42,16 @@ class ProjectService:
         await db.execute(delete(ProjectNote).where(ProjectNote.project_id == project_id))
         await db.execute(delete(Project).where(Project.id == project_id))
 
+    def _safe_remove_workspace(self, ws: Optional[str]) -> None:
+        """Safely remove a workspace folder without risking system directories."""
+        if not ws or not os.path.exists(ws):
+            return
+        workspace_root = os.path.realpath(settings.workspaces_root)
+        abs_ws = os.path.realpath(ws)
+        if abs_ws == workspace_root or os.path.commonpath((workspace_root, abs_ws)) != workspace_root:
+            return
+        shutil.rmtree(abs_ws, ignore_errors=True)
+
     async def delete_project(self, project_id: str, db: AsyncSession) -> bool:
         """Permanently delete a project and its workspace."""
         res = await db.execute(select(Project).where(Project.id == project_id))
@@ -52,8 +63,7 @@ class ProjectService:
         await self._purge_project_data(project_id, db)
         await db.commit()
 
-        if ws and os.path.exists(ws):
-            shutil.rmtree(ws, ignore_errors=True)
+        self._safe_remove_workspace(ws)
         return True
 
     async def cleanup_demo_projects(self, db: AsyncSession) -> Dict[str, Any]:
@@ -71,8 +81,7 @@ class ProjectService:
                 ws = p.workspace_path
                 await self._purge_project_data(p.id, db)
                 deleted_ids.append(p.id)
-                if ws and os.path.exists(ws):
-                    shutil.rmtree(ws, ignore_errors=True)
+                self._safe_remove_workspace(ws)
 
         await db.commit()
         return {"deleted_count": len(deleted_ids), "deleted_ids": deleted_ids}

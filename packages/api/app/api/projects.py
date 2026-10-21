@@ -119,7 +119,40 @@ async def get_project_file(
     session_token: Optional[str] = Cookie(None),
     db: AsyncSession = Depends(get_db),
 ) -> FileResponse:
-    """Safely return file from workspace using signed URL or session auth."""
+    """Serve a workspace file using a query path for API and image clients."""
+    return await _serve_project_file(
+        project_id, path, request, signature, expires, authorization, session_token, db
+    )
+
+
+@router.get("/{project_id}/files/{file_path:path}")
+async def get_project_file_by_path(
+    project_id: str,
+    file_path: str,
+    request: Request,
+    signature: Optional[str] = None,
+    expires: Optional[int] = None,
+    authorization: Optional[str] = Header(None),
+    session_token: Optional[str] = Cookie(None),
+    db: AsyncSession = Depends(get_db),
+) -> FileResponse:
+    """Serve nested HTML/assets so relative links resolve from their real folder path."""
+    return await _serve_project_file(
+        project_id, file_path, request, signature, expires, authorization, session_token, db
+    )
+
+
+async def _serve_project_file(
+    project_id: str,
+    path: str,
+    request: Request,
+    signature: Optional[str],
+    expires: Optional[int],
+    authorization: Optional[str],
+    session_token: Optional[str],
+    db: AsyncSession,
+) -> FileResponse:
+    """Authorize and safely return a file from a project's workspace."""
     is_signed = False
     if signature and expires:
         is_signed = auth_service.verify_file_signature(project_id, path, signature, expires)

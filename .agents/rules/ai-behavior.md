@@ -20,3 +20,8 @@ Quy tắc này hướng dẫn mọi trợ lý AI (bao gồm Antigravity, Claude,
 - Mỗi lần thay đổi code phải giải quyết một bài toán cụ thể, có thông điệp rõ ràng.
 - Không tự ý xóa code hoặc refactor các module không liên quan đến tác vụ đang được giao.
 - Sau khi viết/sửa code, phải chủ động kiểm tra lint, type-check hoặc run tests tương ứng để bảo đảm tính đúng đắn.
+
+## 5. Nguyên tắc kiểm thử sạch sẽ (Clean Test Execution & Zero Garbage)
+- Khi AI thực hiện kiểm thử (chạy pytest, integration tests, custom test scripts) hoặc bổ sung test cases:
+  - Bắt buộc bảo đảm cơ chế cleanup tự động hoạt động, tuyệt đối không để lại các demo/test project rác trong cơ sở dữ liệu làm ô nhiễm giao diện người dùng.
+  - Sau khi kiểm thử, nếu phát hiện database phát sinh project demo ngoài ý muốn, phải dọn dẹp ngay bằng script dọn dẹp hoặc lệnh DB trước khi bàn giao cho người dùng.

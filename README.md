@@ -29,6 +29,36 @@ Nền tảng Multi-Agent chuyên sâu dành cho đội ngũ thiết kế, phát 
 
 ---
 
+## 🎨 Roadmap nâng chất lượng Design Agent và Code Builder
+
+### Phase 1 — Reference Library (đã triển khai)
+- User đưa URL tham khảo; Design Agent có thể xác minh URL và đề xuất tối đa 3 lựa chọn phù hợp trước khi capture.
+- `capture_reference` lưu URL, ghi chú, tags, HTML snapshot, ảnh desktop/mobile và metadata vào thư viện theo project.
+- Library hiển thị, tìm kiếm, sửa ghi chú/tags và xóa reference; agent được báo khi URL đã có trong thư viện.
+
+### Phase 2 — Design workflow có căn cứ (đã triển khai)
+- Trước khi thiết kế, agent đọc brief, brand/project memory và các reference đã lưu.
+- Agent ghi rõ pattern nào được tham khảo, pattern nào được điều chỉnh; không sao chép nguyên trang.
+- Handoff có `references_used` cùng hướng dẫn responsive để Code Builder hiểu nguồn quyết định thiết kế; Design Agent có thể tạo nhiều trang HTML, `sitemap.html`, và ZIP chứa toàn bộ site folder cùng asset.
+
+### Phase 3 — Motion design và implementation (đã triển khai)
+- Design Agent mô tả mục tiêu, trigger, duration, easing, reduced-motion fallback và cách kiểm tra cho từng motion.
+- Chọn family phù hợp: CSS transitions/keyframes, JavaScript runtime, visual animation (SVG/Lottie/canvas), hoặc WebGL & GLSL shaders.
+- Code Builder ưu tiên CSS motion nhỏ, có mục đích; tránh thêm dependency nếu chưa được yêu cầu.
+- Handoff/report có `motion_spec` và `motion_report`; sandbox cảnh báo thiếu `prefers-reduced-motion`, `transition: all` và animation lặp vô hạn.
+
+### Phase 4 — Visual review nhiều viewport (đã triển khai một phần)
+- Sandbox chụp desktop/mobile và trả cấu trúc DOM cùng computed style để agent có bằng chứng khi review.
+- Khi cấu hình `OPENROUTER_VISION_MODEL`, agent có thể gửi tối đa hai ảnh đã resize tới model để nhận visual observations; chi phí ước tính được tính vào ngân sách run.
+- Bước tiếp theo: bổ sung review tương tác thực sự cho hover, keyboard, scroll và animation trong trình duyệt.
+
+### Phase 5 — Đánh giá chất lượng và cải tiến (đã có rubric, còn bộ đánh giá chuẩn)
+- Quality Auditor dùng rubric có trọng số cho hierarchy, typography, brief/reference fit, responsive, accessibility và motion.
+- Bước tiếp theo: tạo brief chuẩn theo loại trang, so sánh kết quả trước/sau, lưu review và dùng feedback để cập nhật agent skills.
+- Chạy kiểm tra migration/API/UI trong môi trường dự án trước khi phát hành workflow mới.
+
+---
+
 ## 🏗️ Kiến Trúc Hệ Thống
 
 ```
@@ -59,10 +89,13 @@ cp .env.example .env
 Điền key vào `.env`:
 ```env
 OPENROUTER_API_KEY=sk-or-v1-...
+OPENROUTER_VISION_MODEL=provider/vision-capable-model
 DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/hub_ai_agent
 INTERNAL_SANDBOX_URL=http://sandbox:8001
 TELEGRAM_BOT_TOKEN=...
 ```
+
+`OPENROUTER_VISION_MODEL` là tùy chọn. Khi được cấu hình bằng model hỗ trợ image input, Design Agent, Code Builder và Quality Auditor có thể gọi `inspect_screenshots`; ảnh được resize trong sandbox trước khi gửi tới OpenRouter và chi phí ước tính được cộng vào ngân sách run. Để trống biến này thì agent vẫn dùng metadata/DOM và phải báo rằng chưa có visual review bằng model.
 
 ### 2. Khởi chạy toàn bộ hệ thống
 ```bash
@@ -72,7 +105,7 @@ docker compose up -d --build
 Sau khi các container sẵn sàng:
 - **Web UI**: [http://localhost:3000](http://localhost:3000)
 - **API Documentation (Swagger)**: [http://localhost:8000/docs](http://localhost:8000/docs)
-- **Playwright Sandbox**: [http://localhost:8001/health](http://localhost:8001/health)
+- **Playwright Sandbox**: chỉ truy cập nội bộ từ API container, không publish cổng ra host.
 
 ---
 

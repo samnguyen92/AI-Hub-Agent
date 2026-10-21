@@ -5,7 +5,9 @@ description: "Trích xuất và định nghĩa bộ Design Tokens (colors, typog
 
 # Style Tokens Skill
 
-## Mẫu Design Tokens chuẩn của Align
+## Bộ tokens theo hướng visual đã chọn
+
+Chọn palette theo brief, thương hiệu và reference đã duyệt. Không mặc định dark mode hoặc glassmorphism. Ví dụ dưới đây là một hướng dark, không phải preset bắt buộc của mọi project.
 
 ```json
 {

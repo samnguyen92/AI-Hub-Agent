@@ -35,6 +35,47 @@
       "type": "string",
       "description": "Đường dẫn file HTML mockup trong workspace"
     },
+    "html_file_url": {
+      "type": "string",
+      "description": "URL mở trang entry HTML"
+    },
+    "page_file_paths": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Danh sách các trang HTML riêng có thể mở trong workspace"
+    },
+    "page_file_urls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": { "type": "string" },
+          "url": { "type": "string" }
+        },
+        "required": ["path", "url"],
+        "additionalProperties": false
+      }
+    },
+    "sitemap_file_path": {
+      "type": "string",
+      "description": "Đường dẫn sitemap.html có liên kết tới các trang"
+    },
+    "sitemap_file_url": {
+      "type": "string",
+      "description": "URL mở sitemap HTML"
+    },
+    "sitemap_xml_path": {
+      "type": ["string", "null"],
+      "description": "Đường dẫn sitemap.xml nếu canonical site URL đã được cung cấp"
+    },
+    "zip_file_path": {
+      "type": "string",
+      "description": "Đường dẫn ZIP chứa HTML và các asset local đã chọn"
+    },
+    "zip_download_url": {
+      "type": "string",
+      "description": "URL tải ZIP trong project workspace"
+    },
     "screenshots": {
       "type": "object",
       "properties": {
@@ -42,6 +83,39 @@
         "mobile_png": { "type": "string" }
       },
       "description": "Đường dẫn file ảnh PNG đã render"
+    },
+    "references_used": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "reference_id": { "type": "string" },
+          "source_url": { "type": "string" },
+          "observations": { "type": "array", "items": { "type": "string" } },
+          "adaptations": { "type": "array", "items": { "type": "string" } }
+        },
+        "required": ["source_url", "observations", "adaptations"],
+        "additionalProperties": false
+      }
+    },
+    "motion_spec": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "family": { "type": "string", "enum": ["css_transition", "css_keyframes", "javascript_runtime", "visual_animation", "webgl_glsl"] },
+          "element": { "type": "string" },
+          "trigger": { "type": "string" },
+          "properties": { "type": "array", "items": { "type": "string" } },
+          "duration_ms": { "type": "integer", "minimum": 0 },
+          "easing": { "type": "string" },
+          "reduced_motion": { "type": "string" },
+          "runtime_fallback": { "type": "string" },
+          "performance_budget": { "type": "string" }
+        },
+        "required": ["family", "element", "trigger", "properties", "duration_ms", "easing", "reduced_motion", "runtime_fallback", "performance_budget"],
+        "additionalProperties": false
+      }
     },
     "changes_summary": {
       "type": "string",
@@ -60,6 +134,6 @@
       }
     }
   },
-  "required": ["artifact_name", "version", "design_tokens", "html_file_path", "changes_summary"],
+  "required": ["artifact_name", "version", "design_tokens", "html_file_path", "html_file_url", "page_file_paths", "page_file_urls", "sitemap_file_path", "sitemap_file_url", "zip_file_path", "zip_download_url", "changes_summary"],
   "additionalProperties": false
 }

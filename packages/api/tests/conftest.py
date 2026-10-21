@@ -1,7 +1,8 @@
-"""Pytest configuration and async database fixtures."""
-
 import pytest
-from app.db.session import engine
+from sqlalchemy import delete, select
+from app.db.models import Project, User
+from app.db.session import async_session_maker, engine
+from app.services.project_service import project_service
 
 
 @pytest.fixture(autouse=True)
@@ -10,3 +11,40 @@ async def cleanup_db_engine() -> None:
     await engine.dispose()
     yield
     await engine.dispose()
+
+
+@pytest.fixture(autouse=True)
+async def cleanup_test_data() -> None:
+    """Track and automatically clean up any Project and User records created during each test."""
+    initial_proj_ids = set()
+    initial_user_ids = set()
+    try:
+        async with async_session_maker() as db:
+            res_p = await db.execute(select(Project.id))
+            initial_proj_ids = set(res_p.scalars().all())
+            res_u = await db.execute(select(User.id))
+            initial_user_ids = set(res_u.scalars().all())
+    except Exception:
+        pass
+
+    yield
+
+    try:
+        async with async_session_maker() as db:
+            # Purge any new projects created during the test run
+            res_new_p = await db.execute(select(Project))
+            for p in res_new_p.scalars().all():
+                if p.id not in initial_proj_ids:
+                    ws = p.workspace_path
+                    await project_service._purge_project_data(p.id, db)
+                    project_service._safe_remove_workspace(ws)
+
+            # Purge any new users created during the test run
+            res_new_u = await db.execute(select(User))
+            for u in res_new_u.scalars().all():
+                if u.id not in initial_user_ids:
+                    await db.execute(delete(User).where(User.id == u.id))
+
+            await db.commit()
+    except Exception:
+        pass

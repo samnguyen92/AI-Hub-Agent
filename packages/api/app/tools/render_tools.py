@@ -36,16 +36,13 @@ class RenderHtmlToPngTool(BaseTool):
             if not os.path.exists(full_html):
                 return {"error": f"Không tìm thấy file: {html_rel}"}
 
-            with open(full_html, "r", encoding="utf-8") as f:
-                html_content = f.read()
-
             desktop_rel = f"screenshots/{prefix}-desktop.png"
             mobile_rel = f"screenshots/{prefix}-mobile.png"
 
             full_desktop = safe_resolve_path(context.workspace_path, desktop_rel)
             full_mobile = safe_resolve_path(context.workspace_path, mobile_rel)
 
-            res = await sandbox_client.render_html(html_content, full_desktop, full_mobile)
+            res = await sandbox_client.render_workspace_html(full_html, full_desktop, full_mobile)
             return {
                 "status": "rendered",
                 "desktop_png": desktop_rel,

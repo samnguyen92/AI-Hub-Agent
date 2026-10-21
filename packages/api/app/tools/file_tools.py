@@ -8,8 +8,8 @@ from app.tools.base import BaseTool, ToolContext, tool_registry
 
 def safe_resolve_path(workspace_root: str, relative_path: str) -> str:
     """Safely resolve relative path and verify it stays within workspace root."""
-    resolved = os.path.abspath(os.path.join(workspace_root, relative_path))
-    root_abs = os.path.abspath(workspace_root)
+    root_abs = os.path.realpath(workspace_root)
+    resolved = os.path.realpath(os.path.join(root_abs, relative_path))
     if not (resolved == root_abs or resolved.startswith(root_abs + os.sep)):
         raise PermissionError(
             f"Bị từ chối: Đường dẫn '{relative_path}' vượt ra ngoài workspace của dự án."

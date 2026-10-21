@@ -36,7 +36,7 @@ async def get_current_user(
     # 1. Bearer Token check
     if authorization and authorization.startswith("Bearer "):
         token_str = authorization.split(" ", 1)[1].strip()
-        if token_str == settings.admin_api_token:
+        if settings.admin_api_token and token_str == settings.admin_api_token:
             return await auth_service.get_or_create_user(db, "admin", role="admin")
 
         payload = auth_service.verify_session_token(token_str)
@@ -64,7 +64,7 @@ async def get_current_user(
     # 3. Development Mode Fallback
     if settings.auth_mode == "dev":
         client_host = request.client.host if request and request.client else "localhost"
-        is_local = client_host in ("127.0.0.1", "localhost", "testclient") or settings.environment == "development"
+        is_local = client_host in ("127.0.0.1", "::1", "localhost", "testclient")
         if is_local:
             return await auth_service.get_or_create_user(db, "developer", role="admin")
 
@@ -100,7 +100,7 @@ async def login(
     db: AsyncSession = Depends(get_db),
 ) -> UserResponse:
     """Log in with username or admin token, returning signed session token and setting HttpOnly cookie."""
-    role = "admin" if req.token == settings.admin_api_token else "member"
+    role = "admin" if settings.admin_api_token and req.token == settings.admin_api_token else "member"
     user = await auth_service.get_or_create_user(db, req.username, role=role)
     token = auth_service.create_session_token(user.id, role=user.role)
 
@@ -108,6 +108,7 @@ async def login(
         key="session_token",
         value=token,
         httponly=True,
+        secure=settings.environment.lower() not in ("development", "dev", "test"),
         samesite="lax",
         max_age=86400 * 7,
     )

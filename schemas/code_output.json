@@ -33,6 +33,25 @@
         "diff_image_path": { "type": "string" }
       }
     },
+    "references_used": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "IDs hoặc URL của các reference đã được đọc từ project library"
+    },
+    "motion_report": {
+      "type": "object",
+      "properties": {
+        "implemented": { "type": "integer", "minimum": 0 },
+        "families_used": { "type": "array", "items": { "type": "string", "enum": ["css_transition", "css_keyframes", "javascript_runtime", "visual_animation", "webgl_glsl"] } },
+        "reduced_motion_supported": { "type": "boolean" },
+        "fallbacks_provided": { "type": "array", "items": { "type": "string" } },
+        "performance_notes": { "type": "array", "items": { "type": "string" } },
+        "interaction_checks": { "type": "array", "items": { "type": "string" } },
+        "unverified_states": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["implemented", "families_used", "reduced_motion_supported", "fallbacks_provided", "performance_notes", "interaction_checks", "unverified_states"],
+      "additionalProperties": false
+    },
     "summary": {
       "type": "string",
       "description": "Báo cáo tóm tắt công việc đã thực hiện"

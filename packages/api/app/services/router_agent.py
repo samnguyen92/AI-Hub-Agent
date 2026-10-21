@@ -13,6 +13,7 @@ DANH MỤC AGENTS:
 3. 'code-builder': Chuyên lập trình HTML/CSS/JS thuần theo chuẩn align.vn từ mockup PNG hoặc yêu cầu cụ thể, sửa code, linting.
 4. 'site-analyzer': Chuyên phân tích website, crawl trang, kiểm tra sitemap/robots.txt, đo tốc độ Core Web Vitals (Lighthouse).
 5. 'seo-auditor': Chuyên kiểm định SEO, phân tích file Search Console/GA4, rà soát noindex, canonical, nội dung mỏng.
+6. 'quality-auditor': Chuyên kiểm tra độc lập chất lượng giao diện, accessibility, responsive và tuân thủ tiêu chuẩn.
 
 QUY TẮC:
 - Nếu yêu cầu là trò chuyện, chào hỏi, tư vấn chung, giải thích -> luôn giao cho 'assistant' với confidence 1.0.
@@ -24,7 +25,7 @@ ROUTER_SCHEMA = {
     "properties": {
         "agent": {
             "type": "string",
-            "enum": ["assistant", "design", "code-builder", "site-analyzer", "seo-auditor"],
+            "enum": ["assistant", "design", "code-builder", "site-analyzer", "seo-auditor", "quality-auditor"],
         },
         "skill_hint": {"type": "string"},
         "confidence": {"type": "number", "minimum": 0.0, "maximum": 1.0},
@@ -89,6 +90,12 @@ class RouterAgent:
                 confidence=1.0,
                 reason="Người dùng chỉ định @seo-auditor",
             )
+        if "@quality" in prompt_lower or "@quality-auditor" in prompt_lower:
+            return RouterDecision(
+                agent="quality-auditor",
+                confidence=1.0,
+                reason="Người dùng chỉ định @quality-auditor",
+            )
 
         # Heuristic keywords matching for specialized actions
         if any(w in prompt_lower for w in ["thiết kế", "mockup", "giao diện", "màu sắc", "font", "layout", "banner"]):
@@ -121,6 +128,13 @@ class RouterAgent:
                 skill_hint="gsc-audit",
                 confidence=0.93,
                 reason="Yêu cầu kiểm định và tối ưu hóa SEO",
+            )
+
+        if any(w in prompt_lower for w in ["kiểm định chất lượng", "quality audit", "accessibility", "wcag", "rà soát giao diện"]):
+            return RouterDecision(
+                agent="quality-auditor",
+                confidence=0.91,
+                reason="Yêu cầu kiểm định chất lượng và khả năng truy cập",
             )
 
         # Default: General conversational assistant (ChatGPT/Claude experience)

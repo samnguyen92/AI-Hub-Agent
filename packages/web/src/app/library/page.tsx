@@ -21,6 +21,7 @@ import {
   ProjectNoteItem,
 } from '@/lib/api';
 import ArtifactViewer, { ArtifactData } from '@/components/artifacts/ArtifactViewer';
+import ReferenceShelf from '@/components/library/ReferenceShelf';
 import { useLanguage } from '@/context/LanguageContext';
 
 function LibraryInner() {
@@ -190,6 +191,8 @@ function LibraryInner() {
           {selectedArtifact && (
             <ArtifactViewer artifact={selectedArtifact} onClose={() => setSelectedArtifact(null)} />
           )}
+
+          <ReferenceShelf references={libraryData?.references || []} projectId={selectedProjectId} onChanged={loadLibrary} />
 
           {/* Artifacts */}
           <section>

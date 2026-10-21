@@ -1,15 +1,17 @@
 """API Router for Agents inspection and configuration."""
 
 import os
+import re
 from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import Agent
+from app.api.auth import get_current_user
+from app.db.models import Agent, User
 from app.db.session import get_db
-from app.tools.base import AGENT_TOOL_PERMISSIONS
+from app.tools.base import tool_registry
 
 router = APIRouter(prefix="/agents", tags=["agents"])
 
@@ -38,7 +40,7 @@ async def list_agents(db: AsyncSession = Depends(get_db)) -> List[AgentResponse]
             model=a.model,
             rules_path=a.rules_path,
             config=a.config or {},
-            allowed_tools=list(AGENT_TOOL_PERMISSIONS.get(a.key, [])),
+            allowed_tools=tool_registry.get_allowed_tool_names(a.key),
         )
         for a in agents
     ]
@@ -56,15 +58,17 @@ async def get_agent(key: str, db: AsyncSession = Depends(get_db)) -> AgentRespon
         model=agent.model,
         rules_path=agent.rules_path,
         config=agent.config or {},
-        allowed_tools=list(AGENT_TOOL_PERMISSIONS.get(agent.key, [])),
+        allowed_tools=tool_registry.get_allowed_tool_names(agent.key),
     )
 
 
 @router.patch("/{key}", response_model=AgentResponse)
 async def update_agent(
-    key: str, req: AgentUpdateRequest, db: AsyncSession = Depends(get_db)
+    key: str, req: AgentUpdateRequest, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ) -> AgentResponse:
     """Update agent model or configuration."""
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Chỉ admin mới được cấu hình agent.")
     res = await db.execute(select(Agent).where(Agent.key == key))
     agent = res.scalars().first()
     if not agent:
@@ -84,13 +88,18 @@ async def update_agent(
         model=agent.model,
         rules_path=agent.rules_path,
         config=agent.config or {},
-        allowed_tools=list(AGENT_TOOL_PERMISSIONS.get(agent.key, [])),
+        allowed_tools=tool_registry.get_allowed_tool_names(agent.key),
     )
 
 
 @router.get("/{key}/rules")
-async def get_agent_rules(key: str) -> Dict[str, str]:
+async def get_agent_rules(key: str, db: AsyncSession = Depends(get_db)) -> Dict[str, str]:
     """Read agent rules markdown file safely."""
+    agent = (await db.execute(select(Agent).where(Agent.key == key))).scalars().first()
+    if not agent:
+        raise HTTPException(status_code=404, detail="Agent not found")
+    if not re.fullmatch(r"[a-zA-Z0-9_-]+", key):
+        raise HTTPException(status_code=400, detail="Invalid agent key")
     candidate_paths = [
         f"/app/agents/{key}/rules.md",
         f"agents/{key}/rules.md",

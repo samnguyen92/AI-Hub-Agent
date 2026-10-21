@@ -6,7 +6,8 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import LibraryItem, Message, ProjectNote, Run, Thread
+from app.db.models import Agent, LibraryItem, Message, ProjectNote, Run, Thread
+from app.services.router_agent import router_agent
 
 
 class IncomingMessagePayload(BaseModel):
@@ -18,6 +19,7 @@ class IncomingMessagePayload(BaseModel):
     content: str
     attachments: List[Dict[str, Any]] = []
     agent_override: Optional[str] = None
+    run_synchronously: bool = False
 
 
 class MessageGateway:
@@ -49,7 +51,11 @@ class MessageGateway:
 
             # Get or create thread
             thread_id = payload.thread_id
-            if not thread_id:
+            if thread_id:
+                thread = (await db.execute(select(Thread).where(Thread.id == thread_id))).scalars().first()
+                if not thread or thread.project_id != payload.project_id:
+                    raise PermissionError("Thread không thuộc project đã chọn.")
+            else:
                 thread = Thread(
                     project_id=payload.project_id,
                     agent_key="assistant",
@@ -72,7 +78,17 @@ class MessageGateway:
 
         # 1. Resolve agent
         agent_mention, clean_content = self.extract_agent_mention(payload.content)
-        target_agent = payload.agent_override or agent_mention or "assistant"
+        if payload.agent_override:
+            target_agent = payload.agent_override
+        elif agent_mention:
+            target_agent = agent_mention
+        else:
+            decision = await router_agent.classify(clean_content)
+            target_agent = decision.agent
+
+        agent_res = await db.execute(select(Agent.key).where(Agent.key == target_agent))
+        if not agent_res.scalar_one_or_none():
+            raise ValueError(f"Agent không tồn tại: {target_agent}")
 
         # 2. Get or create thread
         if payload.thread_id:
@@ -80,6 +96,8 @@ class MessageGateway:
             thread = thread_res.scalars().first()
             if not thread:
                 raise ValueError("Thread not found")
+            if thread.project_id != payload.project_id:
+                raise PermissionError("Thread không thuộc project đã chọn.")
         else:
             thread = Thread(
                 project_id=payload.project_id,
@@ -114,7 +132,7 @@ class MessageGateway:
         run = Run(
             thread_id=thread.id,
             agent_key=target_agent,
-            status="queued",
+            status="running" if payload.run_synchronously else "queued",
         )
         db.add(run)
         await db.commit()
