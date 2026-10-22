@@ -12,8 +12,10 @@ The web service uses these values in the full-stack deployment:
 
 | Variable | Value |
 | --- | --- |
-| `NEXT_PUBLIC_API_URL` | `/api/backend` (same-origin endpoint routed to the API service) |
 | `NEXT_PUBLIC_AUTH_MODE` | `google` when production sign-in uses Google OAuth; do not set `dev` on a public deployment |
+
+`NEXT_PUBLIC_API_URL` is always built as `/api/backend` on Vercel so a stale
+absolute URL cannot send browser requests back to the frontend's `/health` route.
 
 `NEXT_PUBLIC_API_URL` is public and is embedded in browser code. Never put API
 keys, passwords, or signing secrets in a `NEXT_PUBLIC_*` variable.
