@@ -67,10 +67,11 @@ def _validate_hosted_configuration() -> None:
     """Reject unsafe or incomplete settings before starting a Vercel API instance."""
     if settings.auth_mode == "dev":
         raise RuntimeError("AUTH_MODE=dev is not allowed in the hosted Vercel deployment.")
+    sandbox_endpoint = settings.sandbox_internal_url or settings.sandbox_url
     required_secrets = (
         settings.supabase_url,
         settings.supabase_service_role_key,
-        settings.sandbox_internal_url,
+        sandbox_endpoint,
         settings.sandbox_shared_secret,
     )
     if not all(required_secrets):
