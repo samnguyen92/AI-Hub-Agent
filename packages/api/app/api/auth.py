@@ -100,7 +100,10 @@ async def login(
     db: AsyncSession = Depends(get_db),
 ) -> UserResponse:
     """Log in with username or admin token, returning signed session token and setting HttpOnly cookie."""
-    role = "admin" if settings.admin_api_token and req.token == settings.admin_api_token else "member"
+    # The local developer session mirrors the existing development-mode admin fallback.
+    is_dev_admin = settings.auth_mode == "dev" and req.username == "developer"
+    is_token_admin = bool(settings.admin_api_token and req.token == settings.admin_api_token)
+    role = "admin" if is_dev_admin or is_token_admin else "member"
     user = await auth_service.get_or_create_user(db, req.username, role=role)
     token = auth_service.create_session_token(user.id, role=user.role)
 

@@ -1,16 +1,17 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Cpu, BookmarkCheck, CheckCircle2, XCircle, Plus, RefreshCw, FileText, Wrench } from 'lucide-react';
+import { Cpu, CheckCircle2, XCircle, Plus } from 'lucide-react';
+import { fetchWithAuth } from '@/lib/api';
+import AgentModelControl from '@/components/agents/AgentModelControl';
 
 interface AgentInfo {
   key: string;
   model: string;
   rules_path: string;
-  config: Record<string, any>;
+  config: Record<string, unknown>;
   allowed_tools: string[];
 }
-
 interface ProjectNote {
   id: string;
   project_id: string;
@@ -34,21 +35,19 @@ export default function AgentsPage() {
   const [newNoteContent, setNewNoteContent] = useState('');
   const [loading, setLoading] = useState(false);
   const [updatingKey, setUpdatingKey] = useState<string | null>(null);
-
+  const [modelError, setModelError] = useState('');
   const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-
   const fetchAgents = async () => {
     try {
-      const res = await fetch(`${apiBase}/agents`);
+      const res = await fetchWithAuth(`${apiBase}/agents`);
       if (res.ok) setAgents(await res.json());
     } catch (e) {
       console.error(e);
     }
   };
-
   const fetchProjects = async () => {
     try {
-      const res = await fetch(`${apiBase}/projects`);
+      const res = await fetchWithAuth(`${apiBase}/projects`);
       if (res.ok) {
         const data = await res.json();
         setProjects(data);
@@ -60,44 +59,51 @@ export default function AgentsPage() {
       console.error(e);
     }
   };
-
   const fetchNotes = async (projId: string) => {
     if (!projId) return;
     try {
-      const res = await fetch(`${apiBase}/projects/${projId}/notes`);
+      const res = await fetchWithAuth(`${apiBase}/projects/${projId}/notes`);
       if (res.ok) setNotes(await res.json());
     } catch (e) {
       console.error(e);
     }
   };
-
   useEffect(() => {
     fetchAgents();
     fetchProjects();
   }, []);
-
   useEffect(() => {
     if (selectedProjectId) fetchNotes(selectedProjectId);
   }, [selectedProjectId]);
-
   const handleUpdateModel = async (key: string, newModel: string) => {
+    const model = newModel.trim();
+    if (!model) return;
     setUpdatingKey(key);
+    setModelError('');
     try {
-      const res = await fetch(`${apiBase}/agents/${key}`, {
+      const res = await fetchWithAuth(`${apiBase}/agents/${key}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: newModel }),
+        body: JSON.stringify({ model }),
       });
-      if (res.ok) await fetchAgents();
+      if (!res.ok) {
+        const payload: unknown = await res.json().catch((): unknown => null);
+        const detail = typeof payload === 'object' && payload !== null && 'detail' in payload
+          ? payload.detail
+          : null;
+        throw new Error(typeof detail === 'string' ? detail : `Không thể lưu model (HTTP ${res.status}).`);
+      }
+      await fetchAgents();
+    } catch (error) {
+      setModelError(error instanceof Error ? error.message : 'Không thể lưu model.');
     } finally {
       setUpdatingKey(null);
     }
   };
-
   const handleNoteRespond = async (noteId: string, action: 'approve' | 'reject') => {
     if (!selectedProjectId) return;
     try {
-      const res = await fetch(`${apiBase}/projects/${selectedProjectId}/notes/${noteId}/respond`, {
+      const res = await fetchWithAuth(`${apiBase}/projects/${selectedProjectId}/notes/${noteId}/respond`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action }),
@@ -107,13 +113,12 @@ export default function AgentsPage() {
       console.error(e);
     }
   };
-
   const handleAddNote = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedProjectId || !newNoteContent.trim()) return;
     setLoading(true);
     try {
-      const res = await fetch(`${apiBase}/projects/${selectedProjectId}/notes`, {
+      const res = await fetchWithAuth(`${apiBase}/projects/${selectedProjectId}/notes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content: newNoteContent.trim() }),
@@ -126,7 +131,6 @@ export default function AgentsPage() {
       setLoading(false);
     }
   };
-
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-main)', color: 'var(--text-main)' }}>
       <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px' }}>
@@ -169,6 +173,7 @@ export default function AgentsPage() {
 
         {activeTab === 'agents' ? (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '20px' }}>
+            {modelError && <p role="alert" style={{ color: '#f87171', gridColumn: '1 / -1' }}>{modelError}</p>}
             {agents.map((ag) => (
               <div key={ag.key} style={{ background: 'var(--bg-surface)', borderRadius: '14px', border: '1px solid var(--border-subtle)', padding: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
@@ -183,22 +188,12 @@ export default function AgentsPage() {
                   </div>
                 </div>
 
-                <div style={{ marginBottom: '16px' }}>
-                  <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-muted)', marginBottom: '6px' }}>LLM Model</label>
-                  <select
-                    value={ag.model}
-                    disabled={updatingKey === ag.key}
-                    onChange={(e) => handleUpdateModel(ag.key, e.target.value)}
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', background: 'var(--bg-main)', border: '1px solid var(--border-subtle)', color: '#fff', outline: 'none' }}
-                  >
-                    <option value="openai/gpt-6-luna">openai/gpt-6-luna (Khuyên dùng - Chuẩn Align)</option>
-                    <option value="openai/gpt-4o">openai/gpt-4o (Đỉnh cao, Đa năng)</option>
-                    <option value="openai/gpt-4o-mini">openai/gpt-4o-mini (Nhanh, Tiết kiệm)</option>
-                    <option value="anthropic/claude-3-5-sonnet">anthropic/claude-3-5-sonnet</option>
-                    <option value="deepseek/deepseek-chat">deepseek/deepseek-chat</option>
-                    <option value="bytedance-seed/seedream-4.5">bytedance-seed/seedream-4.5 (Image Gen Model)</option>
-                  </select>
-                </div>
+                <AgentModelControl
+                  agentKey={ag.key}
+                  model={ag.model}
+                  saving={updatingKey === ag.key}
+                  onSave={(model) => handleUpdateModel(ag.key, model)}
+                />
 
                 <div>
                   <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-muted)', marginBottom: '6px' }}>Công cụ được cấp quyền ({ag.allowed_tools.length})</label>

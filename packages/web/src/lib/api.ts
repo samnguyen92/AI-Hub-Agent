@@ -85,7 +85,7 @@ const API_BASE =
     ? process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
     : process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-const DEV_SESSION_KEY = 'hub_dev_session_token';
+const DEV_SESSION_KEY = 'hub_dev_session_token_v2';
 const DEV_AUTH_ENABLED = process.env.NEXT_PUBLIC_AUTH_MODE === 'dev';
 let sessionRequest: Promise<string> | null = null;
 
@@ -93,7 +93,7 @@ async function createDevSession(): Promise<string> {
   const response = await fetch(`${API_BASE}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username: 'local-developer' }),
+    body: JSON.stringify({ username: 'developer' }),
     credentials: 'include',
   });
   const result = await handleResponse<{ token: string }>(response);
@@ -108,7 +108,7 @@ async function getDevSessionToken(): Promise<string> {
   return sessionRequest;
 }
 
-async function fetchWithAuth(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
+export async function fetchWithAuth(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
   if (!DEV_AUTH_ENABLED || typeof window === 'undefined') return fetch(input, init);
   const headers = new Headers(init.headers);
   headers.set('Authorization', `Bearer ${await getDevSessionToken()}`);

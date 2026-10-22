@@ -15,12 +15,12 @@ from app.tools.file_tools import safe_resolve_path
 
 
 class GenerateImageTool(BaseTool):
-    """Tool to generate professional AI images using ByteDance Seedream 4.5."""
+    """Tool to generate professional AI images using OpenAI GPT Image 2.5 Sunburst."""
 
     name = "generate_image"
     description = (
-        "Tạo hình ảnh chuyên nghiệp độ phân giải cao sử dụng model ByteDance Seedream 4.5 "
-        "(bytedance-seed/seedream-4.5). Dùng để tạo banner, ảnh phối cảnh xe hơi, sản phẩm, poster."
+        "Tạo hình ảnh chuyên nghiệp độ phân giải cao sử dụng model OpenAI GPT Image 2.5 Sunburst "
+        "(openai/gpt-image-2.5-sunburst). Dùng để tạo banner, ảnh sản phẩm, poster."
     )
     parameters_schema = {
         "type": "object",
@@ -36,8 +36,8 @@ class GenerateImageTool(BaseTool):
             },
             "model": {
                 "type": "string",
-                "description": "Model tạo hình ảnh (mặc định 'bytedance-seed/seedream-4.5'; có thể chọn 'openai/gpt-5.4-image-2').",
-                "default": "bytedance-seed/seedream-4.5",
+                "description": "Model tạo hình ảnh (mặc định 'openai/gpt-image-2.5-sunburst'). Có thể nhập model ID khác.",
+                "default": "openai/gpt-image-2.5-sunburst",
             },
             "filename": {
                 "type": "string",
@@ -51,7 +51,7 @@ class GenerateImageTool(BaseTool):
     async def execute(self, context: ToolContext, **kwargs: Any) -> Dict[str, Any]:
         prompt = kwargs.get("prompt", "").strip()
         aspect_ratio = kwargs.get("aspect_ratio", "16:9")
-        model = kwargs.get("model", "bytedance-seed/seedream-4.5")
+        model = kwargs.get("model", "openai/gpt-image-2.5-sunburst")
         raw_name = kwargs.get("filename", "generated_image")
 
         safe_name = re.sub(r"[^a-zA-Z0-9_-]", "_", raw_name).strip("_") or "image"
