@@ -109,7 +109,14 @@ async function getDevSessionToken(): Promise<string> {
 }
 
 export async function fetchWithAuth(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
-  if (!DEV_AUTH_ENABLED || typeof window === 'undefined') return fetch(input, init);
+  if (typeof window === 'undefined') return fetch(input, init);
+  if (!DEV_AUTH_ENABLED) {
+    const response = await fetch(input, { ...init, credentials: init.credentials ?? 'include' });
+    if (response.status === 401 && window.location.pathname !== '/login') {
+      window.location.assign(`/login?next=${encodeURIComponent(window.location.pathname)}`);
+    }
+    return response;
+  }
   const headers = new Headers(init.headers);
   headers.set('Authorization', `Bearer ${await getDevSessionToken()}`);
   const response = await fetch(input, { ...init, headers, credentials: 'include' });

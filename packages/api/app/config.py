@@ -45,7 +45,7 @@ class Settings(BaseSettings):
 
     # Authentication & Session
     auth_mode: str = Field(
-        default="dev", description="Authentication mode: dev, token, or strict"
+        default="dev", description="Authentication mode: dev, token, strict, or google"
     )
     auth_secret_key: str = Field(
         default_factory=lambda: secrets.token_urlsafe(48),
@@ -54,6 +54,21 @@ class Settings(BaseSettings):
     admin_api_token: str = Field(
         default="",
         description="Static admin token for CLI and worker access",
+    )
+    google_client_id: str = Field(default="", description="Google OAuth client ID")
+    google_client_secret: str = Field(default="", description="Google OAuth client secret")
+    google_redirect_uri: str = Field(
+        default="http://localhost:8000/auth/google/callback",
+        description="Registered Google OAuth callback URL",
+    )
+    google_frontend_url: str = Field(
+        default="http://localhost:3000", description="Frontend origin for OAuth redirects"
+    )
+    google_allowed_emails: str = Field(
+        default="", description="Comma-separated Google accounts allowed to sign in"
+    )
+    google_admin_emails: str = Field(
+        default="", description="Comma-separated allowed accounts granted admin access"
     )
 
     # Telegram Bot
@@ -79,6 +94,16 @@ class Settings(BaseSettings):
     def allowed_origins(self) -> List[str]:
         """Parse comma-separated origins into list."""
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
+
+    @property
+    def google_email_allowlist(self) -> List[str]:
+        """Return normalized Google accounts allowed to sign in."""
+        return [email.strip().lower() for email in self.google_allowed_emails.split(",") if email.strip()]
+
+    @property
+    def google_admin_allowlist(self) -> List[str]:
+        """Return normalized Google accounts granted administrator access."""
+        return [email.strip().lower() for email in self.google_admin_emails.split(",") if email.strip()]
 
 
 settings = Settings()
