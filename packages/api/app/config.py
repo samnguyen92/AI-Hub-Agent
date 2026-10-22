@@ -14,6 +14,12 @@ def _default_workspaces_root() -> str:
     return "/workspaces"
 
 
+def _default_auth_mode() -> str:
+    """Use secure authentication by default on hosted runtimes."""
+    hosted_markers = ("VERCEL", "VERCEL_API_PREFIX", "AIHUB_VERCEL_DAEMON")
+    return "strict" if any(os.getenv(name) for name in hosted_markers) else "dev"
+
+
 class Settings(BaseSettings):
     """Central configuration class for FastAPI backend."""
 
@@ -61,7 +67,8 @@ class Settings(BaseSettings):
 
     # Authentication & Session
     auth_mode: str = Field(
-        default="dev", description="Authentication mode: dev, token, strict, or google"
+        default_factory=_default_auth_mode,
+        description="Authentication mode: dev, token, strict, or google",
     )
     auth_secret_key: str = Field(
         default="",
