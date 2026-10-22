@@ -1,4 +1,4 @@
-"""AI Image Generation tool using ByteDance Seedream 4.5 via OpenRouter."""
+"""Generate and store project images using OpenRouter image models."""
 
 import base64
 import os
@@ -15,12 +15,12 @@ from app.tools.file_tools import safe_resolve_path
 
 
 class GenerateImageTool(BaseTool):
-    """Tool to generate professional AI images using openai/gpt-5.4-image-2."""
+    """Tool to generate professional AI images using ByteDance Seedream 4.5."""
 
     name = "generate_image"
     description = (
-        "Tạo hình ảnh chuyên nghiệp độ phân giải cao sử dụng model OpenAI GPT-5.4 Image "
-        "(openai/gpt-5.4-image-2). Dùng để tạo banner, ảnh phối cảnh xe hơi, sản phẩm, poster."
+        "Tạo hình ảnh chuyên nghiệp độ phân giải cao sử dụng model ByteDance Seedream 4.5 "
+        "(bytedance-seed/seedream-4.5). Dùng để tạo banner, ảnh phối cảnh xe hơi, sản phẩm, poster."
     )
     parameters_schema = {
         "type": "object",
@@ -36,8 +36,8 @@ class GenerateImageTool(BaseTool):
             },
             "model": {
                 "type": "string",
-                "description": "Model tạo hình ảnh (mặc định 'openai/gpt-5.4-image-2', hoặc 'bytedance-seed/seedream-4.5').",
-                "default": "openai/gpt-5.4-image-2",
+                "description": "Model tạo hình ảnh (mặc định 'bytedance-seed/seedream-4.5'; có thể chọn 'openai/gpt-5.4-image-2').",
+                "default": "bytedance-seed/seedream-4.5",
             },
             "filename": {
                 "type": "string",
@@ -51,7 +51,7 @@ class GenerateImageTool(BaseTool):
     async def execute(self, context: ToolContext, **kwargs: Any) -> Dict[str, Any]:
         prompt = kwargs.get("prompt", "").strip()
         aspect_ratio = kwargs.get("aspect_ratio", "16:9")
-        model = kwargs.get("model", "openai/gpt-5.4-image-2")
+        model = kwargs.get("model", "bytedance-seed/seedream-4.5")
         raw_name = kwargs.get("filename", "generated_image")
 
         safe_name = re.sub(r"[^a-zA-Z0-9_-]", "_", raw_name).strip("_") or "image"
@@ -94,7 +94,7 @@ class GenerateImageTool(BaseTool):
                     project_id=context.project_id,
                     type="generated_image",
                     tag=model.split("/")[-1],
-                    description=prompt[:200],
+                    description=prompt,
                     path=rel_path,
                 )
                 context.db.add(lib_item)

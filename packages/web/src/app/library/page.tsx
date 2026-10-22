@@ -248,9 +248,19 @@ function LibraryInner() {
                       )}
                       <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                          <span style={{ fontWeight: 600, fontSize: '13px', lineHeight: 1.4, flex: 1 }}>{i.description || 'Item'}</span>
-                          <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '4px', background: 'rgba(255,255,255,0.06)', color: 'var(--text-dim)', marginLeft: '8px' }}>{i.type}</span>
+                          <span style={{ fontWeight: 600, fontSize: '13px', lineHeight: 1.4, flex: 1, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{i.description || 'Item'}</span>
+                          <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '4px', background: 'rgba(255,255,255,0.06)', color: 'var(--text-dim)', marginLeft: '8px' }}>{i.tag || i.type}</span>
                         </div>
+                        {isImage && i.description && (
+                          <details style={{ margin: '10px 0', fontSize: '12px' }}>
+                            <summary style={{ cursor: 'pointer', color: 'var(--accent-primary)', fontWeight: 600 }}>
+                              Xem prompt đầy đủ
+                            </summary>
+                            <pre style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', maxHeight: '260px', overflowY: 'auto', padding: '12px', marginTop: '8px', borderRadius: '8px', background: 'rgba(0,0,0,0.22)', color: 'var(--text-dim)', font: 'inherit', lineHeight: 1.6 }}>
+                              {i.description}
+                            </pre>
+                          </details>
+                        )}
                         <p style={{ fontSize: '11px', color: 'var(--text-muted)', wordBreak: 'break-all' }}>
                           File: <code>{i.path}</code>
                         </p>

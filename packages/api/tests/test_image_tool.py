@@ -43,6 +43,7 @@ async def test_generate_image_tool_mocked(tmp_path):
                 ctx,
                 prompt="Modern red Toyota Camry showroom banner",
                 aspect_ratio="16:9",
+                model="openai/gpt-5.4-image-2",
                 filename="toyota_camry_banner",
             )
 

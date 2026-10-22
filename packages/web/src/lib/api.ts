@@ -246,7 +246,16 @@ export interface ApprovalItem {
   run_id: string;
   action_type: string;
   status: 'pending' | 'approved' | 'rework' | 'rejected';
-  payload: Record<string, unknown>;
+  payload: {
+    archive_name?: string;
+    result?: { download_url?: string };
+    gate_type?: string;
+    title?: string;
+    decision_needed?: string;
+    recommendation?: string;
+    try_it?: { url?: string; instruction?: string; expected_result?: string };
+    how_to_test?: string[];
+  };
   comment?: string | null;
   created_at: string;
 }
