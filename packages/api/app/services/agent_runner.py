@@ -73,7 +73,7 @@ class AgentRunner:
 
     async def _load_context(
         self, run: Run, db: AsyncSession
-    ) -> Tuple[Thread, str, Optional[str], int, float, float, List[Dict[str, Any]], List[Dict[str, Any]], int, float]:
+    ) -> Tuple[Thread, str, Optional[str], Optional[str], int, float, float, List[Dict[str, Any]], List[Dict[str, Any]], int, float]:
         """Load context, configuration, and previous checkpoint or history for run."""
         thread_q = select(Thread).where(Thread.id == run.thread_id)
         thread = (await db.execute(thread_q)).scalars().first()
@@ -87,6 +87,7 @@ class AgentRunner:
 
         target_model = agent_rec.model if (agent_rec and agent_rec.model) else None
         agent_cfg = agent_rec.config if (agent_rec and isinstance(agent_rec.config, dict)) else {}
+        image_model = agent_cfg.get("image_model") if isinstance(agent_cfg.get("image_model"), str) else None
         max_steps = int(agent_cfg.get("max_steps", self.max_steps))
         max_cost_usd = float(agent_cfg.get("max_cost_usd", self.max_cost_usd))
         max_minutes = float(agent_cfg.get("max_minutes", 10))
@@ -111,7 +112,7 @@ class AgentRunner:
             for msg in (await db.execute(msg_q)).scalars().all():
                 messages.append({"role": msg.role, "content": msg.content})
 
-        return (thread, workspace_path, target_model, max_steps, max_cost_usd, max_minutes, tools, messages, start_step, total_cost)
+        return (thread, workspace_path, target_model, image_model, max_steps, max_cost_usd, max_minutes, tools, messages, start_step, total_cost)
 
     async def _execute_tool_calls(
         self,
@@ -189,12 +190,13 @@ class AgentRunner:
         await db.commit()
 
         (
-            thread, workspace_path, target_model, max_steps, max_cost_usd,
+            thread, workspace_path, target_model, image_model, max_steps, max_cost_usd,
             max_minutes, tools, messages, start_step, total_cost
         ) = await self._load_context(run, db)
 
         tool_ctx = ToolContext(
-            project_id=thread.project_id, run_id=run.id, workspace_path=workspace_path, db=db, agent_key=run.agent_key
+            project_id=thread.project_id, run_id=run.id, workspace_path=workspace_path, db=db,
+            agent_key=run.agent_key, image_model=image_model,
         )
         final_content = ""
         paused_status: Optional[str] = None

@@ -51,7 +51,7 @@ class GenerateImageTool(BaseTool):
     async def execute(self, context: ToolContext, **kwargs: Any) -> Dict[str, Any]:
         prompt = kwargs.get("prompt", "").strip()
         aspect_ratio = kwargs.get("aspect_ratio", "16:9")
-        model = kwargs.get("model", "openai/gpt-image-2.5-sunburst")
+        model = context.image_model or kwargs.get("model") or "openai/gpt-image-2.5-sunburst"
         raw_name = kwargs.get("filename", "generated_image")
 
         safe_name = re.sub(r"[^a-zA-Z0-9_-]", "_", raw_name).strip("_") or "image"

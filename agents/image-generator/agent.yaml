@@ -1,0 +1,12 @@
+key: image-generator
+name: Image Generate Agent
+description: "Tạo ảnh trực tiếp từ brief và lưu ảnh cùng prompt vào thư viện dự án."
+model: openai/gpt-6-luna
+rules_path: agents/image-generator/rules.md
+skills: []
+tools:
+  - generate_image
+config:
+  image_model: openai/gpt-image-2.5-sunburst
+  max_steps: 5
+  max_cost_usd: 1.0

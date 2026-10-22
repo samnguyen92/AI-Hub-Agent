@@ -15,6 +15,7 @@ class ToolContext:
     workspace_path: str
     db: AsyncSession
     agent_key: str
+    image_model: Optional[str] = None
 
 
 class BaseTool(ABC):

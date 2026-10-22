@@ -14,6 +14,7 @@ DANH MỤC AGENTS:
 4. 'site-analyzer': Chuyên phân tích website, crawl trang, kiểm tra sitemap/robots.txt, đo tốc độ Core Web Vitals (Lighthouse).
 5. 'seo-auditor': Chuyên kiểm định SEO, phân tích file Search Console/GA4, rà soát noindex, canonical, nội dung mỏng.
 6. 'quality-auditor': Chuyên kiểm tra độc lập chất lượng giao diện, accessibility, responsive và tuân thủ tiêu chuẩn.
+7. 'image-generator': Tạo ảnh, minh họa, logo, poster hoặc hình sản phẩm theo brief người dùng.
 
 QUY TẮC:
 - Nếu yêu cầu là trò chuyện, chào hỏi, tư vấn chung, giải thích -> luôn giao cho 'assistant' với confidence 1.0.
@@ -25,7 +26,7 @@ ROUTER_SCHEMA = {
     "properties": {
         "agent": {
             "type": "string",
-            "enum": ["assistant", "design", "code-builder", "site-analyzer", "seo-auditor", "quality-auditor"],
+            "enum": ["assistant", "design", "code-builder", "site-analyzer", "seo-auditor", "quality-auditor", "image-generator"],
         },
         "skill_hint": {"type": "string"},
         "confidence": {"type": "number", "minimum": 0.0, "maximum": 1.0},
@@ -54,6 +55,13 @@ class RouterAgent:
     ) -> RouterDecision:
         """Analyze message and determine target agent."""
         prompt_lower = user_prompt.lower()
+
+        if any(term in prompt_lower for term in ["tạo ảnh", "tạo hình", "generate image", "image generation", "vẽ ảnh", "tạo logo"]):
+            return RouterDecision(
+                agent="image-generator",
+                confidence=0.95,
+                reason="Yêu cầu tạo ảnh trực tiếp",
+            )
 
         # Deterministic override rules
         if "@assistant" in prompt_lower or "@chat" in prompt_lower:

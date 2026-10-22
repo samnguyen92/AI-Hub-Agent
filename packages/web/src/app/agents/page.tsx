@@ -1,17 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Cpu, CheckCircle2, XCircle, Plus } from 'lucide-react';
+import { CheckCircle2, XCircle, Plus } from 'lucide-react';
 import { fetchWithAuth } from '@/lib/api';
-import AgentModelControl from '@/components/agents/AgentModelControl';
+import AgentCard, { AgentInfo } from '@/components/agents/AgentCard';
 
-interface AgentInfo {
-  key: string;
-  model: string;
-  rules_path: string;
-  config: Record<string, unknown>;
-  allowed_tools: string[];
-}
 interface ProjectNote {
   id: string;
   project_id: string;
@@ -100,6 +93,24 @@ export default function AgentsPage() {
       setUpdatingKey(null);
     }
   };
+
+  const handleUpdateAgentConfig = async (key: string, config: Record<string, unknown>) => {
+    setUpdatingKey(key);
+    setModelError('');
+    try {
+      const res = await fetchWithAuth(`${apiBase}/agents/${key}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ config }),
+      });
+      if (!res.ok) throw new Error(`Không thể lưu cấu hình ảnh (HTTP ${res.status}).`);
+      await fetchAgents();
+    } catch (error) {
+      setModelError(error instanceof Error ? error.message : 'Không thể lưu cấu hình ảnh.');
+    } finally {
+      setUpdatingKey(null);
+    }
+  };
   const handleNoteRespond = async (noteId: string, action: 'approve' | 'reject') => {
     if (!selectedProjectId) return;
     try {
@@ -175,37 +186,13 @@ export default function AgentsPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '20px' }}>
             {modelError && <p role="alert" style={{ color: '#f87171', gridColumn: '1 / -1' }}>{modelError}</p>}
             {agents.map((ag) => (
-              <div key={ag.key} style={{ background: 'var(--bg-surface)', borderRadius: '14px', border: '1px solid var(--border-subtle)', padding: '20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Cpu size={20} color="#3b82f6" />
-                    </div>
-                    <div>
-                      <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 700 }}>{ag.key}</h3>
-                      <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{ag.rules_path}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <AgentModelControl
-                  agentKey={ag.key}
-                  model={ag.model}
-                  saving={updatingKey === ag.key}
-                  onSave={(model) => handleUpdateModel(ag.key, model)}
-                />
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-muted)', marginBottom: '6px' }}>Công cụ được cấp quyền ({ag.allowed_tools.length})</label>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                    {ag.allowed_tools.map((t) => (
-                      <span key={t} style={{ fontSize: '11px', background: 'rgba(255, 255, 255, 0.05)', padding: '4px 8px', borderRadius: '4px', border: '1px solid var(--border-subtle)', color: 'var(--text-muted)' }}>
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <AgentCard
+                key={ag.key}
+                agent={ag}
+                saving={updatingKey === ag.key}
+                onSaveModel={(model) => handleUpdateModel(ag.key, model)}
+                onSaveImageModel={(model) => handleUpdateAgentConfig(ag.key, { image_model: model })}
+              />
             ))}
           </div>
         ) : (

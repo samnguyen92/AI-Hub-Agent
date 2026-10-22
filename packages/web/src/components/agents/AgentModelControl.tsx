@@ -14,17 +14,25 @@ interface AgentModelControlProps {
   agentKey: string;
   model: string;
   saving: boolean;
+  mode?: 'llm' | 'image';
   onSave: (model: string) => void;
 }
 
-export default function AgentModelControl({ agentKey, model, saving, onSave }: AgentModelControlProps) {
+const IMAGE_MODEL_OPTIONS = [
+  'openai/gpt-image-2.5-sunburst',
+  'openai/gpt-5.4-image-2',
+  'bytedance-seed/seedream-4.5',
+];
+
+export default function AgentModelControl({ agentKey, model, saving, mode = 'llm', onSave }: AgentModelControlProps) {
   const [customModel, setCustomModel] = useState('');
-  const inputValue = customModel || (MODEL_OPTIONS.includes(model) ? '' : model);
+  const options = mode === 'image' ? IMAGE_MODEL_OPTIONS : MODEL_OPTIONS;
+  const inputValue = customModel || (options.includes(model) ? '' : model);
 
   return (
     <div style={{ marginBottom: '16px' }}>
       <label htmlFor={`agent-model-${agentKey}`} style={{ display: 'block', fontSize: '13px', color: 'var(--text-muted)', marginBottom: '6px' }}>
-        LLM Model
+        {mode === 'image' ? 'Image Generation Model' : 'LLM Model'}
       </label>
       <select
         id={`agent-model-${agentKey}`}
@@ -36,15 +44,15 @@ export default function AgentModelControl({ agentKey, model, saving, onSave }: A
         }}
         style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', background: 'var(--bg-main)', border: '1px solid var(--border-subtle)', color: '#fff', outline: 'none' }}
       >
-        {!MODEL_OPTIONS.includes(model) && <option value={model}>{model} (custom)</option>}
-        {MODEL_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
+        {!options.includes(model) && <option value={model}>{model} (custom)</option>}
+        {options.map((option) => <option key={option} value={option}>{option}</option>)}
       </select>
       <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
         <input
           aria-label={`Model ID tùy chỉnh cho ${agentKey}`}
           value={inputValue}
           onChange={(event) => setCustomModel(event.target.value)}
-          placeholder="Nhập model ID, ví dụ: provider/model-name"
+          placeholder={mode === 'image' ? 'Image model ID, ví dụ: provider/model-name' : 'LLM model ID, ví dụ: provider/model-name'}
           disabled={saving}
           style={{ flex: 1, minWidth: 0, padding: '10px 12px', borderRadius: '8px', background: 'var(--bg-main)', border: '1px solid var(--border-subtle)', color: '#fff', outline: 'none' }}
         />
