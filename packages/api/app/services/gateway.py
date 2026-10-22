@@ -1,13 +1,17 @@
 """Message Gateway normalizing incoming messages from Web and Telegram."""
 
+import mimetypes
+import os
 import re
 from typing import Any, Dict, List, Optional, Tuple
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import Agent, LibraryItem, Message, ProjectNote, Run, Thread
 from app.services.router_agent import router_agent
+from app.services.workspace import workspace_service
+from app.tools.file_tools import safe_resolve_path
 
 
 class IncomingMessagePayload(BaseModel):
@@ -17,7 +21,7 @@ class IncomingMessagePayload(BaseModel):
     thread_id: Optional[str] = None
     channel: str = "web"  # web or telegram
     content: str
-    attachments: List[Dict[str, Any]] = []
+    attachments: List[Dict[str, Any]] = Field(default_factory=list)
     agent_override: Optional[str] = None
     run_synchronously: bool = False
 
@@ -33,6 +37,31 @@ class MessageGateway:
             clean_content = re.sub(r"\s+", " ", content.replace(match.group(0), "")).strip()
             return agent_key, clean_content
         return None, content.strip()
+
+    async def validate_attachments(
+        self, project_id: str, attachments: List[Dict[str, Any]], db: AsyncSession
+    ) -> List[Dict[str, Any]]:
+        """Accept only files uploaded into this project's chat attachment folder."""
+        if len(attachments) > 5:
+            raise ValueError("Mỗi tin nhắn chỉ được đính kèm tối đa 5 file.")
+        workspace = workspace_service.get_project_path(project_id)
+        normalized = []
+        for attachment in attachments:
+            path = str(attachment.get("path") or "")
+            if not path.startswith("uploads/chat/"):
+                raise ValueError("Attachment không thuộc thư mục chat của project.")
+            item = (await db.execute(select(LibraryItem).where(
+                LibraryItem.project_id == project_id, LibraryItem.path == path,
+                LibraryItem.tag == "chat_attachment",
+            ))).scalars().first()
+            if not item or not os.path.isfile(safe_resolve_path(workspace, path)):
+                raise ValueError("Attachment không tồn tại hoặc không thuộc project hiện tại.")
+            normalized.append({
+                "id": item.id, "filename": item.description or "attachment",
+                "content_type": mimetypes.guess_type(path)[0] or "application/octet-stream",
+                "size": os.path.getsize(safe_resolve_path(workspace, path)), "path": path,
+            })
+        return normalized
 
     async def process_incoming_message(
         self, payload: IncomingMessagePayload, db: AsyncSession
@@ -108,8 +137,11 @@ class MessageGateway:
             db.add(thread)
             await db.flush()
 
-        # 3. Save attachments to library
-        for att in payload.attachments:
+        # 3. Validate attachment ownership and avoid duplicate library records.
+        attachments = await self.validate_attachments(payload.project_id, payload.attachments, db)
+        for att in attachments:
+            if att.get("id"):
+                continue
             lib_item = LibraryItem(
                 project_id=payload.project_id,
                 type="upload",
@@ -124,7 +156,7 @@ class MessageGateway:
             thread_id=thread.id,
             role="user",
             content=payload.content,
-            attachments=payload.attachments,
+            attachments=attachments,
         )
         db.add(msg)
 

@@ -17,6 +17,7 @@ tools:
   - run_checks
   - compare_screenshots
   - inspect_screenshots
+  - analyze_chat_attachments
   - fetch_url
   - check_sitemap
   - open_gate

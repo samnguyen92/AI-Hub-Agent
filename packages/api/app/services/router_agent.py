@@ -81,11 +81,20 @@ class RouterAgent:
         """Route follow-ups using the latest visible conversation context."""
         history_text = " ".join(message.get("content", "") for message in (recent_history or [])).lower()
         has_image = any(token in history_text for token in ["![", "images/", ".png", ".jpg", ".webp"])
+        has_html = any(term in history_text for term in ["index.html", ".html", "website", "homepage"])
+        website_feedback = any(term in prompt for term in [
+            "screenshot", "ảnh chụp", "ảnh này", "sửa giao diện", "sửa trang", "chỉnh trang",
+            "fix layout", "fix design", "lỗi thiết kế", "vấn đề về design", "theo ảnh",
+        ])
+        if has_image and has_html and website_feedback:
+            return RouterDecision(
+                agent="code-builder", skill_hint="responsive-checks", confidence=0.98,
+                reason="Sửa website hiện tại theo screenshot được đính kèm",
+            )
         image_edit = any(term in prompt for term in ["đổi màu", "chỉnh màu", "màu này", "chữ nhỏ", "chữ to", "chữ hơi", "giảm cỡ chữ", "giữ logo", "sửa logo", "chỉnh logo"])
-        if has_image and image_edit:
+        if has_image and image_edit and not has_html:
             return RouterDecision(agent="image-generator", confidence=0.97, reason="Chỉnh sửa ảnh đã có trong cuộc trò chuyện")
 
-        has_html = any(term in history_text for term in ["index.html", ".html", "website"])
         continue_terms = ["tiếp tục", "chỉnh tiếp", "sửa trang", "hoàn thiện", "gửi file", "đổi màu"]
         if has_html and any(term in prompt for term in continue_terms):
             return RouterDecision(agent="code-builder", skill_hint="align-style", confidence=0.94, reason="Tiếp tục chỉnh sửa website trong ngữ cảnh cuộc trò chuyện")

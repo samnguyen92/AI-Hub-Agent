@@ -1,6 +1,5 @@
 """Application configuration loaded from environment variables."""
 
-import secrets
 from typing import List, Optional
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -29,7 +28,7 @@ class Settings(BaseSettings):
         default="openai/gpt-6-luna", description="Default model name"
     )
     openrouter_vision_model: str = Field(
-        default="", description="Optional OpenRouter model ID with image input support"
+        default="openai/gpt-6-luna", description="OpenRouter model ID used to inspect chat images and screenshots"
     )
 
     # CORS
@@ -48,7 +47,7 @@ class Settings(BaseSettings):
         default="dev", description="Authentication mode: dev, token, strict, or google"
     )
     auth_secret_key: str = Field(
-        default_factory=lambda: secrets.token_urlsafe(48),
+        default="",
         description="HMAC secret key for signing cookies and URLs",
     )
     admin_api_token: str = Field(

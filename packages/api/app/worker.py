@@ -62,7 +62,7 @@ async def pick_and_execute_job(db: AsyncSession) -> bool:
         if fresh_run and fresh_run.status not in [
             "completed", "waiting_approval", "waiting_gate_intake",
             "waiting_gate_plan", "waiting_gate_result", "waiting_gate_design",
-            "waiting_gate_code", "waiting_gate_launch", "waiting_input",
+            "waiting_gate_reference", "waiting_gate_code", "waiting_gate_launch", "waiting_input",
         ]:
             fresh_run.status = "failed"
             fresh_run.error_detail = str(exc)

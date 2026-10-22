@@ -22,6 +22,7 @@ tools:
   - run_checks
   - compare_screenshots
   - inspect_screenshots
+  - analyze_chat_attachments
   - audit_web_design
   - load_skill
   - request_input

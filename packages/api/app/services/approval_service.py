@@ -70,6 +70,8 @@ class ApprovalService:
 
         # Execute decision logic
         if approval.action_type.startswith("gate_"):
+            if approval.action_type == "gate_reference" and action_clean == "approve":
+                self._validate_reference_selection(approval.payload, comment)
             approval = await gate_service.answer_gate(
                 db=db,
                 approval_id=approval_id,
@@ -82,7 +84,7 @@ class ApprovalService:
                     db.add(Message(
                         thread_id=run.thread_id,
                         role="user",
-                        content=f"[CỔNG ĐÃ DUYỆT]: Phê duyệt cổng '{approval.payload.get('title', '')}'. Tiếp tục thực hiện.",
+                        content=self._approval_continuation(approval, comment),
                     ))
                     run.status = "queued"
                 else:
@@ -112,6 +114,26 @@ class ApprovalService:
 
         await db.commit()
         return approval
+
+    @staticmethod
+    def _validate_reference_selection(payload: dict, comment: Optional[str]) -> None:
+        """Require selected candidate IDs to belong to this reference proposal."""
+        prefix = "reference:"
+        if not comment or not comment.startswith(prefix):
+            raise ValueError("Hãy chọn ít nhất một reference trước khi duyệt.")
+        selected = {value.strip() for value in comment[len(prefix):].split(",") if value.strip()}
+        candidates = payload.get("example", {}).get("reference_candidates", [])
+        available = {str(candidate.get("id")) for candidate in candidates}
+        if not selected or not selected.issubset(available):
+            raise ValueError("Reference đã chọn không nằm trong danh sách đề xuất.")
+
+    @staticmethod
+    def _approval_continuation(approval: Approval, comment: Optional[str]) -> str:
+        """Pass the user's selected reference IDs into the resumed agent context."""
+        message = f"[CỔNG ĐÃ DUYỆT]: Phê duyệt cổng '{approval.payload.get('title', '')}'."
+        if approval.action_type == "gate_reference":
+            return f"{message} Người dùng đã chọn {comment}. Hãy capture các reference được chọn và tiếp tục."
+        return f"{message} Tiếp tục thực hiện."
 
 
 approval_service = ApprovalService()

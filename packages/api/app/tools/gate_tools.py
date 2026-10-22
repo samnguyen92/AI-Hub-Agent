@@ -119,8 +119,22 @@ class OpenGateTool(BaseTool):
         report = _parse_review_report(str(step.result.get("report") or ""))
         if report.get("verdict") != "pass":
             return None
+        child_run_id = step.result.get("run_id")
+        if not child_run_id or not await _has_visual_evidence(context, str(child_run_id)):
+            return None
         summary = str(report.get("summary") or "Quality Auditor passed the final design review.")[:500]
         return {"reviewer_seat": "quality-auditor", "status": "passed", "summary": summary}
+
+
+async def _has_visual_evidence(context: ToolContext, child_run_id: str) -> bool:
+    """Verify the auditor actually inspected screenshots rather than only claiming it."""
+    result = await context.db.execute(
+        select(Step).where(
+            Step.run_id == child_run_id, Step.tool == "inspect_screenshots"
+        ).order_by(Step.created_at.desc()).limit(1)
+    )
+    visual_step = result.scalars().first()
+    return bool(visual_step and visual_step.result.get("status") == "analyzed")
 
 
 def _parse_review_report(report: str) -> Dict[str, Any]:

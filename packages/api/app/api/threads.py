@@ -2,9 +2,9 @@ import asyncio
 import json
 from typing import Any, AsyncGenerator, Dict, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,6 +12,8 @@ from app.api.auth import get_current_user, verify_project_ownership
 from app.db.models import Message, Run, Thread, User
 from app.db.session import get_db
 from app.services.agent_runner import agent_runner
+from app.services.auth_service import auth_service
+from app.services.chat_attachments import chat_attachment_service
 from app.services.gateway import IncomingMessagePayload, message_gateway
 
 router = APIRouter(tags=["threads"])
@@ -22,6 +24,7 @@ class SendMessageRequest(BaseModel):
     thread_id: Optional[str] = None
     agent_override: Optional[str] = None
     run_synchronously: bool = False
+    attachments: List[Dict[str, Any]] = Field(default_factory=list)
 
 
 class ThreadResponse(BaseModel):
@@ -62,7 +65,7 @@ async def list_threads(project_id: str, user: User = Depends(get_current_user), 
 @router.get("/threads/{thread_id}/messages", response_model=List[MessageResponse])
 async def get_thread_messages(thread_id: str, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)) -> List[MessageResponse]:
     """Get all messages within a specific thread."""
-    await _authorize_thread(thread_id, user, db)
+    thread = await _authorize_thread(thread_id, user, db)
     res = await db.execute(
         select(Message).where(Message.thread_id == thread_id).order_by(Message.created_at.asc())
     )
@@ -72,10 +75,33 @@ async def get_thread_messages(thread_id: str, user: User = Depends(get_current_u
             id=m.id,
             role=m.role,
             content=m.content,
-            attachments=m.attachments or [],
+            attachments=_with_attachment_urls(m.attachments or [], thread.project_id),
         )
         for m in msgs
     ]
+
+
+def _with_attachment_urls(attachments: List[Dict[str, Any]], project_id: str) -> List[Dict[str, Any]]:
+    """Add short-lived links so authenticated chat history can preview stored files."""
+    return [
+        {**attachment, "url": auth_service.create_signed_file_url(project_id, str(attachment["path"]))}
+        for attachment in attachments if attachment.get("path")
+    ]
+
+
+@router.post("/projects/{project_id}/attachments")
+async def upload_chat_attachment(
+    project_id: str,
+    file: UploadFile = File(...),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> Dict[str, Any]:
+    """Upload one safe project-scoped file for use in a chat message."""
+    await verify_project_ownership(project_id, user, db)
+    try:
+        return await chat_attachment_service.upload(project_id, file, db)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @router.post("/projects/{project_id}/messages")
@@ -91,6 +117,7 @@ async def send_message(
         project_id=project_id,
         thread_id=req.thread_id,
         content=req.content,
+        attachments=req.attachments,
         agent_override=req.agent_override,
         run_synchronously=req.run_synchronously,
     )

@@ -8,13 +8,13 @@ import {
   RotateCcw,
   ExternalLink,
   Globe,
-  HelpCircle,
-  Layers,
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
 import { ApprovalItem } from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
+import ReferenceChoices from '@/components/ReferenceChoices';
+import GateActions from '@/components/GateActions';
 
 interface GateCardProps {
   gate: ApprovalItem;
@@ -24,14 +24,14 @@ interface GateCardProps {
 
 export default function GateCard({ gate, onRespond, isCompact = false }: GateCardProps) {
   const { t } = useLanguage();
-  const [showReworkInput, setShowReworkInput] = useState(false);
-  const [reworkComment, setReworkComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [showDetails, setShowDetails] = useState(!isCompact);
+  const [selectedReferences, setSelectedReferences] = useState<string[]>([]);
 
   const payload = gate.payload || {};
   const gateType = (payload.gate_type || gate.action_type.replace('gate_', '')).toLowerCase();
   const isPending = gate.status === 'pending';
+  const isReferenceGate = gateType === 'reference';
   const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
   const getGateBadge = () => {
@@ -49,11 +49,12 @@ export default function GateCard({ gate, onRespond, isCompact = false }: GateCar
 
   const badge = getGateBadge();
 
-  const handleAction = async (action: 'approve' | 'rework' | 'reject') => {
+  const handleAction = async (action: 'approve' | 'rework' | 'reject', comment?: string) => {
     setSubmitting(true);
     try {
-      await onRespond(gate.id, action, action === 'rework' ? reworkComment : undefined);
-      setShowReworkInput(false);
+      const decisionComment = action === 'approve' && isReferenceGate
+        ? `reference:${selectedReferences.join(',')}` : comment;
+      await onRespond(gate.id, action, decisionComment);
     } finally {
       setSubmitting(false);
     }
@@ -148,6 +149,9 @@ export default function GateCard({ gate, onRespond, isCompact = false }: GateCar
           <strong style={{ color: '#F1F5F9' }}>Đề xuất của Agent:</strong> {payload.recommendation}
         </div>
       )}
+      {isReferenceGate && payload.example?.reference_candidates && (
+        <ReferenceChoices candidates={payload.example.reference_candidates} selected={selectedReferences} onChange={setSelectedReferences} />
+      )}
 
       {/* Try It Section for Result Gates */}
       {payload.try_it && payload.try_it.url && (
@@ -232,127 +236,11 @@ export default function GateCard({ gate, onRespond, isCompact = false }: GateCar
         </div>
       )}
 
-      {/* Action Buttons for Pending Gates */}
-      {isPending && (
-        <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px solid var(--border-subtle)' }}>
-          {!showReworkInput ? (
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              <button
-                type="button"
-                disabled={submitting}
-                onClick={() => handleAction('approve')}
-                className="btn-primary"
-                style={{
-                  background: '#10B981',
-                  color: '#FFFFFF',
-                  padding: '6px 14px',
-                  fontSize: '12px',
-                  fontWeight: 700,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                }}
-              >
-                <CheckCircle2 size={14} /> Duyệt (Approve)
-              </button>
-
-              <button
-                type="button"
-                disabled={submitting}
-                onClick={() => setShowReworkInput(true)}
-                style={{
-                  background: 'rgba(245, 158, 11, 0.15)',
-                  border: '1px solid rgba(245, 158, 11, 0.4)',
-                  color: '#F59E0B',
-                  borderRadius: '6px',
-                  padding: '6px 14px',
-                  fontSize: '12px',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                }}
-              >
-                <RotateCcw size={14} /> Yêu cầu sửa (Rework)
-              </button>
-
-              <button
-                type="button"
-                disabled={submitting}
-                onClick={() => handleAction('reject')}
-                style={{
-                  background: 'rgba(239, 68, 68, 0.15)',
-                  border: '1px solid rgba(239, 68, 68, 0.4)',
-                  color: '#EF4444',
-                  borderRadius: '6px',
-                  padding: '6px 14px',
-                  fontSize: '12px',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                }}
-              >
-                <XCircle size={14} /> Từ chối (Reject)
-              </button>
-            </div>
-          ) : (
-            <div style={{ marginTop: '8px' }}>
-              <textarea
-                value={reworkComment}
-                onChange={(e) => setReworkComment(e.target.value)}
-                placeholder="Nhập yêu cầu chỉnh sửa cụ thể để Agent tiếp thu và khắc phục..."
-                rows={2}
-                style={{
-                  width: '100%',
-                  padding: '8px 12px',
-                  borderRadius: '8px',
-                  background: 'rgba(0, 0, 0, 0.3)',
-                  border: '1px solid rgba(245, 158, 11, 0.4)',
-                  color: '#FFFFFF',
-                  fontSize: '13px',
-                  resize: 'none',
-                  marginBottom: '8px',
-                }}
-              />
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button
-                  type="button"
-                  disabled={submitting || !reworkComment.trim()}
-                  onClick={() => handleAction('rework')}
-                  className="btn-primary"
-                  style={{
-                    background: '#F59E0B',
-                    color: '#000000',
-                    fontWeight: 700,
-                    padding: '6px 14px',
-                    fontSize: '12px',
-                  }}
-                >
-                  Gửi yêu cầu sửa
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowReworkInput(false)}
-                  style={{
-                    background: 'transparent',
-                    border: '1px solid var(--border-subtle)',
-                    color: 'var(--text-muted)',
-                    borderRadius: '6px',
-                    padding: '6px 12px',
-                    fontSize: '12px',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Hủy
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+      {isPending && <GateActions
+        busy={submitting}
+        approveDisabled={isReferenceGate && selectedReferences.length === 0}
+        onAction={handleAction}
+      />}
 
       {/* Comment note if already decided */}
       {gate.comment && (

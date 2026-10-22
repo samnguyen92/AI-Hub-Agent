@@ -31,7 +31,7 @@ class QualityReviewTool(BaseTool):
         """Create an internal child run and return its independent audit report."""
         html_path = str(kwargs.get("html_path", ""))
         screenshots = kwargs.get("screenshot_paths", [])
-        if not html_path or not isinstance(screenshots, list):
+        if not html_path or not isinstance(screenshots, list) or not 1 <= len(screenshots) <= 2:
             return {"error": "Cần truyền html_path và screenshot_paths hợp lệ."}
         prompt = self._review_prompt(html_path, screenshots)
         messages = [
@@ -78,8 +78,9 @@ class QualityReviewTool(BaseTool):
         """Set an evidence-only review contract for the child quality agent."""
         return (
             "Perform an independent, read-only quality review. Do not modify files and do not open a gate. "
-            f"Inspect `{html_path}`. Call run_checks and audit_web_design; inspect these screenshots with "
-            f"inspect_screenshots when vision is configured: {screenshots}. "
+            f"Inspect `{html_path}`. Call run_checks and audit_web_design, then call inspect_screenshots "
+            f"on the supplied screenshot paths: {screenshots}. If visual inspection cannot run, "
+            "report visual_review as unavailable and verdict rework; do not infer the pixels from HTML. "
             "Return concise JSON with verdict ('pass' or 'rework'), findings (severity, evidence, fix), "
             "automated checks, and visual_review status. Mark rework for broken assets/links, major layout "
             "or responsive defects, accessibility failures, or unverified required checks."

@@ -26,9 +26,11 @@ tools:
   - take_screenshot
   - capture_reference
   - inspect_screenshots
+  - analyze_chat_attachments
   - package_design
   - fetch_url
   - audit_web_design
+  - propose_references
   - run_quality_review
   - load_skill
   - request_input

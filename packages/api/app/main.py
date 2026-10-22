@@ -33,15 +33,19 @@ import app.tools.gate_tools  # noqa: F401 - register gate tools
 import app.tools.report_tools  # noqa: F401 - register report tools
 import app.tools.memory_tools  # noqa: F401 - register memory tools
 import app.tools.reference_tools  # noqa: F401 - register design reference tool
+import app.tools.reference_proposal_tools  # noqa: F401 - register reference selection tool
 import app.tools.design_package_tools  # noqa: F401 - register design packaging tool
 import app.tools.vision_tools  # noqa: F401 - register optional screenshot vision tool
 import app.tools.quality_review_tools  # noqa: F401 - register quality delegation tool
+import app.tools.chat_attachment_tools  # noqa: F401 - register chat attachment analysis tool
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan manager initializing db schema on startup."""
     from app.services.agent_loader import agent_loader
+    if len(settings.auth_secret_key) < 32 or settings.auth_secret_key.startswith("replace"):
+        raise RuntimeError("AUTH_SECRET_KEY must be configured with at least 32 characters.")
     agent_loader.validate_agents()
 
     if settings.environment.lower() in ("development", "dev", "test"):

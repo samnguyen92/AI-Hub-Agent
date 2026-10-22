@@ -2,19 +2,21 @@
 
 import React, { Suspense, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Send, HelpCircle, Sparkles, Loader2 } from 'lucide-react';
+import { Sparkles, Loader2 } from 'lucide-react';
 import {
   fetchProjects,
   fetchThreads,
   fetchMessages,
   sendMessage,
   classifyPrompt,
+  uploadChatAttachment,
   Project,
   Thread,
   Message,
 } from '@/lib/api';
 import ChatSidebar from '@/components/chat/ChatSidebar';
 import ChatMessageItem from '@/components/chat/ChatMessageItem';
+import ChatComposer from '@/components/chat/ChatComposer';
 import { useLanguage } from '@/context/LanguageContext';
 
 function ChatInner() {
@@ -24,9 +26,7 @@ function ChatInner() {
   const [threads, setThreads] = useState<Thread[]>([]);
   const [activeThreadId, setActiveThreadId] = useState<string>('');
   const [messages, setMessages] = useState<Message[]>([]);
-  const [inputContent, setInputContent] = useState('');
   const [sending, setSending] = useState(false);
-  const [routerHint, setRouterHint] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -65,41 +65,28 @@ function ChatInner() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSend = async (overrideAgent?: string) => {
-    if (!inputContent.trim() || sending || !selectedProjectId) return;
-    const currentInput = inputContent;
-    setInputContent('');
+  const handleSend = async (content: string, files: File[]): Promise<boolean> => {
+    if (sending || !selectedProjectId) return false;
+    const currentInput = content.trim() || 'Please analyze the attached files and help me with them.';
     setSending(true);
-
-    // Optimistically add user message
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: 'opt-' + Date.now(),
-        role: 'user',
-        content: currentInput,
-      },
-    ]);
-
     try {
-      let resolvedAgent = overrideAgent;
-      if (!resolvedAgent) {
-        try {
-          const recentHistory = messages.slice(-10).map(({ role, content }) => ({ role, content }));
-          const decision = await classifyPrompt(currentInput, recentHistory);
-          resolvedAgent = decision.agent;
-        } catch {
-          resolvedAgent = 'assistant';
-        }
-      }
-
-      setRouterHint(null);
+      const attachments = await Promise.all(files.map((file) => uploadChatAttachment(selectedProjectId, file)));
+      const recentHistory = messages.slice(-10).map((message) => ({
+        role: message.role,
+        content: `${message.content} ${message.attachments?.map((attachment) => attachment.path).join(' ') || ''}`,
+      }));
+      const attachmentHint = attachments.map((attachment) => `${attachment.filename} ${attachment.path}`).join(' ');
+      const decision = await classifyPrompt(currentInput, [
+        ...recentHistory,
+        ...(attachments.length ? [{ role: 'user', content: `Uploaded chat attachments: ${attachmentHint}` }] : []),
+      ]);
       const res = await sendMessage({
         projectId: selectedProjectId,
         content: currentInput,
         threadId: activeThreadId || undefined,
-        agentOverride: resolvedAgent,
+        agentOverride: decision.agent,
         runSynchronously: true,
+        attachments,
       });
 
       if (res.thread_id) {
@@ -110,16 +97,19 @@ function ChatInner() {
         const updatedMsgs = await fetchMessages(res.thread_id);
         setMessages(updatedMsgs);
       }
-    } catch (err: any) {
-      console.error('Failed to send message:', err);
+      return true;
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to communicate with agent. Please try again.';
+      console.error('Failed to send message:', error);
       setMessages((prev) => [
         ...prev,
         {
           id: 'error-' + Date.now(),
           role: 'assistant',
-          content: `⚠️ Error: ${err.message || 'Failed to communicate with agent. Please try again.'}`,
+          content: `⚠️ Error: ${message}`,
         },
       ]);
+      return false;
     } finally {
       setSending(false);
     }
@@ -133,7 +123,7 @@ function ChatInner() {
     { tag: '@code-builder', color: '#10B981', desc: t('badge.code_builder') },
     { tag: '@site-analyzer', color: '#3B82F6', desc: t('badge.site_analyzer') },
     { tag: '@seo-auditor', color: '#F59E0B', desc: t('badge.seo_auditor') },
-    { tag: '@quality-auditor', color: '#A78BFA', desc: 'Quality audit' },
+    { tag: '@quality-auditor', color: '#A78BFA' },
   ];
 
   return (
@@ -190,69 +180,7 @@ function ChatInner() {
           <div ref={messagesEndRef} />
         </div>
 
-        <div style={{ padding: '16px 24px 24px', borderTop: '1px solid var(--border-subtle)', background: 'var(--bg-secondary)' }}>
-          <div style={{ display: 'flex', gap: '8px', marginBottom: '10px', alignItems: 'center' }}>
-            <span style={{ fontSize: '11px', color: 'var(--text-dim)', fontWeight: 600 }}>{t('chat.quick_select')}</span>
-            {agentBadges.map((badge) => (
-              <button
-                key={badge.tag}
-                type="button"
-                onClick={() => setInputContent((prev) => `${badge.tag} ${prev}`.trim())}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  padding: '4px 8px',
-                  borderRadius: '6px',
-                  fontSize: '11px',
-                  fontWeight: 600,
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid var(--border-subtle)',
-                  color: badge.color,
-                  cursor: 'pointer',
-                }}
-              >
-                {badge.tag}
-              </button>
-            ))}
-          </div>
-
-          <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-end' }}>
-            <textarea
-              id="input-chat-message"
-              rows={2}
-              value={inputContent}
-              onChange={(e) => setInputContent(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSend();
-                }
-              }}
-              placeholder={t('chat.placeholder')}
-              style={{
-                flex: 1,
-                padding: '12px 14px',
-                borderRadius: '8px',
-                background: 'var(--bg-card)',
-                color: '#ffffff',
-                border: '1px solid var(--border-subtle)',
-                fontSize: '14px',
-                resize: 'none',
-              }}
-            />
-            <button
-              id="btn-send-message"
-              onClick={() => handleSend()}
-              disabled={sending || !inputContent.trim()}
-              className="btn-primary"
-              style={{ height: '48px', padding: '0 20px', opacity: sending || !inputContent.trim() ? 0.5 : 1 }}
-            >
-              <Send size={16} />
-              {sending ? '...' : t('chat.send')}
-            </button>
-          </div>
-        </div>
+        <ChatComposer busy={sending} enabled={Boolean(selectedProjectId)} agents={agentBadges} onSend={handleSend} />
       </div>
     </div>
   );

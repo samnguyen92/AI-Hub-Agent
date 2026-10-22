@@ -19,6 +19,8 @@ from app.services.google_oauth import build_google_authorization_url, fetch_goog
 router = APIRouter(prefix="/auth", tags=["auth"])
 logger = logging.getLogger(__name__)
 OAUTH_STATE_COOKIE = "google_oauth_state"
+DEV_SESSION_TTL_SECONDS = 30 * 24 * 60 * 60
+DEFAULT_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60
 
 
 class LoginRequest(BaseModel):
@@ -128,7 +130,8 @@ async def login(
     if is_local_password_login:
         user.role = role
         await db.commit()
-    token = auth_service.create_session_token(user.id, role=user.role)
+    session_ttl = DEV_SESSION_TTL_SECONDS if settings.auth_mode == "dev" else DEFAULT_SESSION_TTL_SECONDS
+    token = auth_service.create_session_token(user.id, role=user.role, expires_in=session_ttl)
 
     response.set_cookie(
         key="session_token",
@@ -136,7 +139,7 @@ async def login(
         httponly=True,
         secure=settings.environment.lower() not in ("development", "dev", "test"),
         samesite="lax",
-        max_age=86400 * 7,
+        max_age=session_ttl,
     )
     return UserResponse(id=user.id, username=user.github_login, role=user.role, token=token)
 

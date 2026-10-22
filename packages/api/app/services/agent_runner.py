@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import Agent, Message, ProjectNote, Run, Step, Thread
 from app.services.openrouter import openrouter_client
+from app.services.message_context import format_message_content
 from app.services.workspace import workspace_service
 from app.standards.writing import get_writing_system_prompt
 from app.tools.base import ToolContext, tool_registry
@@ -110,7 +111,10 @@ class AgentRunner:
             }]
             msg_q = select(Message).where(Message.thread_id == thread.id).order_by(Message.created_at.asc())
             for msg in (await db.execute(msg_q)).scalars().all():
-                messages.append({"role": msg.role, "content": msg.content})
+                messages.append({
+                    "role": msg.role,
+                    "content": format_message_content(msg.content, msg.attachments or []),
+                })
 
         return (thread, workspace_path, target_model, image_model, max_steps, max_cost_usd, max_minutes, tools, messages, start_step, total_cost)
 
@@ -265,11 +269,10 @@ class AgentRunner:
             run.checkpoint_state = {"messages": messages, "step_idx": current_step, "total_cost": total_cost}
             run.status = paused_status if paused_status.startswith("waiting_") else run.status
             run.cost_usd = total_cost
-            latest_step = await db.execute(
-                select(Step).where(
-                    Step.run_id == run.id, Step.tool == "open_gate"
-                ).order_by(Step.created_at.desc()).limit(1)
-            )
+            latest_step = await db.execute(select(Step).where(
+                Step.run_id == run.id,
+                Step.tool.in_(["open_gate", "propose_references"]),
+            ).order_by(Step.created_at.desc()).limit(1))
             step = latest_step.scalars().first()
             payload = step.result if step and isinstance(step.result, dict) else {}
             final_content = payload.get("presentation_markdown")
@@ -294,5 +297,4 @@ class AgentRunner:
         if event_callback:
             await event_callback({"type": "done", "content": final_content, "cost": total_cost})
         return {"run_id": run.id, "status": run.status, "cost_usd": total_cost, "output": final_content}
-
 agent_runner = AgentRunner()

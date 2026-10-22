@@ -1,84 +1,14 @@
 /**
  * API client helper communicating with the FastAPI backend.
  */
-
-export interface HealthResponse {
-  status: string;
-  service?: string;
-  database?: string;
-}
-
-export interface Project {
-  id: string;
-  name: string;
-  source_url?: string | null;
-  workspace_path: string;
-}
-
-export interface Thread {
-  id: string;
-  project_id: string;
-  agent_key: string;
-  channel: string;
-  title: string;
-}
-
-export interface Message {
-  id: string;
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-  attachments?: Array<Record<string, unknown>>;
-}
-
-export interface RouterDecision {
-  agent: string;
-  skill_hint?: string | null;
-  confidence: number;
-  missing_info: string[];
-  reason: string;
-}
-
-export interface LibraryItem {
-  id: string;
-  type: string;
-  tag?: string | null;
-  description?: string | null;
-  path: string;
-}
-
-export interface Artifact {
-  id: string;
-  artifact_id: string;
-  version: number;
-  parent_version?: number | null;
-  path: string;
-  git_commit?: string | null;
-}
-
-export interface LibrarySummary {
-  items: LibraryItem[];
-  artifacts: Artifact[];
-  references: DesignReference[];
-}
-
-export interface DesignReference {
-  id: string;
-  source_url: string;
-  title: string;
-  notes?: string | null;
-  tags: string[];
-  desktop_path: string;
-  mobile_path: string;
-  snapshot_path: string;
-  page_summary?: string | null;
-  captured_at: string;
-}
-
-export interface DesignReferenceUpdate {
-  title?: string;
-  notes?: string | null;
-  tags?: string[];
-}
+import type {
+  ApprovalItem, ChatAttachment, DesignReference, DesignReferenceUpdate, HealthResponse,
+  LibrarySummary, Message, Project, ProjectNoteItem, RouterDecision, Thread,
+} from './types';
+export type {
+  ApprovalItem, Artifact, ChatAttachment, DesignReference, DesignReferenceUpdate, HealthResponse,
+  LibraryItem, LibrarySummary, Message, Project, ProjectNoteItem, RouterDecision, Thread,
+} from './types';
 
 const API_BASE =
   typeof window !== 'undefined'
@@ -103,9 +33,21 @@ async function createDevSession(): Promise<string> {
 
 async function getDevSessionToken(): Promise<string> {
   const savedToken = window.localStorage.getItem(DEV_SESSION_KEY);
-  if (savedToken) return savedToken;
+  if (savedToken && sessionExpiresAt(savedToken) > Date.now() / 1000 + 3 * 24 * 60 * 60) {
+    return savedToken;
+  }
   sessionRequest ??= createDevSession().finally(() => { sessionRequest = null; });
   return sessionRequest;
+}
+
+function sessionExpiresAt(token: string): number {
+  try {
+    const encoded = token.split('.')[0].replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(window.atob(encoded.padEnd(Math.ceil(encoded.length / 4) * 4, '='))) as { exp?: number };
+    return typeof payload.exp === 'number' ? payload.exp : 0;
+  } catch {
+    return 0;
+  }
 }
 
 export async function fetchWithAuth(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
@@ -191,12 +133,22 @@ export async function fetchMessages(threadId: string): Promise<Message[]> {
   return handleResponse<Message[]>(res);
 }
 
+export async function uploadChatAttachment(projectId: string, file: File): Promise<ChatAttachment> {
+  const form = new FormData();
+  form.append('file', file);
+  const res = await fetchWithAuth(`${API_BASE}/projects/${projectId}/attachments`, {
+    method: 'POST', body: form,
+  });
+  return handleResponse<ChatAttachment>(res);
+}
+
 export async function sendMessage(params: {
   projectId: string;
   content: string;
   threadId?: string;
   agentOverride?: string;
   runSynchronously?: boolean;
+  attachments?: ChatAttachment[];
 }): Promise<{ thread_id: string; run_id: string; agent_key: string }> {
   const res = await fetchWithAuth(`${API_BASE}/projects/${params.projectId}/messages`, {
     method: 'POST',
@@ -206,6 +158,7 @@ export async function sendMessage(params: {
       thread_id: params.threadId,
       agent_override: params.agentOverride,
       run_synchronously: params.runSynchronously ?? true,
+      attachments: params.attachments ?? [],
     }),
   });
   return handleResponse(res);
@@ -251,25 +204,6 @@ export async function deleteDesignReference(
   return handleResponse<{ id: string; status: string }>(res);
 }
 
-export interface ApprovalItem {
-  id: string;
-  run_id: string;
-  action_type: string;
-  status: 'pending' | 'approved' | 'rework' | 'rejected';
-  payload: {
-    archive_name?: string;
-    result?: { download_url?: string };
-    gate_type?: string;
-    title?: string;
-    decision_needed?: string;
-    recommendation?: string;
-    try_it?: { url?: string; instruction?: string; expected_result?: string };
-    how_to_test?: string[];
-  };
-  comment?: string | null;
-  created_at: string;
-}
-
 export async function fetchApprovals(status?: string): Promise<ApprovalItem[]> {
   const query = status && status !== 'all' ? `?status=${status}` : '';
   const res = await fetchWithAuth(`${API_BASE}/approvals${query}`, { cache: 'no-store' });
@@ -291,15 +225,6 @@ export async function generateTelegramLinkCode(): Promise<{ link_code: string; i
     headers: { 'Content-Type': 'application/json' },
   });
   return handleResponse<{ link_code: string; instructions: string }>(res);
-}
-
-export interface ProjectNoteItem {
-  id: string;
-  project_id: string;
-  content: string;
-  status: string;
-  source_run_id?: string | null;
-  created_at: string;
 }
 
 export async function fetchProjectNotes(projectId: string = 'global'): Promise<ProjectNoteItem[]> {

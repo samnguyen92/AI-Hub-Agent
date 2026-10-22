@@ -54,6 +54,7 @@ class OpenRouterClient:
         model: Optional[str] = None,
         tools: Optional[List[Dict[str, Any]]] = None,
         temperature: float = 0.2,
+        plugins: Optional[List[Dict[str, Any]]] = None,
     ) -> LLMResponse:
         """Call OpenRouter chat completion with function calling support."""
         target_model = model or settings.default_model
@@ -70,6 +71,8 @@ class OpenRouterClient:
         if tools:
             kwargs["tools"] = tools
             kwargs["tool_choice"] = "auto"
+        if plugins:
+            kwargs["plugins"] = plugins
 
         response = await self.client.chat.completions.create(**kwargs)
         if not response or not getattr(response, "choices", None) or len(response.choices) == 0:

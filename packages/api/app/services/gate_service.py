@@ -11,7 +11,7 @@ from app.db.models import Approval, ProjectNote, Run, Thread
 class GateService:
     """Manages the lifecycle of quality gates (Intake, Plan, Result)."""
 
-    VALID_GATES = {"intake", "plan", "result", "design", "code", "launch"}
+    VALID_GATES = {"intake", "plan", "reference", "result", "design", "code", "launch"}
     VALID_ACTIONS = {"approve", "rework", "reject"}
 
     def validate_gate_payload(self, gate_type: str, payload: Dict[str, Any]) -> List[str]:
@@ -153,6 +153,15 @@ class GateService:
         ]
         if recommendation:
             lines.append(f"**Đề xuất của Agent:** {recommendation}")
+
+        candidates = payload.get("example", {}).get("reference_candidates", [])
+        if gate_type == "reference" and candidates:
+            lines.append("\n**Website reference đã được kiểm tra:**")
+            for candidate in candidates:
+                lines.append(
+                    f"- **{candidate['id']} — [{candidate['title']}]({candidate['url']})**: "
+                    f"{candidate['rationale']} (Tập trung: {candidate['study_focus']})"
+                )
 
         # Questions
         questions = payload.get("questions", [])

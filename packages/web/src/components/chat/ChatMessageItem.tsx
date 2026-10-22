@@ -5,13 +5,10 @@ import ChatMessageContent from '@/components/chat/ChatMessageContent';
 import ArtifactViewer, { ArtifactData } from '@/components/artifacts/ArtifactViewer';
 import { Eye, Layers, Lightbulb, Check, Sparkles } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
+import type { Message } from '@/lib/api';
 
 interface ChatMessageItemProps {
-  message: {
-    id: string;
-    role: string;
-    content: string;
-  };
+  message: Message;
   projectId: string;
 }
 
@@ -136,6 +133,19 @@ export default function ChatMessageItem({ message, projectId }: ChatMessageItemP
           </button>
         )}
       </div>
+
+      {message.attachments && message.attachments.length > 0 && (
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', margin: '8px 0 12px' }}>
+          {message.attachments.map((attachment) => (
+            <a key={attachment.id || attachment.path} href={attachment.url} target="_blank" rel="noreferrer" title={attachment.filename} style={{ display: 'flex', flexDirection: 'column', gap: 5, maxWidth: 260, padding: 6, borderRadius: 9, border: '1px solid var(--border-subtle)', background: 'var(--bg-secondary)' }}>
+              {attachment.content_type.startsWith('image/') && attachment.url ? (
+                <img src={attachment.url} alt={attachment.filename} style={{ maxWidth: 240, maxHeight: 180, objectFit: 'contain', borderRadius: 5 }} />
+              ) : <span style={{ fontSize: 12, color: 'var(--accent-primary)' }}>📎 {attachment.filename}</span>}
+              <span style={{ maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--text-muted)', fontSize: 11 }}>{attachment.filename}</span>
+            </a>
+          ))}
+        </div>
+      )}
 
       <ChatMessageContent content={message.content} projectId={projectId} />
 
