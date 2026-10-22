@@ -1,0 +1,59 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "web": {
+      "root": "packages/web",
+      "framework": "nextjs",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "api",
+          "format": "url",
+          "env": "INTERNAL_API_URL"
+        }
+      ]
+    },
+    "api": {
+      "root": ".",
+      "runtime": "container",
+      "entrypoint": "Dockerfile.api.vercel",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "sandbox",
+          "format": "url",
+          "env": "SANDBOX_INTERNAL_URL"
+        }
+      ]
+    },
+    "sandbox": {
+      "root": "packages/sandbox",
+      "runtime": "container",
+      "entrypoint": "Dockerfile.vercel"
+    }
+  },
+  "daemons": {
+    "worker": {
+      "root": ".",
+      "entrypoint": "Dockerfile.worker.vercel",
+      "command": ["python", "-m", "app.worker"],
+      "instances": {
+        "sin1": 1
+      }
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/backend/:path*",
+      "destination": { "service": "api" }
+    },
+    {
+      "source": "/internal/sandbox/:path*",
+      "destination": { "service": "sandbox" }
+    },
+    {
+      "source": "/(.*)",
+      "destination": { "service": "web" }
+    }
+  ]
+}

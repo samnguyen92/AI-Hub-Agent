@@ -1,8 +1,17 @@
 """Application configuration loaded from environment variables."""
 
+import os
 from typing import List, Optional
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+def _default_workspaces_root() -> str:
+    """Choose ephemeral local storage on Vercel and the mounted volume in Docker."""
+    hosted_markers = ("VERCEL", "VERCEL_API_PREFIX", "AIHUB_VERCEL_DAEMON")
+    if any(os.getenv(name) for name in hosted_markers):
+        return "/tmp/hub-workspaces"
+    return "/workspaces"
 
 
 class Settings(BaseSettings):
@@ -39,8 +48,16 @@ class Settings(BaseSettings):
 
     # Storage
     workspaces_root: str = Field(
-        default="/workspaces", description="Root folder for project workspaces"
+        default_factory=_default_workspaces_root,
+        description="Scratch folder for project workspaces",
     )
+    supabase_url: str = Field(default="", description="Supabase project URL for durable workspace storage")
+    supabase_service_role_key: str = Field(default="", description="Server-only Supabase Storage credential")
+    supabase_storage_bucket: str = Field(default="hub-workspaces", description="Private workspace archive bucket")
+    workspace_archive_max_bytes: int = Field(default=41943040, description="Maximum compressed workspace archive size")
+    sandbox_url: str = Field(default="http://sandbox:8001", description="Playwright service URL")
+    sandbox_internal_url: str = Field(default="", description="Private Vercel service binding for Playwright")
+    sandbox_shared_secret: str = Field(default="", description="Shared credential for the Playwright service")
 
     # Authentication & Session
     auth_mode: str = Field(

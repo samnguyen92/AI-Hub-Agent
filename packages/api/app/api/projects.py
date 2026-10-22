@@ -48,7 +48,7 @@ async def list_projects(
             id=p.id,
             name=p.name,
             source_url=p.source_url,
-            workspace_path=p.workspace_path,
+            workspace_path=workspace_service.get_project_path(p.id),
         )
         for p in projects
     ]
@@ -78,7 +78,7 @@ async def create_project(
         id=project.id,
         name=project.name,
         source_url=project.source_url,
-        workspace_path=project.workspace_path,
+        workspace_path=workspace_service.get_project_path(project.id),
     )
 
 
@@ -92,7 +92,7 @@ async def get_project(
         id=project.id,
         name=project.name,
         source_url=project.source_url,
-        workspace_path=project.workspace_path,
+        workspace_path=workspace_service.get_project_path(project.id),
     )
 
 
@@ -151,7 +151,9 @@ async def get_project_preview_file(
     if not auth_service.verify_preview_token(project_id, token):
         raise HTTPException(status_code=401, detail="Preview link expired or invalid.")
     project = await _get_preview_project(project_id, db)
-    full_path = _resolve_project_file_path(project.workspace_path, file_path)
+    workspace_path = workspace_service.get_project_path(project.id)
+    workspace_service.init_project_workspace(project.id)
+    full_path = _resolve_project_file_path(workspace_path, file_path)
     return FileResponse(full_path, headers=_preview_headers())
 
 
@@ -194,12 +196,15 @@ async def _serve_project_file(
         project = await verify_project_ownership(project_id, user, db)
 
     try:
-        full_path = _resolve_project_file_path(project.workspace_path, path)
+        workspace_service.init_project_workspace(project.id, refresh=True)
+        workspace_path = workspace_service.get_project_path(project.id)
+        full_path = _resolve_project_file_path(workspace_path, path)
         if full_path.lower().endswith((".html", ".htm")):
             token = auth_service.create_preview_token(project_id)
             safe_path = quote(path.lstrip("/"), safe="/")
+            api_prefix = "/api/backend" if os.getenv("VERCEL_API_PREFIX") else ""
             return RedirectResponse(
-                f"/projects/{project_id}/preview/{token}/{safe_path}", status_code=302
+                f"{api_prefix}/projects/{project_id}/preview/{token}/{safe_path}", status_code=302
             )
         return FileResponse(
             full_path,

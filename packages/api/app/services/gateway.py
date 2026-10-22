@@ -44,7 +44,7 @@ class MessageGateway:
         """Accept only files uploaded into this project's chat attachment folder."""
         if len(attachments) > 5:
             raise ValueError("Mỗi tin nhắn chỉ được đính kèm tối đa 5 file.")
-        workspace = workspace_service.get_project_path(project_id)
+        workspace = workspace_service.init_project_workspace(project_id, refresh=True)
         normalized = []
         for attachment in attachments:
             path = str(attachment.get("path") or "")

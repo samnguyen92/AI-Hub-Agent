@@ -9,6 +9,7 @@ from playwright.async_api import async_playwright
 
 from app.browser_security import guard_browser_request
 from app.path_security import resolve_workspace_path
+from app.workspace_storage import restore_for_path, save_for_path
 
 router = APIRouter()
 
@@ -24,6 +25,7 @@ class WorkspaceRenderRequest(BaseModel):
 @router.post("/render-workspace-html")
 async def render_workspace_html(req: WorkspaceRenderRequest) -> Dict[str, Any]:
     """Render a workspace page as a file URL so relative CSS/JS/images resolve."""
+    restore_for_path(req.html_path)
     html_path = resolve_workspace_path(req.html_path)
     desktop_path = resolve_workspace_path(req.desktop_output_path)
     mobile_path = resolve_workspace_path(req.mobile_output_path)
@@ -36,6 +38,7 @@ async def render_workspace_html(req: WorkspaceRenderRequest) -> Dict[str, Any]:
         await _capture_viewport(browser, html_path, desktop_path, 1440, 900)
         await _capture_viewport(browser, html_path, mobile_path, 390, 844)
         await browser.close()
+    save_for_path(html_path)
     return {"status": "success", "desktop_png": desktop_path, "mobile_png": mobile_path}
 
 

@@ -44,7 +44,7 @@ class ChatAttachmentService:
         if extension not in IMAGE_SIGNATURES and extension != ".pdf":
             self._validate_text(content)
         relative_path = f"uploads/chat/{uuid.uuid4().hex}{extension}"
-        workspace = workspace_service.init_project_workspace(project_id)
+        workspace = workspace_service.init_project_workspace(project_id, refresh=True)
         target = safe_resolve_path(workspace, relative_path)
         os.makedirs(os.path.dirname(target), exist_ok=True)
         with open(target, "wb") as uploaded:

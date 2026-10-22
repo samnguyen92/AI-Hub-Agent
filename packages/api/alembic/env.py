@@ -22,9 +22,12 @@ def get_sync_url() -> str:
     """Retrieve synchronous database URL for migrations using psycopg2 driver."""
     url = settings.database_url
     if "postgresql+asyncpg://" in url:
-        return url.replace("postgresql+asyncpg://", "postgresql+psycopg2://")
+        url = url.replace("postgresql+asyncpg://", "postgresql+psycopg2://", 1)
     elif url.startswith("postgresql://"):
-        return url.replace("postgresql://", "postgresql+psycopg2://", 1)
+        url = url.replace("postgresql://", "postgresql+psycopg2://", 1)
+    # asyncpg uses `ssl`; psycopg2/libpq uses `sslmode` for the same setting.
+    url = url.replace("?ssl=require", "?sslmode=require")
+    url = url.replace("&ssl=require", "&sslmode=require")
     return url
 
 

@@ -15,6 +15,9 @@ engine = create_async_engine(
     echo=settings.environment == "development",
     future=True,
     pool_pre_ping=True,
+    pool_size=1,
+    max_overflow=0,
+    connect_args={"statement_cache_size": 0},
 )
 
 async_session_maker = async_sessionmaker(

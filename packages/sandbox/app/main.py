@@ -2,8 +2,10 @@
 
 import os
 import re
-from typing import Any, Dict, List, Optional
-from fastapi import FastAPI, HTTPException
+import hmac
+from typing import Any, Awaitable, Callable, Dict, List, Optional
+from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from playwright.async_api import async_playwright
 from PIL import Image, ImageChops
@@ -11,10 +13,32 @@ from app.image_routes import router as image_router
 from app.path_security import resolve_workspace_path
 from app.browser_routes import router as browser_router
 from app.browser_security import guard_browser_request, validate_public_url
+from app.workspace_storage import restore_for_path, save_for_path
 
 app = FastAPI(title="Hub AI Sandbox", version="0.1.0")
 app.include_router(image_router)
 app.include_router(browser_router)
+
+
+@app.middleware("http")
+async def protect_vercel_sandbox(
+    request: Request, call_next: Callable[[Request], Awaitable[Response]]
+) -> Response:
+    """Require a private shared secret and normalize the public Vercel route."""
+    prefix = "/internal/sandbox"
+    path = request.scope["path"]
+    hosted = bool(os.getenv("VERCEL") or os.getenv("SANDBOX_SHARED_SECRET"))
+    if hosted:
+        if path == prefix or path.startswith(prefix + "/"):
+            request.scope["path"] = path[len(prefix):] or "/"
+            request.scope["raw_path"] = request.scope["path"].encode("utf-8")
+        configured = os.getenv("SANDBOX_SHARED_SECRET", "")
+        supplied = request.headers.get("x-sandbox-secret", "")
+        if request.scope["path"] != "/health" and (
+            not configured or not hmac.compare_digest(supplied, configured)
+        ):
+            return JSONResponse({"detail": "Unauthorized sandbox request"}, status_code=401)
+    return await call_next(request)
 
 
 async def inspect_rendered_page(page: Any) -> Dict[str, Any]:
@@ -87,6 +111,7 @@ async def health_check() -> Dict[str, str]:
 @app.post("/render-html")
 async def render_html(req: RenderHtmlRequest) -> Dict[str, Any]:
     """Render HTML content to Desktop (1440px) and Mobile (390px) PNG images."""
+    restore_for_path(req.desktop_output_path)
     desktop_path = resolve_workspace_path(req.desktop_output_path)
     mobile_path = resolve_workspace_path(req.mobile_output_path)
     os.makedirs(os.path.dirname(desktop_path), exist_ok=True)
@@ -111,6 +136,7 @@ async def render_html(req: RenderHtmlRequest) -> Dict[str, Any]:
 
         await browser.close()
 
+    save_for_path(desktop_path)
     return {
         "status": "success",
         "desktop_png": desktop_path,
@@ -122,6 +148,7 @@ async def render_html(req: RenderHtmlRequest) -> Dict[str, Any]:
 async def screenshot_url(req: ScreenshotUrlRequest) -> Dict[str, Any]:
     """Capture live screenshots of an external URL."""
     validate_public_url(req.url)
+    restore_for_path(req.desktop_output_path)
     desktop_path = resolve_workspace_path(req.desktop_output_path)
     mobile_path = resolve_workspace_path(req.mobile_output_path)
     os.makedirs(os.path.dirname(desktop_path), exist_ok=True)
@@ -148,6 +175,7 @@ async def screenshot_url(req: ScreenshotUrlRequest) -> Dict[str, Any]:
 
         await browser.close()
 
+    save_for_path(desktop_path)
     return {
         "status": "success",
         "url": req.url,
@@ -234,6 +262,7 @@ def _motion_status(has_motion: bool, issues: List[str]) -> str:
 @app.post("/compare-images")
 async def compare_images(req: CompareImagesRequest) -> Dict[str, Any]:
     """Compute visual diff between two images."""
+    restore_for_path(req.image1_path)
     image1_path = resolve_workspace_path(req.image1_path)
     image2_path = resolve_workspace_path(req.image2_path)
     if not os.path.exists(image1_path) or not os.path.exists(image2_path):

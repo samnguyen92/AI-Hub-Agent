@@ -122,7 +122,7 @@ async def upload_library_item(
     """Upload a file directly into the project library."""
     project = await verify_project_ownership(project_id, user, db)
 
-    ws_path = workspace_service.init_project_workspace(project_id)
+    ws_path = workspace_service.init_project_workspace(project_id, refresh=True)
     upload_dir = os.path.join(ws_path, "uploads")
     os.makedirs(upload_dir, exist_ok=True)
 

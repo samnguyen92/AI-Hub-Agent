@@ -4,7 +4,7 @@ import os
 
 from fastapi import HTTPException
 
-WORKSPACES_ROOT = os.path.realpath("/workspaces")
+WORKSPACES_ROOT = os.path.realpath(os.getenv("WORKSPACES_ROOT", "/workspaces"))
 
 
 def resolve_workspace_path(path: str) -> str:

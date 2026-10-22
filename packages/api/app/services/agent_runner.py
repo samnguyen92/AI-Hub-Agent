@@ -81,7 +81,7 @@ class AgentRunner:
         if not thread:
             raise ValueError(f"Thread for run {run.id} not found")
 
-        workspace_path = workspace_service.init_project_workspace(thread.project_id)
+        workspace_path = workspace_service.init_project_workspace(thread.project_id, refresh=True)
         tools = tool_registry.get_openai_schemas_for_agent(run.agent_key)
         agent_q = select(Agent).where(Agent.key == run.agent_key)
         agent_rec = (await db.execute(agent_q)).scalars().first()

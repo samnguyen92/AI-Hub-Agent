@@ -1,16 +1,19 @@
 """PostgreSQL-backed queue worker for running pending agent tasks."""
 
 import asyncio
+import os
 from datetime import datetime, timedelta, timezone
 from html import escape
 import logging
 from typing import Any, Dict
+from urllib.parse import urlsplit
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import Project, Run, TelegramLink, Thread
 from app.db.session import async_session_maker
 from app.services.agent_runner import agent_runner
+from app.config import settings
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("hub_worker")
@@ -99,6 +102,7 @@ async def _notify_telegram_if_needed(run_id: str, result: Dict[str, Any], db: As
 
 async def run_worker_loop(poll_interval: float = 1.0) -> None:
     """Continuous polling worker loop with periodic stale run reaping."""
+    _validate_deployment_config()
     logger.info("Hub AI Agent Worker started...")
     iteration = 0
     while True:
@@ -113,6 +117,20 @@ async def run_worker_loop(poll_interval: float = 1.0) -> None:
         except Exception as exc:
             logger.error(f"Worker loop error: {exc}")
             await asyncio.sleep(poll_interval)
+
+
+def _validate_deployment_config() -> None:
+    """Fail early when a hosted worker still points to Docker-only sandbox DNS."""
+    if not os.getenv("AIHUB_VERCEL_DAEMON"):
+        return
+    sandbox_url = settings.sandbox_url
+    if not sandbox_url.startswith("https://") or "/internal/sandbox" not in sandbox_url:
+        raise RuntimeError("Set SANDBOX_URL to the deployed /internal/sandbox endpoint.")
+    if not all((settings.supabase_url, settings.supabase_service_role_key, settings.sandbox_shared_secret)):
+        raise RuntimeError("Set Supabase Storage credentials and SANDBOX_SHARED_SECRET for the worker.")
+    database_host = urlsplit(settings.database_url).hostname
+    if database_host in (None, "localhost", "postgres", "127.0.0.1"):
+        raise RuntimeError("Set DATABASE_URL to the deployed Supabase PostgreSQL pooler.")
 
 
 if __name__ == "__main__":

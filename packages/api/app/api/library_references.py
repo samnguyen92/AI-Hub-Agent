@@ -86,7 +86,7 @@ async def delete_reference(
     await verify_project_ownership(project_id, user, db)
     reference = await _get_reference(project_id, reference_id, db)
     paths = [reference.desktop_path, reference.mobile_path, reference.snapshot_path]
-    workspace = workspace_service.get_project_path(project_id)
+    workspace = workspace_service.init_project_workspace(project_id, refresh=True)
     resolved_paths = [safe_resolve_path(workspace, path) for path in paths]
     await db.delete(reference)
     await db.commit()

@@ -133,6 +133,14 @@ export async function fetchMessages(threadId: string): Promise<Message[]> {
   return handleResponse<Message[]>(res);
 }
 
+export async function fetchRunStatus(
+  threadId: string,
+  runId: string,
+): Promise<{ status: string }> {
+  const res = await fetchWithAuth(`${API_BASE}/threads/${threadId}/runs/${runId}`, { cache: 'no-store' });
+  return handleResponse<{ status: string }>(res);
+}
+
 export async function uploadChatAttachment(projectId: string, file: File): Promise<ChatAttachment> {
   const form = new FormData();
   form.append('file', file);
@@ -149,7 +157,7 @@ export async function sendMessage(params: {
   agentOverride?: string;
   runSynchronously?: boolean;
   attachments?: ChatAttachment[];
-}): Promise<{ thread_id: string; run_id: string; agent_key: string }> {
+}): Promise<{ thread_id: string; run_id: string; agent_key: string; status: string }> {
   const res = await fetchWithAuth(`${API_BASE}/projects/${params.projectId}/messages`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -157,7 +165,7 @@ export async function sendMessage(params: {
       content: params.content,
       thread_id: params.threadId,
       agent_override: params.agentOverride,
-      run_synchronously: params.runSynchronously ?? true,
+      run_synchronously: params.runSynchronously ?? false,
       attachments: params.attachments ?? [],
     }),
   });

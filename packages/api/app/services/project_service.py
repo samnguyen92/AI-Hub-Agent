@@ -18,6 +18,8 @@ from app.db.models import (
     ProjectNote,
 )
 from app.config import settings
+from app.services.workspace_storage import workspace_storage
+from app.services.workspace import workspace_service
 
 
 class ProjectService:
@@ -59,11 +61,12 @@ class ProjectService:
         if not project:
             return False
 
-        ws = project.workspace_path
+        ws = workspace_service.get_project_path(project_id)
         await self._purge_project_data(project_id, db)
         await db.commit()
 
         self._safe_remove_workspace(ws)
+        workspace_storage.delete(project_id)
         return True
 
     async def cleanup_demo_projects(self, db: AsyncSession) -> Dict[str, Any]:
@@ -78,10 +81,11 @@ class ProjectService:
             p_name_lower = (p.name or "").lower()
             is_preserved = any(kw in p_name_lower for kw in preserved_keywords)
             if not is_preserved:
-                ws = p.workspace_path
+                ws = workspace_service.get_project_path(p.id)
                 await self._purge_project_data(p.id, db)
                 deleted_ids.append(p.id)
                 self._safe_remove_workspace(ws)
+                workspace_storage.delete(p.id)
 
         await db.commit()
         return {"deleted_count": len(deleted_ids), "deleted_ids": deleted_ids}

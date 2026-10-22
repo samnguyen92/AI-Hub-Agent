@@ -8,6 +8,7 @@ from PIL import Image, ImageOps, UnidentifiedImageError
 from pydantic import BaseModel
 
 from app.path_security import resolve_workspace_path
+from app.workspace_storage import restore_for_path
 
 router = APIRouter()
 
@@ -21,6 +22,7 @@ class PrepareImageRequest(BaseModel):
 @router.post("/prepare-image")
 async def prepare_image(req: PrepareImageRequest) -> dict[str, str]:
     """Return a bounded JPEG data URL without exposing original image bytes."""
+    restore_for_path(req.image_path)
     image_path = resolve_workspace_path(req.image_path)
     try:
         with Image.open(image_path) as source:

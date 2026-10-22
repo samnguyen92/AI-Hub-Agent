@@ -105,7 +105,7 @@ class ApprovalService:
             approval.decided_by = decided_user_id
             if approval.status == "approved":
                 if approval.action_type == "export_zip":
-                    ws_path = workspace_service.init_project_workspace(thread.project_id)
+                    ws_path = workspace_service.init_project_workspace(thread.project_id, refresh=True)
                     arch_name = approval.payload.get("archive_name") or "project_export.zip"
                     approval.payload["result"] = perform_export(ws_path, arch_name, thread.project_id)
                 run.status = "queued" if run.checkpoint_state else "completed"

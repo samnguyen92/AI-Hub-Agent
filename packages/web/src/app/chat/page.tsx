@@ -7,6 +7,7 @@ import {
   fetchProjects,
   fetchThreads,
   fetchMessages,
+  fetchRunStatus,
   sendMessage,
   classifyPrompt,
   uploadChatAttachment,
@@ -28,6 +29,8 @@ function ChatInner() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const activeThreadIdRef = useRef(activeThreadId);
+  activeThreadIdRef.current = activeThreadId;
 
   useEffect(() => {
     fetchProjects().then((data) => {
@@ -85,17 +88,44 @@ function ChatInner() {
         content: currentInput,
         threadId: activeThreadId || undefined,
         agentOverride: decision.agent,
-        runSynchronously: true,
+        runSynchronously: false,
         attachments,
       });
 
       if (res.thread_id) {
         if (res.thread_id !== activeThreadId) {
+          activeThreadIdRef.current = res.thread_id;
           setActiveThreadId(res.thread_id);
           await loadThreads(selectedProjectId);
         }
-        const updatedMsgs = await fetchMessages(res.thread_id);
-        setMessages(updatedMsgs);
+        const initialMessages = await fetchMessages(res.thread_id);
+        if (activeThreadIdRef.current === res.thread_id) setMessages(initialMessages);
+        if (res.run_id) {
+          let status = res.status;
+          let attempt = 0;
+          while ((status === 'queued' || status === 'running') && attempt < 1200) {
+            await new Promise((resolve) => window.setTimeout(resolve, 1000));
+            const run = await fetchRunStatus(res.thread_id, res.run_id);
+            status = run.status;
+            attempt += 1;
+          }
+          const updatedMsgs = await fetchMessages(res.thread_id);
+          if (res.thread_id === activeThreadIdRef.current) setMessages(updatedMsgs);
+          if (status === 'failed' && res.thread_id === activeThreadIdRef.current) {
+            setMessages((prev) => [...prev, {
+              id: `run-error-${res.run_id}`,
+              role: 'assistant',
+              content: '⚠️ Agent gặp lỗi khi xử lý yêu cầu. Hãy thử gửi lại; quản trị viên có thể xem chi tiết trong log của run.',
+            }]);
+          } else if ((status === 'queued' || status === 'running') && res.thread_id === activeThreadIdRef.current) {
+            setMessages((prev) => [...prev, {
+              id: `run-timeout-${res.run_id}`,
+              role: 'assistant',
+              content: 'Yêu cầu vẫn đang chạy nền. Bạn có thể mở lại cuộc trò chuyện sau để xem kết quả.',
+            }]);
+          }
+          await loadThreads(selectedProjectId);
+        }
       }
       return true;
     } catch (error: unknown) {

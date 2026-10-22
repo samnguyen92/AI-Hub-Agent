@@ -154,6 +154,24 @@ async def get_thread_status(
     }
 
 
+@router.get("/threads/{thread_id}/runs/{run_id}")
+async def get_run_status(
+    thread_id: str,
+    run_id: str,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> Dict[str, Any]:
+    """Return one run status so clients can safely poll queued agent work."""
+    await _authorize_thread(thread_id, user, db)
+    res = await db.execute(
+        select(Run).where(Run.id == run_id, Run.thread_id == thread_id)
+    )
+    run = res.scalars().first()
+    if not run:
+        raise HTTPException(status_code=404, detail="Run not found")
+    return {"thread_id": thread_id, "run_id": run.id, "status": run.status}
+
+
 @router.get("/threads/{thread_id}/stream")
 async def stream_thread(thread_id: str, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)) -> StreamingResponse:
     """Stream thread updates to client via Server-Sent Events (SSE)."""
