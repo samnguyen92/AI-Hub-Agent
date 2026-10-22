@@ -16,6 +16,20 @@ export default function ChatMessageContent({ content, projectId }: ChatMessageCo
   const [copiedCodeIdx, setCopiedCodeIdx] = useState<number | null>(null);
   const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
+  const projectFileUrl = (path: string): string => {
+    const safePath = path.split('/').filter(Boolean).map(encodeURIComponent).join('/');
+    return `${apiBase}/projects/${projectId}/files/${safePath}`;
+  };
+
+  const projectFilePath = (rawUrl: string): string => {
+    const parsed = new URL(rawUrl, 'http://hub.local');
+    const queryPath = parsed.searchParams.get('path');
+    if (queryPath) return queryPath;
+    const marker = `/projects/${projectId}/files/`;
+    const index = parsed.pathname.indexOf(marker);
+    return index >= 0 ? decodeURIComponent(parsed.pathname.slice(index + marker.length)) : '';
+  };
+
   const resolveMediaUrl = (rawUrl: string): string => {
     if (!rawUrl) return '';
     if (rawUrl.startsWith('http://') || rawUrl.startsWith('https://')) return rawUrl;
@@ -23,9 +37,7 @@ export default function ChatMessageContent({ content, projectId }: ChatMessageCo
       return `${apiBase}${rawUrl.replace('/api/backend', '')}`;
     }
     if (rawUrl.startsWith('sandbox:')) {
-      const parts = rawUrl.split('/');
-      const filename = parts[parts.length - 1];
-      return `${apiBase}/projects/${projectId}/files?path=${encodeURIComponent(filename)}`;
+      return projectFileUrl(rawUrl.replace(/^sandbox:\/\/?/, ''));
     }
     const clean = rawUrl.replace(/^\.?\//, '');
     return `${apiBase}/projects/${projectId}/files?path=${encodeURIComponent(clean)}`;
@@ -64,12 +76,15 @@ export default function ChatMessageContent({ content, projectId }: ChatMessageCo
             li: ({ ...props }) => <li style={{ margin: '2px 0' }} {...props} />,
             a: ({ href, children, ...props }) => {
               const url = href || '';
-              const fileUrl = url.split('?')[0].toLowerCase();
+              const filePath = projectFilePath(url);
+              const fileUrl = (filePath || url.split('?')[0]).toLowerCase();
               if (
                 url.startsWith('/api/backend/projects/') &&
                 (fileUrl.endsWith('.zip') || fileUrl.endsWith('.html'))
               ) {
-                const downloadUrl = `${apiBase}${url.replace('/api/backend', '')}`;
+                const downloadUrl = fileUrl.endsWith('.html')
+                  ? projectFileUrl(filePath)
+                  : `${apiBase}${url.replace('/api/backend', '')}`;
                 return (
                   <a href={downloadUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--accent-primary)', textDecoration: 'underline' }} {...props}>
                     {children || (fileUrl.endsWith('.zip') ? 'Tải file ZIP' : 'Mở file HTML')} <ExternalLink size={11} style={{ display: 'inline' }} />
@@ -77,9 +92,8 @@ export default function ChatMessageContent({ content, projectId }: ChatMessageCo
                 );
               }
               if (url.startsWith('sandbox:') || url.endsWith('.html')) {
-                const parts = url.split('/');
-                const filename = parts[parts.length - 1] || 'index.html';
-                const liveUrl = `${apiBase}/projects/${projectId}/files?path=${encodeURIComponent(filename)}`;
+                const filePath = projectFilePath(url) || url.replace(/^sandbox:\/\/?/, '') || 'index.html';
+                const liveUrl = projectFileUrl(filePath);
                 return (
                   <a
                     href={liveUrl}

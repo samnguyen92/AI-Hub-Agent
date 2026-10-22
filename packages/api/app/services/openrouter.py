@@ -126,6 +126,7 @@ class OpenRouterClient:
         prompt: str,
         aspect_ratio: str = "16:9",
         model: str = "openai/gpt-image-2.5-sunburst",
+        input_references: Optional[List[Dict[str, Any]]] = None,
     ) -> Dict[str, Any]:
         """Generate high-fidelity image via OpenRouter images endpoint."""
         if not self.api_key or self.api_key == "your_openrouter_api_key_here":
@@ -146,6 +147,8 @@ class OpenRouterClient:
             "prompt": prompt,
             "aspect_ratio": aspect_ratio,
         }
+        if input_references:
+            payload["input_references"] = input_references
 
         import httpx
         async with httpx.AsyncClient(timeout=90.0) as client:

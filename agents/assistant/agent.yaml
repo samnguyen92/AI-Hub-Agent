@@ -13,6 +13,9 @@ tools:
   - read_file
   - write_file
   - generate_image
+  - render_html_to_png
+  - run_checks
+  - inspect_screenshots
   - propose_note
   - list_notes
   - learn_rule

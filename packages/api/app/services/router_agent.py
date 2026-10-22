@@ -2,7 +2,7 @@
 
 import json
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from app.services.openrouter import openrouter_client
 
 ROUTER_PROMPT = """Bạn là Router Agent của Align AI Hub. Nhiệm vụ của bạn là đọc yêu cầu người dùng và quyết định giao việc cho Agent nào.
@@ -43,70 +43,62 @@ class RouterDecision(BaseModel):
     agent: str
     skill_hint: Optional[str] = None
     confidence: float
-    missing_info: List[str] = []
+    missing_info: List[str] = Field(default_factory=list)
     reason: str
 
 
 class RouterAgent:
     """Agent router classifier directing user requests seamlessly."""
 
+    @staticmethod
+    def _explicit_decision(prompt: str) -> Optional[RouterDecision]:
+        """Honor a user-selected agent before applying history-based routing."""
+        routes = [
+            (("@assistant", "@chat"), "assistant", None),
+            (("@design",), "design", "homepage-mockup"),
+            (("@code", "@code-builder"), "code-builder", "align-style"),
+            (("@analyzer", "@site-analyzer"), "site-analyzer", "site-crawl"),
+            (("@seo", "@seo-auditor"), "seo-auditor", "gsc-audit"),
+            (("@quality", "@quality-auditor"), "quality-auditor", None),
+            (("@image-generator",), "image-generator", None),
+        ]
+        for tags, agent, skill in routes:
+            if any(tag in prompt for tag in tags):
+                return RouterDecision(agent=agent, skill_hint=skill, confidence=1.0, reason=f"Người dùng chỉ định {agent}")
+        return None
+
     async def classify(
         self, user_prompt: str, recent_history: Optional[List[Dict[str, str]]] = None
     ) -> RouterDecision:
         """Analyze message and determine target agent."""
         prompt_lower = user_prompt.lower()
+        explicit = self._explicit_decision(prompt_lower)
+        return explicit or self._context_decision(prompt_lower, recent_history) or self._keyword_decision(prompt_lower)
 
-        if any(term in prompt_lower for term in ["tạo ảnh", "tạo hình", "generate image", "image generation", "vẽ ảnh", "tạo logo"]):
-            return RouterDecision(
-                agent="image-generator",
-                confidence=0.95,
-                reason="Yêu cầu tạo ảnh trực tiếp",
-            )
+    def _context_decision(
+        self, prompt: str, recent_history: Optional[List[Dict[str, str]]]
+    ) -> Optional[RouterDecision]:
+        """Route follow-ups using the latest visible conversation context."""
+        history_text = " ".join(message.get("content", "") for message in (recent_history or [])).lower()
+        has_image = any(token in history_text for token in ["![", "images/", ".png", ".jpg", ".webp"])
+        image_edit = any(term in prompt for term in ["đổi màu", "chỉnh màu", "màu này", "chữ nhỏ", "chữ to", "chữ hơi", "giảm cỡ chữ", "giữ logo", "sửa logo", "chỉnh logo"])
+        if has_image and image_edit:
+            return RouterDecision(agent="image-generator", confidence=0.97, reason="Chỉnh sửa ảnh đã có trong cuộc trò chuyện")
 
-        # Deterministic override rules
-        if "@assistant" in prompt_lower or "@chat" in prompt_lower:
-            return RouterDecision(
-                agent="assistant",
-                confidence=1.0,
-                reason="Người dùng chỉ định Trợ lý hội thoại",
-            )
-        if "@design" in prompt_lower:
-            return RouterDecision(
-                agent="design",
-                skill_hint="homepage-mockup",
-                confidence=1.0,
-                reason="Người dùng chỉ định @design",
-            )
-        if "@code" in prompt_lower or "@code-builder" in prompt_lower:
-            return RouterDecision(
-                agent="code-builder",
-                skill_hint="align-style",
-                confidence=1.0,
-                reason="Người dùng chỉ định @code-builder",
-            )
-        if "@analyzer" in prompt_lower or "@site-analyzer" in prompt_lower:
-            return RouterDecision(
-                agent="site-analyzer",
-                skill_hint="site-crawl",
-                confidence=1.0,
-                reason="Người dùng chỉ định @site-analyzer",
-            )
-        if "@seo" in prompt_lower or "@seo-auditor" in prompt_lower:
-            return RouterDecision(
-                agent="seo-auditor",
-                skill_hint="gsc-audit",
-                confidence=1.0,
-                reason="Người dùng chỉ định @seo-auditor",
-            )
-        if "@quality" in prompt_lower or "@quality-auditor" in prompt_lower:
-            return RouterDecision(
-                agent="quality-auditor",
-                confidence=1.0,
-                reason="Người dùng chỉ định @quality-auditor",
-            )
+        has_html = any(term in history_text for term in ["index.html", ".html", "website"])
+        continue_terms = ["tiếp tục", "chỉnh tiếp", "sửa trang", "hoàn thiện", "gửi file", "đổi màu"]
+        if has_html and any(term in prompt for term in continue_terms):
+            return RouterDecision(agent="code-builder", skill_hint="align-style", confidence=0.94, reason="Tiếp tục chỉnh sửa website trong ngữ cảnh cuộc trò chuyện")
+        if has_image and any(term in prompt for term in ["tiếp tục", "dựng trang", "tạo trang"]):
+            return RouterDecision(agent="design", skill_hint="homepage-mockup", confidence=0.92, reason="Tiếp tục thiết kế từ ảnh đã thống nhất")
+        if any(term in prompt for term in ["tạo ảnh", "tạo hình", "generate image", "image generation", "vẽ ảnh", "tạo logo"]):
+            return RouterDecision(agent="image-generator", confidence=0.95, reason="Yêu cầu tạo ảnh trực tiếp")
+        return None
 
-        # Heuristic keywords matching for specialized actions
-        if any(w in prompt_lower for w in ["thiết kế", "mockup", "giao diện", "màu sắc", "font", "layout", "banner"]):
+    @staticmethod
+    def _keyword_decision(prompt: str) -> RouterDecision:
+        """Classify a new request by action keywords when context is absent."""
+        if any(w in prompt for w in ["thiết kế", "mockup", "giao diện", "màu sắc", "font", "layout", "banner"]):
             return RouterDecision(
                 agent="design",
                 skill_hint="homepage-mockup",
@@ -114,7 +106,7 @@ class RouterAgent:
                 reason="Yêu cầu liên quan đến thiết kế và mockup giao diện",
             )
 
-        if any(w in prompt_lower for w in ["lập trình", "viết code", "html", "css", "javascript", "build", "sửa code", "bug"]):
+        if any(w in prompt for w in ["lập trình", "viết code", "html", "css", "javascript", "build", "sửa code", "bug"]):
             return RouterDecision(
                 agent="code-builder",
                 skill_hint="align-style",
@@ -122,7 +114,7 @@ class RouterAgent:
                 reason="Yêu cầu lập trình mã nguồn website",
             )
 
-        if any(w in prompt_lower for w in ["lighthouse", "tốc độ", "crawl", "sitemap", "robots.txt", "kiểm tra web", "quét trang"]):
+        if any(w in prompt for w in ["lighthouse", "tốc độ", "crawl", "sitemap", "robots.txt", "kiểm tra web", "quét trang"]):
             return RouterDecision(
                 agent="site-analyzer",
                 skill_hint="site-crawl",
@@ -130,7 +122,7 @@ class RouterAgent:
                 reason="Yêu cầu đo đạc và phân tích kỹ thuật website",
             )
 
-        if any(w in prompt_lower for w in ["seo", "từ khóa", "search console", "ga4", "ranking", "index", "canonical"]):
+        if any(w in prompt for w in ["seo", "từ khóa", "search console", "ga4", "ranking", "index", "canonical"]):
             return RouterDecision(
                 agent="seo-auditor",
                 skill_hint="gsc-audit",
@@ -138,14 +130,13 @@ class RouterAgent:
                 reason="Yêu cầu kiểm định và tối ưu hóa SEO",
             )
 
-        if any(w in prompt_lower for w in ["kiểm định chất lượng", "quality audit", "accessibility", "wcag", "rà soát giao diện"]):
+        if any(w in prompt for w in ["kiểm định chất lượng", "quality audit", "accessibility", "wcag", "rà soát giao diện"]):
             return RouterDecision(
                 agent="quality-auditor",
                 confidence=0.91,
                 reason="Yêu cầu kiểm định chất lượng và khả năng truy cập",
             )
 
-        # Default: General conversational assistant (ChatGPT/Claude experience)
         return RouterDecision(
             agent="assistant",
             confidence=1.0,

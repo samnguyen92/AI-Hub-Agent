@@ -83,9 +83,10 @@ function ChatInner() {
 
     try {
       let resolvedAgent = overrideAgent;
-      if (!resolvedAgent && !currentInput.startsWith('@')) {
+      if (!resolvedAgent) {
         try {
-          const decision = await classifyPrompt(currentInput);
+          const recentHistory = messages.slice(-10).map(({ role, content }) => ({ role, content }));
+          const decision = await classifyPrompt(currentInput, recentHistory);
           resolvedAgent = decision.agent;
         } catch {
           resolvedAgent = 'assistant';

@@ -211,11 +211,14 @@ export async function sendMessage(params: {
   return handleResponse(res);
 }
 
-export async function classifyPrompt(prompt: string): Promise<RouterDecision> {
+export async function classifyPrompt(
+  prompt: string,
+  recentHistory: Array<{ role: string; content: string }> = [],
+): Promise<RouterDecision> {
   const res = await fetchWithAuth(`${API_BASE}/router/classify`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt }),
+    body: JSON.stringify({ prompt, recent_history: recentHistory }),
   });
   return handleResponse<RouterDecision>(res);
 }
