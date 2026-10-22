@@ -11,6 +11,9 @@ available for the selected Vercel project before switching production traffic.
 1. Import the repository as one Vercel project. Set **Root Directory** to `./` and
    **Framework Preset** to **Services**. Services and Daemons must be enabled for
    the Vercel project/team.
+   In the repository import screen, use the grouped **Services** project setup. Do
+   not select **Import single project** for only `packages/web`; that creates a
+   Next.js-only deployment and leaves the API and sandbox service names unresolved.
 2. Add the environment values below to **Production**, then deploy. Enable Preview
    only after configuring an isolated Supabase database/bucket and a Preview-specific
    `SANDBOX_URL`; otherwise Preview deployments can consume production jobs and files.
@@ -78,3 +81,10 @@ private service binding. Daemons continuously poll the existing database-backed 
 queue. Vercel services do not share local disks, so project files are synchronized by
 private ZIP snapshots in Supabase Storage. Concurrent runs that modify the same
 project may contend on the same snapshot; serialize those runs if this becomes common.
+
+If `/api/backend/health` returns a Vercel `DEPLOYMENT_NOT_FOUND` response and
+`/internal/sandbox/health` shows the Next.js 404 page, the current deployment does
+not contain the named API and sandbox services. Check the project's Root Directory
+is the repository root (`./`) and that it was imported as the grouped Services
+project, then redeploy. A successful Next.js build alone does not confirm that the
+API, sandbox, or daemon was deployed.
