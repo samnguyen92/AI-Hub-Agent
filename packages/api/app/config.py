@@ -70,6 +70,9 @@ class Settings(BaseSettings):
     google_admin_emails: str = Field(
         default="", description="Comma-separated allowed accounts granted admin access"
     )
+    local_login_email: str = Field(default="", description="Email allowed to use local password login")
+    local_login_password_hash: str = Field(default="", description="PBKDF2 password hash for local login")
+    local_login_role: str = Field(default="member", description="Role assigned to the local login account")
 
     # Telegram Bot
     telegram_bot_token: Optional[str] = Field(

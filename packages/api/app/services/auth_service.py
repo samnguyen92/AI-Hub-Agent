@@ -49,6 +49,21 @@ class AuthService:
         except Exception:
             return None
 
+    def verify_password(self, password: str, encoded_hash: str) -> bool:
+        """Verify a PBKDF2-SHA256 password hash stored in application settings."""
+        import base64
+
+        try:
+            algorithm, rounds, salt, expected = encoded_hash.split(":", 3)
+            if algorithm != "pbkdf2_sha256":
+                return False
+            salt_bytes = base64.urlsafe_b64decode(salt + "=" * (-len(salt) % 4))
+            expected_bytes = base64.urlsafe_b64decode(expected + "=" * (-len(expected) % 4))
+            actual = hashlib.pbkdf2_hmac("sha256", password.encode(), salt_bytes, int(rounds))
+            return hmac.compare_digest(actual, expected_bytes)
+        except (ValueError, TypeError):
+            return False
+
     def create_signed_file_url(self, project_id: str, path: str, expires_in: int = 900) -> str:
         """Generate a short-lived HMAC signed URL for sandboxed preview of HTML/images."""
         expires_at = int(time.time()) + expires_in

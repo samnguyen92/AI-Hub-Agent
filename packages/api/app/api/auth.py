@@ -24,6 +24,7 @@ OAUTH_STATE_COOKIE = "google_oauth_state"
 class LoginRequest(BaseModel):
     username: str
     token: Optional[str] = None
+    password: Optional[str] = None
 
 
 class UserResponse(BaseModel):
@@ -107,12 +108,26 @@ async def login(
     db: AsyncSession = Depends(get_db),
 ) -> UserResponse:
     """Create local development or explicitly token-authorized sessions."""
-    is_dev_admin = settings.auth_mode == "dev" and req.username == "developer"
+    local_email = settings.local_login_email.strip().lower()
+    is_local_password_login = bool(
+        req.password
+        and local_email
+        and req.username.strip().lower() == local_email
+        and auth_service.verify_password(req.password, settings.local_login_password_hash)
+    )
+    if req.password and not is_local_password_login:
+        raise HTTPException(status_code=401, detail="Email hoặc mật khẩu không đúng.")
+
+    is_dev_admin = settings.auth_mode == "dev" and req.username == "developer" and not req.password
     is_token_admin = bool(settings.admin_api_token and req.token == settings.admin_api_token)
-    if settings.auth_mode != "dev" and not is_token_admin:
-        raise HTTPException(status_code=403, detail="Use Google sign-in to access this hub.")
-    role = "admin" if is_dev_admin or is_token_admin else "member"
-    user = await auth_service.get_or_create_user(db, req.username, role=role)
+    if settings.auth_mode != "dev" and not (is_token_admin or is_local_password_login):
+        raise HTTPException(status_code=403, detail="Use an enabled sign-in method to access this hub.")
+    role = settings.local_login_role if is_local_password_login else "admin" if is_dev_admin or is_token_admin else "member"
+    username = local_email if is_local_password_login else req.username
+    user = await auth_service.get_or_create_user(db, username, role=role)
+    if is_local_password_login:
+        user.role = role
+        await db.commit()
     token = auth_service.create_session_token(user.id, role=user.role)
 
     response.set_cookie(
@@ -124,6 +139,12 @@ async def login(
         max_age=86400 * 7,
     )
     return UserResponse(id=user.id, username=user.github_login, role=user.role, token=token)
+
+
+@router.get("/local/config")
+async def local_login_config() -> Dict[str, bool]:
+    """Report whether local email/password login is configured."""
+    return {"enabled": bool(settings.local_login_email and settings.local_login_password_hash)}
 
 
 @router.get("/google/login")
