@@ -15,14 +15,16 @@ export default function ProjectsPage() {
   const [sourceUrl, setSourceUrl] = useState('');
   const [creating, setCreating] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const loadProjects = async () => {
     setLoading(true);
     try {
       const data = await fetchProjects();
       setProjects(data);
-    } catch {
-      // Fallback empty
+      setErrorMessage('');
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : 'Không thể tải danh sách dự án.');
     } finally {
       setLoading(false);
     }
@@ -42,6 +44,8 @@ export default function ProjectsPage() {
       setSourceUrl('');
       setShowModal(false);
       await loadProjects();
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : 'Không thể tạo dự án.');
     } finally {
       setCreating(false);
     }
@@ -89,6 +93,7 @@ export default function ProjectsPage() {
         </div>
       ) : projects.length === 0 ? (
         <div className="glass-panel" style={{ padding: '60px', textAlign: 'center' }}>
+          {errorMessage && <p role="alert" style={{ color: '#f87171', marginBottom: '16px' }}>{errorMessage}</p>}
           <FolderKanban size={48} color="var(--accent-primary)" style={{ margin: '0 auto 16px', opacity: 0.6 }} />
           <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '8px' }}>Chưa có dự án nào</h3>
           <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '24px' }}>
@@ -182,6 +187,7 @@ export default function ProjectsPage() {
           ))}
         </div>
       )}
+      {errorMessage && projects.length > 0 && <p role="alert" style={{ color: '#f87171', marginTop: '16px' }}>{errorMessage}</p>}
 
       {/* Create Modal */}
       {showModal && (
