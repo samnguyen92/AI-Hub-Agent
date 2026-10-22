@@ -138,7 +138,7 @@ async def login(
         value=token,
         httponly=True,
         secure=settings.environment.lower() not in ("development", "dev", "test"),
-        samesite="lax",
+        samesite=_session_cookie_samesite(),
         max_age=session_ttl,
     )
     return UserResponse(id=user.id, username=user.github_login, role=user.role, token=token)
@@ -223,9 +223,15 @@ def _set_session_cookie(response: Response, token: str) -> None:
         value=token,
         httponly=True,
         secure=settings.environment.lower() not in ("development", "dev", "test"),
-        samesite="lax",
+        samesite=_session_cookie_samesite(),
         max_age=86400 * 7,
     )
+
+
+def _session_cookie_samesite() -> str:
+    """Allow secure cross-origin browser sessions when frontend and API are separate sites."""
+    production = settings.environment.lower() not in ("development", "dev", "test")
+    return "none" if production else "lax"
 
 
 @router.get("/me", response_model=UserResponse)
