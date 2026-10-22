@@ -14,7 +14,7 @@ interface ChatMessageContentProps {
 export default function ChatMessageContent({ content, projectId }: ChatMessageContentProps) {
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   const [copiedCodeIdx, setCopiedCodeIdx] = useState<number | null>(null);
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || '/api/backend';
 
   const projectFileUrl = (path: string): string => {
     const safePath = path.split('/').filter(Boolean).map(encodeURIComponent).join('/');

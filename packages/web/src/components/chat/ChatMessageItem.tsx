@@ -54,7 +54,7 @@ export default function ChatMessageItem({ message, projectId }: ChatMessageItemP
 
   const isUser = message.role === 'user';
   const artifact = !isUser ? parseArtifactFromMessage(message.content, projectId) : null;
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || '/api/backend';
 
   const handleTeachRule = async (e: React.FormEvent) => {
     e.preventDefault();

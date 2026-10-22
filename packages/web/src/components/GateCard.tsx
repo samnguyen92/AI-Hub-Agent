@@ -32,7 +32,7 @@ export default function GateCard({ gate, onRespond, isCompact = false }: GateCar
   const gateType = (payload.gate_type || gate.action_type.replace('gate_', '')).toLowerCase();
   const isPending = gate.status === 'pending';
   const isReferenceGate = gateType === 'reference';
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || '/api/backend';
 
   const getGateBadge = () => {
     switch (gateType) {

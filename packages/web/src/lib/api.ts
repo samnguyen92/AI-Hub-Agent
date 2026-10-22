@@ -12,7 +12,7 @@ export type {
 
 const API_BASE =
   typeof window !== 'undefined'
-    ? process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+    ? process.env.NEXT_PUBLIC_API_URL || '/api/backend'
     : process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 const DEV_SESSION_KEY = 'hub_dev_session_token_v2';

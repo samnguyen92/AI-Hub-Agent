@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { Bot, CheckCircle2, Chrome, ShieldAlert } from 'lucide-react';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/backend';
 
 export default function LoginPage() {
   const [googleEnabled, setGoogleEnabled] = useState<boolean | null>(null);

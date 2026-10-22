@@ -78,7 +78,7 @@ services:
       - "3000:3000"
     environment:
       - INTERNAL_API_URL=http://api:8000
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_API_URL=/api/backend
       - NEXT_PUBLIC_AUTH_MODE=${AUTH_MODE:-dev}
     command: sh -c "npm run build && npm run start"
     volumes:

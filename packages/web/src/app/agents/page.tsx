@@ -29,7 +29,7 @@ export default function AgentsPage() {
   const [loading, setLoading] = useState(false);
   const [updatingKey, setUpdatingKey] = useState<string | null>(null);
   const [modelError, setModelError] = useState('');
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || '/api/backend';
   const fetchAgents = async () => {
     try {
       const res = await fetchWithAuth(`${apiBase}/agents`);
