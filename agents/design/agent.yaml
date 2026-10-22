@@ -29,6 +29,7 @@ tools:
   - package_design
   - fetch_url
   - audit_web_design
+  - run_quality_review
   - load_skill
   - request_input
   - export_zip

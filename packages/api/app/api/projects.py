@@ -1,9 +1,10 @@
 """API Router for Project operations."""
 
 import os
+from urllib.parse import quote
 from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, Cookie, Depends, Header, HTTPException, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse, Response
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -118,7 +119,7 @@ async def get_project_file(
     authorization: Optional[str] = Header(None),
     session_token: Optional[str] = Cookie(None),
     db: AsyncSession = Depends(get_db),
-) -> FileResponse:
+) -> Response:
     """Serve a workspace file using a query path for API and image clients."""
     return await _serve_project_file(
         project_id, path, request, signature, expires, authorization, session_token, db
@@ -135,11 +136,37 @@ async def get_project_file_by_path(
     authorization: Optional[str] = Header(None),
     session_token: Optional[str] = Cookie(None),
     db: AsyncSession = Depends(get_db),
-) -> FileResponse:
+) -> Response:
     """Serve nested HTML/assets so relative links resolve from their real folder path."""
     return await _serve_project_file(
         project_id, file_path, request, signature, expires, authorization, session_token, db
     )
+
+
+@router.get("/{project_id}/preview/{token}/{file_path:path}")
+async def get_project_preview_file(
+    project_id: str, token: str, file_path: str, db: AsyncSession = Depends(get_db)
+) -> Response:
+    """Serve an expiring, project-scoped static preview and its relative assets."""
+    if not auth_service.verify_preview_token(project_id, token):
+        raise HTTPException(status_code=401, detail="Preview link expired or invalid.")
+    project = await _get_preview_project(project_id, db)
+    full_path = _resolve_project_file_path(project.workspace_path, file_path)
+    return FileResponse(full_path, headers=_preview_headers())
+
+
+async def _get_preview_project(project_id: str, db: AsyncSession) -> Project:
+    """Fetch project metadata for a signed preview request."""
+    result = await db.execute(select(Project).where(Project.id == project_id))
+    project = result.scalars().first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found.")
+    return project
+
+
+def _preview_headers() -> Dict[str, str]:
+    """Keep project HTML isolated from the application origin."""
+    return {"Content-Security-Policy": "sandbox allow-scripts", "X-Content-Type-Options": "nosniff"}
 
 
 async def _serve_project_file(
@@ -151,7 +178,7 @@ async def _serve_project_file(
     authorization: Optional[str],
     session_token: Optional[str],
     db: AsyncSession,
-) -> FileResponse:
+) -> Response:
     """Authorize and safely return a file from a project's workspace."""
     is_signed = False
     if signature and expires:
@@ -168,12 +195,15 @@ async def _serve_project_file(
 
     try:
         full_path = _resolve_project_file_path(project.workspace_path, path)
+        if full_path.lower().endswith((".html", ".htm")):
+            token = auth_service.create_preview_token(project_id)
+            safe_path = quote(path.lstrip("/"), safe="/")
+            return RedirectResponse(
+                f"/projects/{project_id}/preview/{token}/{safe_path}", status_code=302
+            )
         return FileResponse(
             full_path,
-            headers={
-                "Content-Security-Policy": "sandbox allow-scripts",
-                "X-Content-Type-Options": "nosniff",
-            },
+            headers=_preview_headers(),
         )
     except PermissionError:
         raise HTTPException(status_code=403, detail="Path traversal forbidden")

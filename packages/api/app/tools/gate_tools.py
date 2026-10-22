@@ -1,6 +1,10 @@
 """Tool enabling agents to open Intake, Plan, and Result gates."""
 
-from typing import Any, Dict
+import json
+import re
+from typing import Any, Dict, Optional
+from sqlalchemy import select
+from app.db.models import Step
 from app.services.gate_service import gate_service
 from app.tools.base import BaseTool, ToolContext, tool_registry
 
@@ -59,6 +63,11 @@ class OpenGateTool(BaseTool):
         questions = kwargs.get("questions", [])
         try_it_url = kwargs.get("try_it_url")
         how_to_test = kwargs.get("how_to_test", [])
+        review = None
+        if gate_type == "design":
+            review = await self._verified_quality_review(context)
+            if not review:
+                return {"error": "Design gate chưa mở: hãy chạy Quality Auditor, sửa findings và đạt verdict pass sau lần sửa cuối."}
 
         try_it = {"url": try_it_url} if try_it_url else None
 
@@ -73,6 +82,7 @@ class OpenGateTool(BaseTool):
             questions=questions,
             try_it=try_it,
             how_to_test=how_to_test,
+            review=review,
         )
 
         formatted_md = gate_service.format_gate_markdown(approval.payload)
@@ -86,6 +96,44 @@ class OpenGateTool(BaseTool):
             "presentation_markdown": formatted_md,
             "validation_warnings": approval.payload.get("validation_warnings", []),
         }
+
+    @staticmethod
+    async def _verified_quality_review(context: ToolContext) -> Optional[Dict[str, str]]:
+        """Require a passing audit after the latest design-changing tool call."""
+        result = await context.db.execute(
+            select(Step).where(Step.run_id == context.run_id, Step.tool == "run_quality_review")
+            .order_by(Step.created_at.desc()).limit(1)
+        )
+        step = result.scalars().first()
+        if not step or not isinstance(step.result, dict):
+            return None
+        mutation = await context.db.execute(
+            select(Step).where(
+                Step.run_id == context.run_id,
+                Step.tool.in_(["write_file", "apply_patch", "save_artifact", "generate_image"]),
+            ).order_by(Step.created_at.desc()).limit(1)
+        )
+        latest_mutation = mutation.scalars().first()
+        if latest_mutation and latest_mutation.created_at > step.created_at:
+            return None
+        report = _parse_review_report(str(step.result.get("report") or ""))
+        if report.get("verdict") != "pass":
+            return None
+        summary = str(report.get("summary") or "Quality Auditor passed the final design review.")[:500]
+        return {"reviewer_seat": "quality-auditor", "status": "passed", "summary": summary}
+
+
+def _parse_review_report(report: str) -> Dict[str, Any]:
+    """Parse the child auditor's JSON verdict while tolerating code fences."""
+    cleaned = re.sub(r"^```(?:json)?|```$", "", report.strip(), flags=re.IGNORECASE).strip()
+    match = re.search(r"\{[\s\S]*\}", cleaned)
+    if not match:
+        return {}
+    try:
+        parsed = json.loads(match.group(0))
+        return parsed if isinstance(parsed, dict) else {}
+    except json.JSONDecodeError:
+        return {}
 
 
 # Register tool

@@ -79,6 +79,26 @@ class AuthService:
         expected_sig = hmac.new(self.secret_key, msg, hashlib.sha256).hexdigest()[:32]
         return hmac.compare_digest(signature, expected_sig)
 
+    def create_preview_token(self, project_id: str, expires_in: int = 900) -> str:
+        """Create a short-lived, read-only token scoped to one project preview."""
+        expires = int(time.time()) + expires_in
+        message = f"preview:{project_id}:{expires}".encode("utf-8")
+        signature = hmac.new(self.secret_key, message, hashlib.sha256).hexdigest()[:32]
+        return f"{expires}.{signature}"
+
+    def verify_preview_token(self, project_id: str, token: str) -> bool:
+        """Verify project scope and expiry for static preview requests."""
+        try:
+            expires_text, signature = token.split(".", 1)
+            expires = int(expires_text)
+        except (ValueError, AttributeError):
+            return False
+        if expires < time.time():
+            return False
+        message = f"preview:{project_id}:{expires}".encode("utf-8")
+        expected = hmac.new(self.secret_key, message, hashlib.sha256).hexdigest()[:32]
+        return hmac.compare_digest(signature, expected)
+
     async def get_or_create_user(self, db: AsyncSession, github_login: str, role: str = "member") -> User:
         """Helper to get existing user or create a new user entity."""
         res = await db.execute(select(User).where(User.github_login == github_login))

@@ -105,6 +105,7 @@ class ToolRegistry:
                 "list_notes",
                 "learn_rule",
                 "audit_web_design",
+                "run_quality_review",
                 "open_gate",
             ],
             "site-analyzer": [

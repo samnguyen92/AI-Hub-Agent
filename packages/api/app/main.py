@@ -35,6 +35,7 @@ import app.tools.memory_tools  # noqa: F401 - register memory tools
 import app.tools.reference_tools  # noqa: F401 - register design reference tool
 import app.tools.design_package_tools  # noqa: F401 - register design packaging tool
 import app.tools.vision_tools  # noqa: F401 - register optional screenshot vision tool
+import app.tools.quality_review_tools  # noqa: F401 - register quality delegation tool
 
 
 @asynccontextmanager

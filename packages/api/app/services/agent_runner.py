@@ -124,11 +124,14 @@ class AgentRunner:
         messages: List[Dict[str, Any]],
         db: AsyncSession,
         consecutive_errors: int = 0,
+        allowed_tool_names: Optional[List[str]] = None,
     ) -> Tuple[Optional[str], int, float]:
         """Execute tool calls, handle error containment and check for pause requests."""
         paused_status: Optional[str] = None
         tool_cost_usd = 0.0
         allowed_tools = tool_registry.get_allowed_tool_names(tool_ctx.agent_key)
+        if allowed_tool_names is not None:
+            allowed_tools = [name for name in allowed_tools if name in allowed_tool_names]
 
         for idx, tc in enumerate(tool_calls):
             tool = tool_registry.get(tc.name)
@@ -179,6 +182,8 @@ class AgentRunner:
         run_id: str,
         db: AsyncSession,
         event_callback: Optional[Callable[[Dict[str, Any]], Any]] = None,
+        persist_final_message: bool = True,
+        allowed_tool_names: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """Execute a full ReAct loop for a run."""
         q = select(Run).where(Run.id == run_id)
@@ -193,6 +198,8 @@ class AgentRunner:
             thread, workspace_path, target_model, image_model, max_steps, max_cost_usd,
             max_minutes, tools, messages, start_step, total_cost
         ) = await self._load_context(run, db)
+        if allowed_tool_names is not None:
+            tools = [item for item in tools if item["function"]["name"] in allowed_tool_names]
 
         tool_ctx = ToolContext(
             project_id=thread.project_id, run_id=run.id, workspace_path=workspace_path, db=db,
@@ -242,7 +249,8 @@ class AgentRunner:
             })
 
             paused_status, consecutive_errors, tool_cost_usd = await self._execute_tool_calls(
-                llm_res.tool_calls, step_idx, run.id, llm_res.total_tokens, tool_ctx, messages, db, consecutive_errors
+                llm_res.tool_calls, step_idx, run.id, llm_res.total_tokens, tool_ctx, messages, db,
+                consecutive_errors, allowed_tool_names,
             )
             total_cost += tool_cost_usd
             if paused_status:
@@ -257,15 +265,27 @@ class AgentRunner:
             run.checkpoint_state = {"messages": messages, "step_idx": current_step, "total_cost": total_cost}
             run.status = paused_status if paused_status.startswith("waiting_") else run.status
             run.cost_usd = total_cost
+            latest_step = await db.execute(
+                select(Step).where(
+                    Step.run_id == run.id, Step.tool == "open_gate"
+                ).order_by(Step.created_at.desc()).limit(1)
+            )
+            step = latest_step.scalars().first()
+            payload = step.result if step and isinstance(step.result, dict) else {}
+            final_content = payload.get("presentation_markdown")
+            if final_content:
+                final_content = f"{final_content}\n\n⏸️ Run đang chờ quyết định của bạn. Mở mục [Phê duyệt](/approvals) để duyệt, yêu cầu sửa hoặc từ chối."
+                db.add(Message(thread_id=thread.id, role="assistant", content=final_content))
             await db.commit()
-            return {"run_id": run.id, "status": run.status, "cost_usd": total_cost, "output": None}
+            return {"run_id": run.id, "status": run.status, "cost_usd": total_cost, "output": final_content}
 
         if not final_content:
             final_content = "Đã đạt giới hạn số bước tối đa (max_steps). Vui lòng gửi tin nhắn tiếp để tiếp tục."
             if run.status not in ["failed", "limit_reached"]:
                 run.status = "limit_reached"
 
-        db.add(Message(thread_id=thread.id, role="assistant", content=final_content))
+        if persist_final_message:
+            db.add(Message(thread_id=thread.id, role="assistant", content=final_content))
         if run.status not in ["failed", "limit_reached", "rework_needed", "cancelled"]:
             run.status = "completed"
         run.cost_usd = total_cost
@@ -274,6 +294,5 @@ class AgentRunner:
         if event_callback:
             await event_callback({"type": "done", "content": final_content, "cost": total_cost})
         return {"run_id": run.id, "status": run.status, "cost_usd": total_cost, "output": final_content}
-
 
 agent_runner = AgentRunner()
