@@ -1,0 +1,137 @@
+# Production Docker Compose for Align AI Hub on Hostinger VPS (KVM 2)
+# Khởi chạy toàn bộ hệ thống bằng 1 lệnh: docker compose -f docker-compose.prod.yml up -d --build
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: hub_ai_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-hub_ai_agent}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  api:
+    build:
+      context: ./packages/api
+      dockerfile: Dockerfile
+    container_name: hub_ai_api
+    restart: unless-stopped
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-hub_ai_agent}
+      ENVIRONMENT: production
+    volumes:
+      - ./packages/api:/app
+      - ./agents:/app/agents
+      - ./skills:/app/skills
+      - workspace_data:/workspaces
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  worker:
+    build:
+      context: ./packages/api
+      dockerfile: Dockerfile
+    container_name: hub_ai_worker
+    restart: unless-stopped
+    command: ["python", "-m", "app.worker"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-hub_ai_agent}
+      ENVIRONMENT: production
+    volumes:
+      - ./packages/api:/app
+      - ./agents:/app/agents
+      - ./skills:/app/skills
+      - workspace_data:/workspaces
+      # Mount Docker socket để Worker/Runner có quyền tạo container WordPress tạm thời
+      - /var/run/docker.sock:/var/run/docker.sock
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  sandbox:
+    build:
+      context: ./packages/sandbox
+      dockerfile: Dockerfile
+    container_name: hub_ai_sandbox
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - workspace_data:/workspaces
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  web:
+    build:
+      context: ./packages/web
+      dockerfile: Dockerfile
+    container_name: hub_ai_web
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      # Map thẳng cổng 80 của VPS vào Next.js để truy cập http://<IP_VPS> không cần gõ :3000
+      - "80:3000"
+    environment:
+      - INTERNAL_API_URL=http://api:8000
+      - NEXT_PUBLIC_API_URL=/api/backend
+      - NEXT_PUBLIC_AUTH_MODE=${AUTH_MODE:-strict}
+    command: sh -c "npm run build && npm run start"
+    volumes:
+      - ./packages/web:/app
+      - /app/node_modules
+      - /app/.next
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  postgres_data:
+  workspace_data:
