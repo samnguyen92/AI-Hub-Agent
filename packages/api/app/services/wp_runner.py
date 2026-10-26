@@ -197,6 +197,20 @@ class WordPressRunnerService:
         await self.run_cmd(["docker", "exec", container_name, "php", "-r", php_inject])
         return True
 
+    def format_site_url(self, slug: str) -> str:
+        """Format public site URL as 1-level subdomain compatible with Cloudflare Universal SSL."""
+        if not settings.wp_base_domain:
+            return f"http://{slug}.localhost:8500"
+
+        base = settings.wp_base_domain.strip().lstrip(".")
+        if base.startswith("demo."):
+            root = base[5:]
+            return f"https://demo-{slug}.{root}"
+        elif base.startswith("wp."):
+            root = base[3:]
+            return f"https://wp-{slug}.{root}"
+        return f"https://demo-{slug}.{base}"
+
     async def create_site(
         self,
         project_id: str,
@@ -205,8 +219,14 @@ class WordPressRunnerService:
         subdomain: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Create and provision a complete WordPress container environment for a project."""
+        slug = self._sanitize_slug(subdomain or project_id)
         existing = await self.get_site(project_id, db)
         if existing and existing.status == "running":
+            expected_url = self.format_site_url(slug)
+            if existing.site_url != expected_url:
+                existing.site_url = expected_url
+                existing.admin_url = f"{expected_url}/wp-admin"
+                await db.commit()
             return {
                 "success": True,
                 "site_url": existing.site_url,
@@ -216,15 +236,10 @@ class WordPressRunnerService:
                 "status": existing.status,
             }
 
-        slug = self._sanitize_slug(subdomain or project_id)
         container_name = f"hub_ai_wp_{slug}"
         db_name = f"wp_{slug.replace('-', '_')}"
         port = self.find_available_port(8501)
-
-        if settings.wp_base_domain:
-            site_url = f"https://{slug}.{settings.wp_base_domain}"
-        else:
-            site_url = f"http://{slug}.localhost:8500"
+        site_url = self.format_site_url(slug)
 
         admin_user = "admin"
         admin_pass = secrets.token_urlsafe(12)

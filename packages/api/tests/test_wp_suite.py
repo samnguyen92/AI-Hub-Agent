@@ -24,6 +24,18 @@ def test_wp_runner_slug_and_port():
     port = wp_runner.find_available_port(8501)
     assert 8501 <= port < 8700
 
+    from app.config import settings
+    orig_base = settings.wp_base_domain
+    try:
+        settings.wp_base_domain = "alignvn.cloud"
+        assert wp_runner.format_site_url("vietthanh") == "https://demo-vietthanh.alignvn.cloud"
+        settings.wp_base_domain = "demo.alignvn.cloud"
+        assert wp_runner.format_site_url("vietthanh") == "https://demo-vietthanh.alignvn.cloud"
+        settings.wp_base_domain = ""
+        assert wp_runner.format_site_url("vietthanh") == "http://vietthanh.localhost:8500"
+    finally:
+        settings.wp_base_domain = orig_base
+
 
 def test_wp_runner_prepare_vault_assets():
     """Verify that themes and plugins are correctly staged from vault."""
