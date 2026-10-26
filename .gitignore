@@ -15,6 +15,7 @@ eggs/
 lib/
 !packages/web/src/lib/
 !packages/web/src/lib/**
+!packages/api/assets/**
 lib64/
 parts/
 sdist/

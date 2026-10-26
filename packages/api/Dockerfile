@@ -7,7 +7,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     build-essential \
     libpq-dev \
-    docker.io \
+    && ARCH=$(uname -m) \
+    && curl -fsSL "https://download.docker.com/linux/static/stable/${ARCH}/docker-26.1.4.tgz" | tar -xz -C /usr/local/bin --strip-components=1 docker/docker \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .

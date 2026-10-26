@@ -70,19 +70,32 @@ class WordPressRunnerService:
         vault_themes = os.path.join(self.VAULT_DIR, "themes")
         vault_plugins = os.path.join(self.VAULT_DIR, "plugins")
 
-        # Copy themes
         for theme_name in ("align", "align-child"):
             src = os.path.join(vault_themes, theme_name)
             dst = os.path.join(themes_dir, theme_name)
             if os.path.isdir(src) and not os.path.exists(dst):
                 shutil.copytree(src, dst)
 
-        # Copy plugins
         for plugin_name in ("align-agent", "all-in-one-wp-migration", "fluentform"):
             src = os.path.join(vault_plugins, plugin_name)
             dst = os.path.join(plugins_dir, plugin_name)
             if os.path.isdir(src) and not os.path.exists(dst):
                 shutil.copytree(src, dst)
+
+    async def copy_vault_to_container(self, container_name: str) -> None:
+        """Copy themes and plugins from vault directly into WordPress container."""
+        vault_themes = os.path.join(self.VAULT_DIR, "themes")
+        vault_plugins = os.path.join(self.VAULT_DIR, "plugins")
+
+        for theme_name in ("align", "align-child"):
+            src = os.path.join(vault_themes, theme_name)
+            if os.path.isdir(src):
+                await self.run_cmd(["docker", "cp", src, f"{container_name}:/var/www/html/wp-content/themes/"])
+
+        for plugin_name in ("align-agent", "all-in-one-wp-migration", "fluentform"):
+            src = os.path.join(vault_plugins, plugin_name)
+            if os.path.isdir(src):
+                await self.run_cmd(["docker", "cp", src, f"{container_name}:/var/www/html/wp-content/plugins/"])
 
     async def ensure_wp_cli(self, container_name: str) -> bool:
         """Download and install wp-cli binary inside container if missing."""
@@ -109,10 +122,9 @@ class WordPressRunnerService:
         return code == 0
 
     async def _launch_container(
-        self, container_name: str, port: int, wp_content: str, db_name: str
+        self, container_name: str, port: int, db_name: str
     ) -> bool:
         """Run standard WordPress docker container connected to MariaDB."""
-        # Find compose network
         net_code, net_out, _ = await self.run_cmd([
             "docker", "inspect", "hub_ai_mariadb",
             "--format", "{{range $k, $v := .NetworkSettings.Networks}}{{$k}}{{end}}"
@@ -124,7 +136,6 @@ class WordPressRunnerService:
             "--name", container_name,
             "--network", network,
             "-p", f"{port}:80",
-            "-v", f"{wp_content}:/var/www/html/wp-content",
             "-e", "WORDPRESS_DB_HOST=hub_ai_mariadb:3306",
             "-e", "WORDPRESS_DB_USER=root",
             "-e", "WORDPRESS_DB_PASSWORD=wp_secure_pass",
@@ -138,7 +149,6 @@ class WordPressRunnerService:
         self, container_name: str, site_url: str, title: str, user: str, pwd: str
     ) -> bool:
         """Wait for WordPress container to be ready and configure theme & plugins."""
-        # Wait up to 30s for web server response
         for _ in range(15):
             await asyncio.sleep(2)
             chk, _, _ = await self.run_cmd(["docker", "exec", container_name, "curl", "-s", "http://localhost"])
@@ -147,7 +157,6 @@ class WordPressRunnerService:
 
         await self.ensure_wp_cli(container_name)
 
-        # Install WP Core if not already installed
         chk_code, _, _ = await self.run_wp_cli(container_name, ["core", "is-installed"])
         if chk_code != 0:
             install_args = [
@@ -160,6 +169,9 @@ class WordPressRunnerService:
                 "--skip-email"
             ]
             await self.run_wp_cli(container_name, install_args)
+
+        # Copy vault themes and plugins into container
+        await self.copy_vault_to_container(container_name)
 
         # Set permissions for www-data
         await self.run_cmd(["docker", "exec", container_name, "chown", "-R", "www-data:www-data", "/var/www/html/wp-content"])
@@ -192,22 +204,15 @@ class WordPressRunnerService:
         admin_user = "admin"
         admin_pass = secrets.token_urlsafe(12)
 
-        # 1. Setup workspace folders & assets
-        wp_dir = os.path.join(settings.workspaces_root, project_id, "wordpress")
-        wp_content = os.path.join(wp_dir, "wp-content")
-        os.makedirs(wp_content, exist_ok=True)
-        self.prepare_vault_assets(wp_content)
-
-        # 2. Database & Docker Container
+        # 1. Setup database & launch container
         await self._init_database(db_name)
-        # Remove old container if stopped
         await self.run_cmd(["docker", "rm", "-f", container_name])
-        await self._launch_container(container_name, port, wp_content, db_name)
+        await self._launch_container(container_name, port, db_name)
 
-        # 3. Configure WP instance
+        # 2. Configure WP instance
         await self._configure_wp_instance(container_name, site_url, site_title, admin_user, admin_pass)
 
-        # 4. Save to Database
+        # 3. Save to Database
         site = existing or WordPressSite(project_id=project_id, container_name=container_name)
         site.container_name = container_name
         site.site_url = site_url

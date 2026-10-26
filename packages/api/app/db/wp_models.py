@@ -8,6 +8,7 @@ from sqlalchemy import DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.session import Base
+import app.db.models  # noqa: F401 - ensure projects table is in metadata
 
 
 def utc_now() -> datetime:
