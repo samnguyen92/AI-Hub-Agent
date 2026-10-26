@@ -15,8 +15,11 @@ from app.tools.wp_tools import WPPatchTemplateTool
 def test_wp_runner_slug_and_port():
     """Verify project ID sanitization and port discovery."""
     slug = wp_runner._sanitize_slug("Project-Alpha-123_Test#XYZ!")
-    assert slug == "project_alpha_123_test_x"
+    assert slug == "project-alpha-123_test-x"
     assert len(slug) <= 24
+
+    sub_slug = wp_runner._sanitize_slug("cafe-quan-1")
+    assert sub_slug == "cafe-quan-1"
 
     port = wp_runner.find_available_port(8501)
     assert 8501 <= port < 8700

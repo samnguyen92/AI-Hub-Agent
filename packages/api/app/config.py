@@ -110,6 +110,11 @@ class Settings(BaseSettings):
         default=None, description="Google PageSpeed Insights API key"
     )
 
+    # WordPress Multi-tenant Routing
+    wp_base_domain: str = Field(
+        default="", description="Base domain for automatic WordPress wildcard routing (e.g. demo.alignvn.cloud)"
+    )
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

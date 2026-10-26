@@ -26,12 +26,19 @@ class WPCreateEnvironmentTool(BaseTool):
                 "description": "Tiêu đề của website WordPress",
                 "default": "Align WordPress Site",
             },
+            "subdomain": {
+                "type": "string",
+                "description": "Subdomain mong muốn cho website (ví dụ: cafe, shop, portfolio). Mặc định tự sinh từ project.",
+            },
         },
     }
 
     async def execute(self, context: ToolContext, **kwargs: Any) -> Dict[str, Any]:
         site_title = kwargs.get("site_title", "Align WordPress Site")
-        return await wp_runner.create_site(context.project_id, site_title, context.db)
+        subdomain = kwargs.get("subdomain")
+        return await wp_runner.create_site(
+            context.project_id, site_title, context.db, subdomain=subdomain
+        )
 
 
 class WPImportHtmlPackageTool(BaseTool):

@@ -23,8 +23,10 @@ class WordPressRunnerService:
 
     @staticmethod
     def _sanitize_slug(text: str) -> str:
-        """Create a clean Docker-safe name from project ID."""
-        return "".join(c if c.isalnum() else "_" for c in text.lower())[:24]
+        """Create a clean DNS-safe and Docker-safe name from project ID or subdomain."""
+        clean = "".join(c if (c.isalnum() or c in ("-", "_")) else "-" for c in text.lower())
+        clean = clean.strip("-_")
+        return clean[:24] or "site"
 
     @staticmethod
     def find_available_port(start_port: int = 8501, max_tries: int = 100) -> int:
@@ -179,10 +181,28 @@ class WordPressRunnerService:
         # Activate theme and plugins
         await self.run_wp_cli(container_name, ["theme", "activate", "align-child"])
         await self.run_wp_cli(container_name, ["plugin", "activate", "align-agent", "all-in-one-wp-migration", "fluentform"])
+
+        # Configure dynamic host & HTTPS reverse proxy support in wp-config.php
+        php_inject = (
+            "$f='/var/www/html/wp-config.php';"
+            "if(file_exists($f)){"
+            "$c=file_get_contents($f);"
+            "if(strpos($c,'HTTP_X_FORWARDED_PROTO')===false){"
+            "$s=\"\\nif(isset(\\$_SERVER['HTTP_X_FORWARDED_PROTO'])&&\\$_SERVER['HTTP_X_FORWARDED_PROTO']==='https'){\\$_SERVER['HTTPS']='on';}\\n\";"
+            "$s.=\"if(isset(\\$_SERVER['HTTP_HOST'])){\\$p=(isset(\\$_SERVER['HTTPS'])&&\\$_SERVER['HTTPS']==='on')?'https':'http';if(!defined('WP_HOME'))define('WP_HOME',\\$p.'://'.\\$_SERVER['HTTP_HOST']);if(!defined('WP_SITEURL'))define('WP_SITEURL',\\$p.'://'.\\$_SERVER['HTTP_HOST']);}\\n\";"
+            "$c=preg_replace('/(\\/\\* That\\'s all, stop editing!)/',$s.'$1',$c);"
+            "file_put_contents($f,$c);"
+            "}}"
+        )
+        await self.run_cmd(["docker", "exec", container_name, "php", "-r", php_inject])
         return True
 
     async def create_site(
-        self, project_id: str, site_title: str, db: AsyncSession
+        self,
+        project_id: str,
+        site_title: str,
+        db: AsyncSession,
+        subdomain: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Create and provision a complete WordPress container environment for a project."""
         existing = await self.get_site(project_id, db)
@@ -196,11 +216,16 @@ class WordPressRunnerService:
                 "status": existing.status,
             }
 
-        slug = self._sanitize_slug(project_id)
+        slug = self._sanitize_slug(subdomain or project_id)
         container_name = f"hub_ai_wp_{slug}"
-        db_name = f"wp_{slug}"
+        db_name = f"wp_{slug.replace('-', '_')}"
         port = self.find_available_port(8501)
-        site_url = f"http://localhost:{port}"
+
+        if settings.wp_base_domain:
+            site_url = f"https://{slug}.{settings.wp_base_domain}"
+        else:
+            site_url = f"http://{slug}.localhost:8500"
+
         admin_user = "admin"
         admin_pass = secrets.token_urlsafe(12)
 
@@ -232,6 +257,7 @@ class WordPressRunnerService:
             "admin_url": site.admin_url,
             "admin_user": site.admin_user,
             "admin_password": site.admin_password,
+            "direct_port_url": f"http://localhost:{port}",
             "status": site.status,
         }
 
