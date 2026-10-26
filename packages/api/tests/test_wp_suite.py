@@ -18,8 +18,8 @@ def test_wp_runner_slug_and_port():
     assert slug == "project_alpha_123_test_x"
     assert len(slug) <= 24
 
-    port = wp_runner.find_available_port(8081)
-    assert 8081 <= port < 8200
+    port = wp_runner.find_available_port(8501)
+    assert 8501 <= port < 8700
 
 
 def test_wp_runner_prepare_vault_assets():

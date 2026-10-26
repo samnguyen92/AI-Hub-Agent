@@ -1,0 +1,319 @@
+/**
+ * Align Theme Builder CSS - Hover Highlight & Target Indicators
+ * @package Align
+ */
+
+#vvveb-builder .component-properties-sidepane>div {
+  flex: 1 1;
+  height: 100%;
+}
+
+#vvveb-builder .component-properties {
+  background: var(--bs-body-bg);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  height: calc(100% - 45px);
+  /*
+		.form-control, .form-select
+		{
+			padding:.275rem 0.25rem;
+		}*/
+}
+
+#vvveb-builder .component-properties .tab-content {
+  padding: 0.5rem 0;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  flex: 1 1;
+}
+
+#vvveb-builder .component-properties .tab-content>.active {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin-bottom: 2rem;
+}
+
+#vvveb-builder .component-properties #right-panel {
+  color: #777;
+}
+
+#vvveb-builder .component-properties,
+#vvveb-builder .component-properties select,
+#vvveb-builder .component-properties textarea,
+#vvveb-builder .component-properties input[type="text"] {
+  font-size: 12px;
+}
+
+#vvveb-builder .component-properties .btn-sm,
+#vvveb-builder .component-properties .btn-group-sm>.btn {
+  font-size: 0.8rem;
+}
+
+#vvveb-builder .component-properties .form-select {
+  height: auto;
+}
+
+#vvveb-builder .component-properties .mb-2 {
+  vertical-align: middle;
+  align-items: center;
+}
+
+#vvveb-builder .component-properties .mb-2.row {
+  margin: 0;
+}
+
+#vvveb-builder .component-properties .mb-2 label {
+  font-size: 11px;
+  font-weight: 500;
+  margin-bottom: 5px;
+  color: var(--bs-secondary-color);
+  flex-grow: 1;
+}
+
+#vvveb-builder .component-properties .mb-2 label i {
+  font-size: 14px;
+}
+
+#vvveb-builder .component-properties .mb-2 .input .input-range {
+  position: relative;
+  padding-top: 0.4rem;
+}
+
+#vvveb-builder .component-properties .mb-2 .input .input-range input[type="number"] {
+  position: absolute;
+  right: 0;
+  top: -0.8rem;
+  width: 5em;
+  padding: 0.2rem 0.2rem;
+  text-align: center;
+  line-height: 12px;
+  font-size: 12px;
+}
+
+#vvveb-builder .component-properties .mb-2 .input [type="color"],
+#vvveb-builder .component-properties .mb-2 .input .form-check-input {
+  float: right;
+}
+
+#vvveb-builder .component-properties .mb-2 .custom-control {
+  min-height: 1.1rem;
+}
+
+#vvveb-builder .component-properties .mb-2.inline {
+  display: flex !important;
+  flex-direction: column;
+  gap: 5px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+#vvveb-builder .component-properties .mb-2.inline label,
+#vvveb-builder .component-properties .mb-2.inline .form-label,
+#vvveb-builder .component-properties .mb-2.inline .control-label {
+  flex: 1 1 auto;
+  margin-bottom: 0;
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+#vvveb-builder .component-properties .mb-2.inline .input {
+  flex: 0 0 auto;
+  width: auto;
+  /* margin-left: auto; */
+}
+
+#vvveb-builder .component-properties .mb-2.inline .input .form-check {
+  margin-bottom: 0;
+  padding-left: 0;
+  display: flex;
+  align-items: center;
+}
+
+#vvveb-builder .component-properties .mb-2.inline .input .form-check-input {
+  float: none;
+  margin-top: 0;
+}
+
+#vvveb-builder #canvas {
+  margin-right: var(--builder-right-panel-width);
+  margin-left: var(--builder-left-panel-width);
+  width: calc(100vw - (var(--builder-left-panel-width) + var(--builder-sidebar-width) + var(--builder-right-panel-width) + var(--builder-canvas-margin)));
+  height: calc(100vh - (var(--builder-header-top-height) + var(--builder-bottom-panel-height)));
+  top: var(--builder-header-top-height);
+  position: fixed;
+  background-color: var(--bs-secondary-bg);
+  overflow: clip;
+  overflow-clip-margin: 0px;
+  box-sizing: border-box;
+}
+
+#vvveb-builder #canvas #iframe-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
+  transition: transform 0.2s ease 0s, width 0.2s ease 0s, height 0.2s ease 0s;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  background-color: #ffffff;
+  margin: 0 !important;
+  flex-shrink: 0;
+}
+
+#vvveb-builder #canvas #iframe-wrapper,
+#vvveb-builder #canvas iframe,
+#vvveb-builder #canvas iframe body {
+  border: none;
+}
+
+#vvveb-builder #canvas iframe {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#vvveb-builder #canvas.responsive {
+  background: var(--bs-border-color);
+}
+
+#vvveb-builder #canvas.responsive #iframe-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
+  margin: 0 !important;
+}
+
+#vvveb-builder #canvas.responsive #iframe-wrapper iframe {
+  resize: both;
+}
+
+#vvveb-builder.preview #canvas {
+  width: 100%;
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
+#vvveb-builder.preview #left-panel,
+#vvveb-builder.preview #right-panel {
+  display: none;
+}
+
+#vvveb-builder.no-right-panel {
+  --builder-right-panel-width: 0px;
+}
+
+#vvveb-builder.no-right-panel #right-panel {
+  display: none;
+}
+
+#vvveb-builder #iframe-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+#vvveb-builder #iframe-layer .loading-message {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  display: none;
+}
+
+#vvveb-builder #iframe-layer .loading-message.active {
+  display: block;
+}
+
+#vvveb-builder #highlight-box {
+  position: absolute;
+  border: 1px solid var(--bs-primary);
+  color: var(--bs-white);
+  width: 0px;
+  height: 0px;
+  top: 0px;
+  left: 0px;
+  display: none;
+  transition: all 0.05s;
+}
+
+#vvveb-builder #drop-highlight-box {
+  position: absolute;
+  border: 2px solid var(--bs-primary);
+  color: var(--bs-white);
+  width: 0px;
+  height: 0px;
+  top: 0px;
+  left: 0px;
+  transition: all 0.3s;
+  border-radius: 4px;
+  display: none;
+}
+
+#vvveb-builder .text-edit#select-box {
+  border-style: dashed;
+  /*border-width:1px;*/
+  border: 1px solid rgba(var(--bs-body-color-rgb), 0.2);
+  box-shadow: 1px 1px 3px 0px rgba(var(--bs-body-color-rgb), 0.1) inset, 0px 0px 2px 1px rgba(var(--bs-body-bg-rgb), 0.8) inset;
+  background: transparent;
+  border-radius: 0 0 3px 3px;
+}
+
+#vvveb-builder #select-box {
+  position: absolute;
+  border: 1px solid var(--bs-primary);
+  color: var(--bs-white);
+  background: rgba(var(--bs-primary), 0.1);
+  width: 0px;
+  height: 0px;
+  top: 0px;
+  left: 0px;
+  display: none;
+}
+
+#vvveb-builder #select-box.resizable .resize {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+}
+
+#vvveb-builder #select-box.resizable .resize>div {
+  position: absolute;
+  pointer-events: all;
+  border: 2px solid var(--bs-primary);
+  width: 10px;
+  height: 10px;
+  background-color: rgba(var(--bs-primary), 0.1);
+  margin: -5px;
+}
+
+#vvveb-builder #select-box.resizable .resize .top-left {
+  top: 0;
+  left: 0;
+  cursor: nwse-resize;
+}
+
+#vvveb-builder #select-box.resizable .resize .top-center {
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: -5px auto;
+  cursor: ns-resize;
+}
+
+#vvveb-builder #select-box.resizable .resize .top-right {
+  top: 0;
+  right: 0;
+  cursor: nesw-resize;
+}

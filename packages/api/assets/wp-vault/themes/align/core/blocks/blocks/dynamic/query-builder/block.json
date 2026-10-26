@@ -1,0 +1,246 @@
+{
+    "apiVersion": 3,
+    "name": "align/query-builder",
+    "title": "Query Builder",
+    "icon": "database",
+    "category": "align-category",
+    "description": "A versatile Query Builder supporting Slider and Grid layouts.",
+    "textdomain": "align-function",
+    "attributes": {
+        "dataSource": {
+            "type": "string",
+            "default": "post"
+        },
+        "displayMode": {
+            "type": "string",
+            "default": "slider"
+        },
+        "enableSliderInit": {
+            "type": "boolean",
+            "default": false
+        },
+        "gridColumns": {
+            "type": "number",
+            "default": 3
+        },
+        "postType": {
+            "type": "string",
+            "default": "post"
+        },
+        "customPostType": {
+            "type": "string",
+            "default": ""
+        },
+        "postTypeMode": {
+            "type": "string",
+            "default": "inclusive"
+        },
+        "selectedPostTypes": {
+            "type": "array",
+            "default": ["all"],
+            "items": {
+                "type": "string"
+            }
+        },
+        "postsPerPage": {
+            "type": "number",
+            "default": 4
+        },
+        "slidesPerView": {
+            "type": "string",
+            "default": "1"
+        },
+        "slidesPerViewTablet": {
+            "type": "string",
+            "default": "1"
+        },
+        "slidesPerViewMobile": {
+            "type": "string",
+            "default": "1"
+        },
+        "loop": {
+            "type": "boolean",
+            "default": true
+        },
+        "autoplayDelay": {
+            "type": "number",
+            "default": 0
+        },
+        "arrows": {
+            "type": "boolean",
+            "default": true
+        },
+        "showDots": {
+            "type": "boolean",
+            "default": true
+        },
+        "useCustomDotLabels": {
+            "type": "boolean",
+            "default": false
+        },
+        "dotLabels": {
+            "type": "string",
+            "default": ""
+        },
+        "spaceBetween": {
+            "type": "number",
+            "default": 20
+        },
+        "transitionEffect": {
+            "type": "string",
+            "default": "slide"
+        },
+        "hookNavigator": {
+            "type": "boolean",
+            "default": false
+        },
+        "nextSelector": {
+            "type": "string",
+            "default": ""
+        },
+        "prevSelector": {
+            "type": "string",
+            "default": ""
+        },
+        "postCardStyle": {
+            "type": "string",
+            "default": "overlay"
+        },
+        "fallbackImageId": {
+            "type": "number",
+            "default": 0
+        },
+        "fallbackImageUrl": {
+            "type": "string",
+            "default": ""
+        },
+        "showPostTitle": {
+            "type": "boolean",
+            "default": true
+        },
+        "showPostExcerpt": {
+            "type": "boolean",
+            "default": false
+        },
+        "showPostDate": {
+            "type": "boolean",
+            "default": false
+        },
+        "showPostCategory": {
+            "type": "boolean",
+            "default": false
+        },
+        "filterTaxonomy": {
+            "type": "string",
+            "default": ""
+        },
+        "filterTermIds": {
+            "type": "string",
+            "default": ""
+        },
+        "titleTag": {
+            "type": "string",
+            "default": "h3"
+        },
+        "titleSource": {
+            "type": "string",
+            "default": "default"
+        },
+        "titleAcfSlug": {
+            "type": "string",
+            "default": ""
+        },
+        "excerptTag": {
+            "type": "string",
+            "default": "p"
+        },
+        "excerptSource": {
+            "type": "string",
+            "default": "default"
+        },
+        "excerptAcfSlug": {
+            "type": "string",
+            "default": ""
+        },
+        "dateFormat": {
+            "type": "string",
+            "default": "F j, Y"
+        },
+        "customDateFormat": {
+            "type": "string",
+            "default": ""
+        },
+        "dateSource": {
+            "type": "string",
+            "default": "default"
+        },
+        "dateAcfSlug": {
+            "type": "string",
+            "default": ""
+        },
+        "showReadMore": {
+            "type": "boolean",
+            "default": true
+        },
+        "readMoreText": {
+            "type": "string",
+            "default": "Read More"
+        },
+        "readMoreIconType": {
+            "type": "string",
+            "default": "arrow"
+        },
+        "readMoreCustomSvg": {
+            "type": "string",
+            "default": ""
+        },
+        "queryOrderBy": {
+            "type": "string",
+            "default": "date"
+        },
+        "queryOrder": {
+            "type": "string",
+            "default": "DESC"
+        },
+        "paginationType": {
+            "type": "string",
+            "default": "none"
+        },
+        "queryRelatedPosts": {
+            "type": "boolean",
+            "default": false
+        },
+        "videoLazyload": {
+            "type": "boolean",
+            "default": true
+        },
+        "enableSearch": {
+            "type": "boolean",
+            "default": false
+        },
+        "searchPlaceholder": {
+            "type": "string",
+            "default": "Search..."
+        },
+        "searchDebounce": {
+            "type": "number",
+            "default": 400
+        },
+        "linkWholeContainer": {
+            "type": "boolean",
+            "default": false
+        },
+        "className": {
+            "type": "string",
+            "default": ""
+        }
+    },
+    "supports": {
+        "html": false,
+        "customClassName": false,
+        "anchor": false,
+        "align": ["wide", "full"]
+    },
+    "usesContext": ["postId", "postType"],
+    "editorScript": "align-query-builder-editor"
+}

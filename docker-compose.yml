@@ -77,7 +77,7 @@ services:
       api:
         condition: service_healthy
     ports:
-      - "3000:3000"
+      - "3100:3000"
     environment:
       - INTERNAL_API_URL=http://api:8000
       - NEXT_PUBLIC_API_URL=/api/backend

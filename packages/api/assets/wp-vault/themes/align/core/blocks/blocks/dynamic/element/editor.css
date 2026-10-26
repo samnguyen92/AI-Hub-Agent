@@ -1,0 +1,752 @@
+/* Reset WordPress default block margins/max-width for align/element */
+.editor-styles-wrapper .wp-block[data-type="align/element"],
+.editor-styles-wrapper .block-editor-block-list__block[data-type="align/element"],
+.editor-styles-wrapper [data-type="align/element"],
+.wp-block[data-type="align/element"] {
+  /* max-width: none; */
+  margin: 0;
+  /* padding: 0; */
+  /* background: transparent; */
+}
+
+/* Bypass Gutenberg's inner-blocks wrappers for correct Flexbox/Grid behavior globally inside Align blocks */
+.editor-styles-wrapper [data-type^="align/"] .block-editor-inner-blocks,
+.editor-styles-wrapper [data-type^="align/"] .block-editor-block-list__layout:not(.align_custom_block),
+.editor-styles-wrapper .align-splide-slide-editor .block-editor-inner-blocks,
+.editor-styles-wrapper .align-splide-slide-editor .block-editor-block-list__layout:not(.align_custom_block),
+[data-type^="align/"] .block-editor-inner-blocks,
+[data-type^="align/"] .block-editor-block-list__layout:not(.align_custom_block),
+.align-splide-slide-editor .block-editor-inner-blocks,
+.align-splide-slide-editor .block-editor-block-list__layout:not(.align_custom_block) {
+  display: contents !important;
+}
+
+/* Make block wrapper invisible layout-wise if the block element itself is absolute or inset */
+.editor-styles-wrapper .wp-block[data-type^="align/"]:has(> .absolute),
+.editor-styles-wrapper .wp-block[data-type^="align/"]:has(> [class*="absolute"]),
+.editor-styles-wrapper .wp-block[data-type^="align/"]:has(> .inset-0),
+.editor-styles-wrapper .wp-block[data-type^="align/"]:has(> [class*="inset-"]),
+.editor-styles-wrapper .wp-block[data-type^="align/"]:has(> [class*="z-"]),
+.wp-block[data-type^="align/"]:has(> .absolute),
+.wp-block[data-type^="align/"]:has(> [class*="absolute"]),
+.wp-block[data-type^="align/"]:has(> .inset-0),
+.wp-block[data-type^="align/"]:has(> [class*="inset-"]),
+.wp-block[data-type^="align/"]:has(> [class*="z-"]) {
+  display: contents !important;
+}
+
+/* Override default Gutenberg block wrappers positioning so absolute positioning context bubbles up correctly */
+/* .editor-styles-wrapper .wp-block[data-type^="align/"]:not(.absolute):not(.relative):not(.fixed):not(.sticky),
+.editor-styles-wrapper .block-editor-block-list__block[data-type^="align/"]:not(.absolute):not(.relative):not(.fixed):not(.sticky) {
+    position: static !important;
+} */
+
+/* ==========================================================================
+   3. CUSTOM SELECT CONTROL STYLES
+   ========================================================================== */
+.align-custom-select-wrapper {
+  position: relative !important;
+  display: block !important;
+}
+
+.align-custom-select-wrapper label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #1e1e1e;
+}
+
+.align-custom-select-wrapper .align-select-btn {
+  width: 100%;
+  text-align: left;
+  padding: 6px 12px;
+  font-size: 13px;
+  line-height: normal;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 40px;
+  color: #334155;
+}
+
+.align-custom-select-wrapper .align-select-btn:focus,
+.align-custom-select-wrapper .align-select-btn:active {
+  outline: 0 !important;
+  box-shadow: none !important;
+  border-color: #0f172a !important;
+}
+
+.align-custom-select-wrapper.is-open .align-select-btn {
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.align-custom-select-wrapper .align-select-dropdown {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  width: 100% !important;
+  z-index: 999999 !important;
+  box-sizing: border-box !important;
+  background: #fff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-top: none !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-left-radius: 6px !important;
+  border-bottom-right-radius: 6px !important;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08) !important;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.align-custom-select-wrapper .align-select-opt {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #1e1e1e;
+}
+
+.align-custom-select-wrapper .align-select-opt:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.align-custom-select-wrapper .align-select-opt.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f8f8f8;
+  font-weight: bold;
+}
+
+.align-custom-select-arrow {
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid #64748b;
+  margin-left: 8px;
+}
+
+.align-custom-select-wrapper.is-open .align-custom-select-arrow {
+  border-top: none;
+  border-bottom: 4px solid #64748b;
+}
+
+/* Force Accordion Desktop Grid Layout in CMS editor & Show all texts expanded for editing */
+@media (min-width: 1024px) {
+
+  .editor-styles-wrapper.editor-styles-wrapper [id^="section-3"] .accordion-row,
+  .editor-styles-wrapper.editor-styles-wrapper [id^="align-section-3"] .accordion-row {
+    display: block !important;
+    height: auto !important;
+    min-height: 320px !important;
+    overflow: hidden !important;
+  }
+
+  .editor-styles-wrapper.editor-styles-wrapper [id^="section-3"] .accordion-row-flex,
+  .editor-styles-wrapper.editor-styles-wrapper [id^="align-section-3"] .accordion-row-flex {
+    display: flex !important;
+    flex-direction: row !important;
+    height: 100% !important;
+  }
+
+  .editor-styles-wrapper.editor-styles-wrapper [id^="section-3"] .accordion-row .lg\:w-1\/3,
+  .editor-styles-wrapper.editor-styles-wrapper [id^="align-section-3"] .accordion-row .lg\:w-1\/3 {
+    width: 33.333333% !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-left: none !important;
+    position: relative !important;
+  }
+
+  .editor-styles-wrapper.editor-styles-wrapper [id^="section-3"] .accordion-row .lg\:w-2\/3,
+  .editor-styles-wrapper.editor-styles-wrapper [id^="align-section-3"] .accordion-row .lg\:w-2\/3 {
+    width: 66.666667% !important;
+    height: 100% !important;
+    display: block !important;
+    position: relative !important;
+  }
+}
+
+/* Mobile responsive styles in the editor (under 1024px) */
+@media (max-width: 1023px) {
+
+  .editor-styles-wrapper.editor-styles-wrapper [id^="section-3"] .accordion-row,
+  .editor-styles-wrapper.editor-styles-wrapper [id^="align-section-3"] .accordion-row {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    padding-bottom: 24px !important;
+  }
+
+  .editor-styles-wrapper.editor-styles-wrapper [id^="section-3"] .accordion-row-flex,
+  .editor-styles-wrapper.editor-styles-wrapper [id^="align-section-3"] .accordion-row-flex {
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+  }
+
+  .editor-styles-wrapper.editor-styles-wrapper [id^="section-3"] .accordion-row .lg\:w-1\/3,
+  .editor-styles-wrapper.editor-styles-wrapper [id^="align-section-3"] .accordion-row .lg\:w-1\/3 {
+    width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding-bottom: 16px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .editor-styles-wrapper.editor-styles-wrapper [id^="section-3"] .accordion-row .lg\:w-2\/3,
+  .editor-styles-wrapper.editor-styles-wrapper [id^="align-section-3"] .accordion-row .lg\:w-2\/3 {
+    width: 100% !important;
+    height: 240px !important;
+    display: block !important;
+    position: relative !important;
+  }
+}
+
+.editor-styles-wrapper.editor-styles-wrapper [id^="section-3"] .accordion-row h3,
+.editor-styles-wrapper.editor-styles-wrapper [id^="align-section-3"] .accordion-row h3,
+.editor-styles-wrapper.editor-styles-wrapper [id^="section-3"] .accordion-row span,
+.editor-styles-wrapper.editor-styles-wrapper [id^="align-section-3"] .accordion-row span {
+  opacity: 1 !important;
+}
+
+.editor-styles-wrapper.editor-styles-wrapper [id^="section-3"] .accordion-desktop-collapse-wrapper,
+.editor-styles-wrapper.editor-styles-wrapper [id^="align-section-3"] .accordion-desktop-collapse-wrapper {
+  grid-template-rows: 1fr !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.editor-styles-wrapper.editor-styles-wrapper [id^="section-3"] .accordion-image-wrapper,
+.editor-styles-wrapper.editor-styles-wrapper [id^="align-section-3"] .accordion-image-wrapper {
+  width: 100% !important;
+  height: 100% !important;
+  opacity: 1 !important;
+  margin-top: 0 !important;
+  display: block !important;
+  position: relative !important;
+}
+
+.editor-styles-wrapper.editor-styles-wrapper [id^="section-3"] .accordion-image-wrapper [data-type="align/media"],
+.editor-styles-wrapper.editor-styles-wrapper [id^="align-section-3"] .accordion-image-wrapper [data-type="align/media"],
+.editor-styles-wrapper.editor-styles-wrapper [id^="section-3"] .accordion-image-wrapper .wp-block-align-media,
+.editor-styles-wrapper.editor-styles-wrapper [id^="align-section-3"] .accordion-image-wrapper .wp-block-align-media {
+  height: 100% !important;
+  width: 100% !important;
+  display: block !important;
+  position: relative !important;
+}
+
+/* Fix button hover states in the editor */
+.btn-chat-nav:hover,
+.btn-chat-nav:hover * {
+  background-color: var(--color-white) !important;
+  color: #3b4aff !important;
+}
+
+.btn-primary-rect:hover,
+.btn-primary-rect:hover * {
+  background-color: var(--color-white) !important;
+  color: #3b4aff !important;
+}
+
+.btn-cta-heavy-primary:hover,
+.btn-cta-heavy-primary:hover * {
+  background-color: #fff !important;
+  color: #3b4aff !important;
+}
+
+.btn-cta-heavy-secondary:hover,
+.btn-cta-heavy-secondary:hover * {
+  background-color: var(--color-white) !important;
+  color: #3b4aff !important;
+  border-color: var(--color-white) !important;
+}
+
+.btn-outline-arrow:hover,
+.btn-outline-arrow:hover * {
+  background-color: var(--color-white) !important;
+  color: #3b4aff !important;
+}
+
+.btn-outline-transit:hover,
+.btn-outline-transit:hover * {
+  background-color: var(--color-white) !important;
+  color: #0f1420 !important;
+}
+
+.btn-blue-rounded:hover,
+.btn-blue-rounded:hover * {
+  background-color: #2a39e6 !important;
+  color: var(--color-white) !important;
+}
+
+.btn-blue-rect:hover,
+.btn-blue-rect:hover * {
+  background-color: #fff !important;
+  color: #3b4aff !important;
+}
+
+.btn-blue-rect:hover svg path {
+  stroke: #3b4aff !important;
+}
+
+.btn-white-rect:hover,
+.btn-white-rect:hover * {
+  background-color: #3b4aff !important;
+  color: #fff !important;
+}
+
+.btn-white-rect:hover svg path {
+  stroke: #fff !important;
+}
+
+.chat-btn:hover,
+.chat-btn:hover * {
+  color: #3b4aff !important;
+}
+
+.explore-btn:hover,
+.explore-btn:hover * {
+  color: #3b4aff !important;
+}
+
+/* Fix Hero Section Buttons in Gutenberg Editor by bypassing intermediate Gutenberg wrappers for inner blocks specifically */
+.editor-styles-wrapper .wp-block[data-type="align/element"]:has(> .btn-hero-primary-bg),
+.editor-styles-wrapper .block-editor-block-list__block[data-type="align/element"]:has(> .btn-hero-primary-bg) {
+  display: contents !important;
+}
+
+.editor-styles-wrapper .btn-hero-primary {
+  display: flex !important;
+  position: relative !important;
+  overflow: hidden !important;
+  align-items: center !important;
+  height: 48px !important;
+  background-color: transparent !important;
+  min-width: 200px !important;
+  margin: 0 !important;
+}
+
+.editor-styles-wrapper .btn-hero-primary-bg {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  height: 100% !important;
+  width: 48px !important;
+  background-color: #3b4aff !important;
+  z-index: 0 !important;
+  margin: 0 !important;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.editor-styles-wrapper .btn-hero-primary:hover .btn-hero-primary-bg {
+  width: 100% !important;
+}
+
+.editor-styles-wrapper .btn-hero-primary-icon {
+  z-index: 10 !important;
+  position: relative !important;
+  width: 48px !important;
+  height: 48px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin: 0 !important;
+}
+
+.editor-styles-wrapper .btn-hero-primary-text {
+  z-index: 10 !important;
+  position: relative !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  padding-left: 12px !important;
+}
+
+.editor-styles-wrapper .btn-hero-secondary {
+  min-width: 200px !important;
+  height: 47px !important;
+  padding: 12px !important;
+  color: #fff9 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin: 0 !important;
+  transition: all 0.2s ease !important;
+}
+
+.editor-styles-wrapper .btn-hero-secondary:hover {
+  color: var(--color-white) !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.editor-styles-wrapper .btn-hero-secondary-text {
+  color: inherit !important;
+}
+
+/* CMS-only Override: Show all Accordion answers by default in the editor */
+.editor-styles-wrapper .accordion-content {
+  max-height: none !important;
+  height: auto !important;
+  overflow: visible !important;
+  padding-bottom: 24px !important;
+  opacity: 1 !important;
+  display: block !important;
+}
+
+.editor-styles-wrapper .chevron-icon {
+  transform: rotate(180deg) !important;
+}
+
+/* Keep active tab panels visible in the editor during editing/selection */
+.editor-styles-wrapper.editor-styles-wrapper .tab-panel:has(.is-selected),
+.editor-styles-wrapper.editor-styles-wrapper .tab-panel:has(.is-focused),
+.editor-styles-wrapper.editor-styles-wrapper .tab-panel.is-selected,
+.editor-styles-wrapper.editor-styles-wrapper .tab-panel.is-focused,
+.editor-styles-wrapper.editor-styles-wrapper .tab-panel.has-child-selected {
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* ==========================================================================
+   4. LINK LIVE SEARCH CONTROL STYLES
+   ========================================================================== */
+.align-link-search-wrapper {
+  position: relative !important;
+  margin-bottom: 16px;
+}
+
+.align-link-search-wrapper .components-text-control {
+  margin-bottom: 0 !important;
+}
+
+.align-link-search-wrapper.is-open input[type="text"].components-text-control__input {
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.align-link-search-dropdown {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  width: 100% !important;
+  z-index: 999999 !important;
+  box-sizing: border-box !important;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-top: none !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-left-radius: 6px !important;
+  border-bottom-right-radius: 6px !important;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08) !important;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.align-link-search-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #1e1e1e;
+  border-bottom: 1px solid #e0e0e0;
+  transition: background-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.align-link-search-item:last-child {
+  border-bottom: none;
+}
+
+.align-link-search-item:hover {
+  background: #f1f5f9;
+}
+
+.align-link-search-item .align-link-search-item-title {
+  font-weight: 500;
+  color: #1e1e1e;
+  margin-bottom: 2px;
+  transition: color 0.2s ease;
+}
+
+.align-link-search-item:hover .align-link-search-item-title {
+  color: #0f172a;
+}
+
+.align-link-search-item .align-link-search-item-meta {
+  font-size: 11px;
+  color: #757575;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.align-link-search-dropdown .align-link-search-status {
+  padding: 12px;
+  font-size: 13px;
+  color: #757575;
+  text-align: center;
+  font-style: italic;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.align-media-uploader-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+
+.align-media-uploader-row>.components-base-control {
+  margin-bottom: 0 !important;
+  flex: 1;
+}
+
+.align-media-uploader-row>.components-base-control .components-base-control__field {
+  margin-bottom: 0 !important;
+}
+
+/* Prevent Gutenberg from forcing labels to uppercase inside Inspector sidebar controls */
+.components-base-control__label {
+  text-transform: none !important;
+}
+
+/* Make editable text blocks easier to click and type in the editor */
+.editor-styles-wrapper .align-element-text,
+.editor-styles-wrapper .align-element-preview-text,
+.editor-styles-wrapper .block-editor-rich-text__editable,
+.editor-styles-wrapper .editor-post-title__input {
+  min-height: 1.5em;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+/* Helper outline and spacing for Align custom blocks in Editor */
+.editor-styles-wrapper .block-editor-block-list__block[data-type^="align/"],
+.editor-styles-wrapper .wp-block[data-type^="align/"] {
+  box-sizing: border-box !important;
+  outline: 1px dashed transparent !important;
+  outline-offset: -1px !important;
+  transition: outline-color 0.15s ease-in-out !important;
+}
+
+/* Hover and Selected states for Align custom blocks only */
+.editor-styles-wrapper .block-editor-block-list__block[data-type^="align/"]:hover,
+.editor-styles-wrapper .wp-block[data-type^="align/"]:hover {
+  outline-color: rgba(15, 23, 42, 0.2) !important;
+}
+
+.editor-styles-wrapper .block-editor-block-list__block[data-type^="align/"].is-selected,
+.editor-styles-wrapper .wp-block[data-type^="align/"].is-selected {
+  outline: 1px dashed #3b4aff !important;
+  outline-offset: -1px !important;
+}
+
+/* Ensure empty Align blocks have a minimum height to remain visible and clickable */
+.editor-styles-wrapper .block-editor-block-list__block[data-type^="align/"]:empty,
+.editor-styles-wrapper .wp-block[data-type^="align/"]:empty,
+.editor-styles-wrapper .block-editor-block-list__block[data-type^="align/"].is-empty,
+.editor-styles-wrapper .wp-block[data-type^="align/"].is-empty,
+.editor-styles-wrapper .block-editor-block-list__block[data-type^="align/"]:has(.align-appender-wrapper),
+.editor-styles-wrapper .wp-block[data-type^="align/"]:has(.align-appender-wrapper) {
+  min-height: 36px !important;
+}
+
+/* Prevent Gutenberg sandboxed iframes (like Custom HTML previews) from collapsing to 0 width */
+.editor-styles-wrapper .components-sandbox {
+  width: 100% !important;
+}
+
+/* Keep dropdown menu visible when selected in editor */
+.editor-styles-wrapper .wp-block.is-selected .glass-menu,
+.editor-styles-wrapper .wp-block.has-child-selected .glass-menu,
+.editor-styles-wrapper .wp-block:focus-within .glass-menu,
+.editor-styles-wrapper .glass-menu.is-selected,
+.editor-styles-wrapper .glass-menu:has(.is-selected),
+.editor-styles-wrapper .wp-block[data-type^="align/"]:has(.is-selected) .glass-menu {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+  z-index: 100 !important;
+}
+
+/* Ensure the currently selected block's megamenu has higher z-index to overlay others */
+.editor-styles-wrapper .wp-block.is-selected > .glass-menu,
+.editor-styles-wrapper .wp-block.is-selected .glass-menu,
+.editor-styles-wrapper .wp-block.has-child-selected > .glass-menu {
+  z-index: 99999 !important;
+}
+
+/* Support hover states in Editor to easily preview other menus by hover */
+.editor-styles-wrapper .wp-block[data-type^="align/"]:hover > .glass-menu,
+.editor-styles-wrapper .wp-block[data-type^="align/"]:hover .glass-menu {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+  z-index: 999999 !important;
+}
+
+/* ==========================================================================
+   5. WORDPRESS CORE BLOCKS STANDARDIZED EDITOR STYLING
+   ========================================================================== */
+.editor-styles-wrapper .components-placeholder,
+.editor-styles-wrapper [data-type="core/html"] .components-placeholder,
+.editor-styles-wrapper [data-type="core/shortcode"] .components-placeholder,
+.editor-styles-wrapper .block-library-html__edit,
+.editor-styles-wrapper .wp-block-shortcode {
+  border: 1px solid #1e1e1e !important;
+  border-radius: 4px !important;
+  padding: 16px 20px !important;
+  background: #ffffff !important;
+  box-sizing: border-box !important;
+  margin-bottom: 16px !important;
+}
+
+.editor-styles-wrapper .components-placeholder__label {
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  color: #1e1e1e !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-bottom: 12px !important;
+}
+
+.editor-styles-wrapper .components-placeholder__instructions,
+.editor-styles-wrapper .components-placeholder p,
+.editor-styles-wrapper .components-placeholder fieldset,
+.editor-styles-wrapper .components-placeholder__fieldset {
+  margin-bottom: 12px !important;
+  font-size: 13px !important;
+  color: #1e1e1e !important;
+  line-height: 1.4 !important;
+}
+
+.editor-styles-wrapper .components-placeholder .components-button,
+.editor-styles-wrapper .components-placeholder button,
+.editor-styles-wrapper [data-type^="core/"] button,
+.editor-styles-wrapper .block-library-html__edit button {
+  background-color: #3b4aff !important;
+  color: #ffffff !important;
+  border-radius: 4px !important;
+  padding: 8px 16px !important;
+  font-weight: 500 !important;
+  border: none !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-top: 12px !important;
+}
+
+.editor-styles-wrapper .blocks-shortcode__textarea,
+.editor-styles-wrapper [data-type="core/shortcode"] textarea,
+.editor-styles-wrapper [data-type="core/html"] textarea {
+  border: 1px solid #1e1e1e !important;
+  border-radius: 4px !important;
+  padding: 8px 12px !important;
+  background: #ffffff !important;
+  color: #1e1e1e !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  font-family: monospace !important;
+  font-size: 13px !important;
+}
+
+.editor-styles-wrapper .wp-block-code,
+.editor-styles-wrapper [data-type="core/code"] {
+  background-color: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 4px !important;
+  padding: 16px 20px !important;
+  font-family: monospace !important;
+  color: #1e1e1e !important;
+}
+
+/* ==========================================================================
+   6. ALIGN CUSTOM BLOCKS STANDARDIZED PLACEHOLDER STYLING
+   ========================================================================== */
+.editor-styles-wrapper .align-block-placeholder,
+.editor-styles-wrapper .align-media-placeholder,
+.align-block-placeholder,
+.align-media-placeholder {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  padding: 32px 20px !important;
+  background-color: #ffffff !important;
+  border: 1px solid #1e1e1e !important;
+  border-radius: 4px !important;
+  box-sizing: border-box !important;
+  color: #1e1e1e !important;
+  margin-bottom: 16px !important;
+  width: 100% !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important;
+}
+
+.editor-styles-wrapper .align-placeholder-header,
+.align-placeholder-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  margin-bottom: 4px !important;
+}
+
+.editor-styles-wrapper .align-placeholder-header .dashicons,
+.align-placeholder-header .dashicons {
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+  color: #3b4aff !important;
+  display: inline-block !important;
+  margin: 0 !important;
+}
+
+.editor-styles-wrapper .align-block-placeholder p,
+.editor-styles-wrapper .align-media-placeholder p,
+.align-block-placeholder p,
+.align-media-placeholder p {
+  margin: 0 !important;
+  text-align: center !important;
+}
+
+.editor-styles-wrapper .align-placeholder-title,
+.align-placeholder-title {
+  margin: 0 !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #1e1e1e !important;
+  line-height: 1.4 !important;
+  text-align: center !important;
+}
+
+.editor-styles-wrapper .align-placeholder-desc,
+.align-placeholder-desc {
+  margin: 0 !important;
+  margin-top: 4px !important;
+  font-size: 12px !important;
+  color: #64748b !important;
+  line-height: 1.4 !important;
+  text-align: center !important;
+}

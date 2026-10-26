@@ -1,0 +1,205 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "align/media",
+  "title": "Media",
+  "category": "align-category",
+  "icon": "format-image",
+  "description": "Add responsive images or optimized video (MP4/WebM) for display.",
+  "attributes": {
+    "imageId": {
+      "type": "number",
+      "default": 0
+    },
+    "customAttributes": {
+      "type": "string",
+      "default": ""
+    },
+    "mediaType": {
+      "type": "string",
+      "default": "video"
+    },
+    "mp4Url": {
+      "type": "string",
+      "default": ""
+    },
+    "webmUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "posterUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "videoTitle": {
+      "type": "string",
+      "default": "Align Video Intro"
+    },
+    "loop": {
+      "type": "boolean",
+      "default": true
+    },
+    "autoplay": {
+      "type": "boolean",
+      "default": true
+    },
+    "muted": {
+      "type": "boolean",
+      "default": true
+    },
+    "playsinline": {
+      "type": "boolean",
+      "default": true
+    },
+    "preload": {
+      "type": "string",
+      "default": "auto"
+    },
+    "ariaHidden": {
+      "type": "boolean",
+      "default": true
+    },
+    "videoClass": {
+      "type": "string",
+      "default": ""
+    },
+    "videoId": {
+      "type": "string",
+      "default": ""
+    },
+    "desktopImgUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "imageAlt": {
+      "type": "string",
+      "default": ""
+    },
+    "ignoreLazyLoad": {
+      "type": "boolean",
+      "default": false
+    },
+    "fetchPriority": {
+      "type": "string",
+      "default": "auto"
+    },
+    "figureClass": {
+      "type": "string",
+      "default": "blogFeaturedImage wp-block-post-featured-image"
+    },
+    "imgClass": {
+      "type": "string",
+      "default": ""
+    },
+    "imgId": {
+      "type": "string",
+      "default": ""
+    },
+    "useFeaturedImage": {
+      "type": "boolean",
+      "default": false
+    },
+    "focalPoint": {
+      "type": "object",
+      "default": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "tabletImgId": {
+      "type": "number",
+      "default": 0
+    },
+    "tabletImgUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "mobileImgId": {
+      "type": "number",
+      "default": 0
+    },
+    "mobileImgUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "tabletFocalPoint": {
+      "type": "object",
+      "default": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "mobileFocalPoint": {
+      "type": "object",
+      "default": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "tabletMp4Url": {
+      "type": "string",
+      "default": ""
+    },
+    "tabletWebmUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "tabletPosterUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "mobileMp4Url": {
+      "type": "string",
+      "default": ""
+    },
+    "mobileWebmUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "mobilePosterUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "imageOpacity": {
+      "type": "number",
+      "default": 1
+    },
+    "tabletOpacity": {
+      "type": "number",
+      "default": 1
+    },
+    "mobileOpacity": {
+      "type": "number",
+      "default": 1
+    },
+    "desktopSize": {
+      "type": "string",
+      "default": ""
+    },
+    "tabletSize": {
+      "type": "string",
+      "default": ""
+    },
+    "mobileSize": {
+      "type": "string",
+      "default": ""
+    },
+    "objectFit": {
+      "type": "string",
+      "default": "cover"
+    },
+    "tabletObjectFit": {
+      "type": "string",
+      "default": "cover"
+    },
+    "mobileObjectFit": {
+      "type": "string",
+      "default": "cover"
+    }
+  },
+  "supports": {
+    "align": ["wide", "full"],
+    "html": false,
+    "customClassName": false
+  }
+}

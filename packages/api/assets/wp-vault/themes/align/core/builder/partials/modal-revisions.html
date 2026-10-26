@@ -1,0 +1,127 @@
+<!-- Align Builder - Revision Comparison Studio (Minimalist & Cohesive Theme) -->
+<div class="modal fade" id="revisionsModal" tabindex="-1" aria-labelledby="revisionsModalLabel" aria-hidden="true" data-bs-backdrop="static" style="z-index: 2147483640;">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content bg-dark text-light border-0" style="background: #0f172a !important; height: 100vh; display: flex; flex-direction: column;">
+      
+      <!-- Top Studio Toolbar (Compact, Monochromatic, Matching Builder UI) -->
+      <div class="modal-header border-bottom border-secondary px-3 py-0 d-flex align-items-center justify-content-between" style="border-color: #272f3d !important; height: 46px; min-height: 46px; background: #181f2c;">
+        
+        <!-- Left: Title & Target Badge -->
+        <div class="d-flex align-items-center gap-2">
+          <i class="la la-history text-secondary fs-5"></i>
+          <span class="fw-semibold text-light small" style="font-size: 13px; letter-spacing: 0.2px;">Revision Compare</span>
+          <span id="rev-item-title-badge" class="badge text-secondary border border-secondary fw-normal px-2 py-1" style="font-size: 11px; background: #1e293b; border-color: #334155 !important;">Current Page</span>
+        </div>
+
+        <!-- Center: Clean View Switcher & Sync Scroll Toggle -->
+        <div class="d-flex align-items-center gap-2">
+          <div class="btn-group btn-group-sm" role="group" id="rev-mode-switch-group">
+            <button type="button" class="btn btn-outline-secondary text-light active px-3 text-nowrap flex-shrink-0" id="rev-mode-split-btn" style="font-size: 12px; border-color: #334155;">
+              <i class="la la-columns me-1"></i> Side-by-Side
+            </button>
+            <button type="button" class="btn btn-outline-secondary text-secondary px-3 text-nowrap flex-shrink-0" id="rev-mode-single-btn" style="font-size: 12px; border-color: #334155;">
+              <i class="la la-desktop me-1"></i> Single View
+            </button>
+          </div>
+
+          <button type="button" class="btn btn-sm btn-outline-secondary text-light active px-3 text-nowrap flex-shrink-0" id="rev-sync-scroll-btn" title="Toggle synchronized scrolling" style="font-size: 12px; border-color: #334155;">
+            <i class="la la-link me-1"></i> Sync Scroll
+          </button>
+        </div>
+
+        <!-- Right: Restore & Close Action -->
+        <div class="d-flex align-items-center gap-2">
+          <button type="button" class="btn btn-primary btn-sm px-3 fw-normal text-nowrap flex-shrink-0" id="rev-apply-restore-btn" style="font-size: 12px;" disabled>
+            <span class="spinner-border spinner-border-sm me-1 d-none" id="rev-restore-spinner" role="status" aria-hidden="true"></span>
+            <i class="la la-check me-1" id="rev-restore-icon"></i>
+            <span id="rev-restore-btn-text">Restore Version</span>
+          </button>
+          <button type="button" class="btn btn-sm btn-link text-secondary p-1 text-decoration-none" data-bs-dismiss="modal" aria-label="Close" title="Close">
+            <i class="la la-times fs-5"></i>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Comparison Canvas Workspace -->
+      <div class="modal-body p-0 d-flex flex-grow-1 overflow-hidden" style="height: calc(100vh - 46px);">
+        
+        <div class="rev-comparison-workspace w-100 h-100 d-flex flex-column bg-black position-relative overflow-hidden">
+          
+          <!-- Mode 1: Side-by-Side Dual-Iframe Container -->
+          <div class="w-100 h-100 d-flex" id="rev-split-preview-container">
+            
+            <!-- Left Comparison Column (Base) -->
+            <div id="rev-col-left" class="w-50 h-100 border-end border-secondary d-flex flex-column position-relative" style="border-color: #272f3d !important;">
+              <div class="px-3 py-1 border-bottom border-secondary d-flex align-items-center justify-content-between" style="background: #131923; border-color: #272f3d !important; height: 38px; min-height: 38px;">
+                <div class="d-flex align-items-center gap-2 me-3" style="min-width: 0; flex: 1 1 auto;">
+                  <span class="text-secondary small fw-medium text-nowrap" style="font-size: 11px; letter-spacing: 0.3px;">Base:</span>
+                  <select id="rev-select-left" class="form-select form-select-sm text-light py-0 px-2" style="max-width: 360px; font-size: 12px; height: 28px; background-color: #1e2638; border-color: #334155; color: #e2e8f0;">
+                    <option value="">Loading revisions...</option>
+                  </select>
+                </div>
+                <span class="text-secondary small text-truncate flex-shrink-0" id="rev-left-meta-info" style="font-size: 11px; max-width: 180px; opacity: 0.8;">--</span>
+              </div>
+              <div class="flex-grow-1 position-relative bg-white">
+                <iframe id="rev-split-left-iframe" class="w-100 h-100 border-0" src="about:blank"></iframe>
+                <div class="position-absolute top-50 start-50 translate-middle text-center text-secondary d-none" id="rev-left-loader">
+                  <div class="spinner-border spinner-border-sm text-secondary mb-1"></div>
+                  <div class="small" style="font-size: 11px;">Loading...</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Comparison Column (Target / Compare) -->
+            <div id="rev-col-right" class="w-50 h-100 d-flex flex-column position-relative">
+              <div class="px-3 py-1 border-bottom border-secondary d-flex align-items-center justify-content-between" style="background: #131923; border-color: #272f3d !important; height: 38px; min-height: 38px;">
+                <div class="d-flex align-items-center gap-2 me-3" style="min-width: 0; flex: 1 1 auto;">
+                  <span class="text-secondary small fw-medium text-nowrap" style="font-size: 11px; letter-spacing: 0.3px;">Compare:</span>
+                  <select id="rev-select-right" class="form-select form-select-sm text-light py-0 px-2" style="max-width: 360px; font-size: 12px; height: 28px; background-color: #1e2638; border-color: #334155; color: #e2e8f0;">
+                    <option value="">Loading revisions...</option>
+                  </select>
+                </div>
+                <span class="text-secondary small text-truncate flex-shrink-0" id="rev-right-meta-info" style="font-size: 11px; max-width: 180px; opacity: 0.8;">--</span>
+              </div>
+              <div class="flex-grow-1 position-relative bg-white">
+                <iframe id="rev-split-right-iframe" class="w-100 h-100 border-0" src="about:blank"></iframe>
+                <div class="position-absolute top-50 start-50 translate-middle text-center text-secondary d-none" id="rev-right-loader">
+                  <div class="spinner-border spinner-border-sm text-secondary mb-1"></div>
+                  <div class="small" style="font-size: 11px;">Loading...</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Unified Single Master Scrollbar Track -->
+            <div id="rev-master-scrollbar" class="position-absolute end-0 bottom-0" style="top: 38px; width: 8px; background: rgba(15, 23, 42, 0.7); z-index: 1000; cursor: pointer;">
+              <div id="rev-master-thumb" class="position-absolute start-0 end-0 bg-secondary rounded" style="top: 0; height: 60px; min-height: 30px; opacity: 0.6; margin: 1px;"></div>
+            </div>
+
+          </div>
+
+          <!-- Mode 2: Single Iframe Container (Hidden by default) -->
+          <div class="w-100 h-100 flex-column d-none" id="rev-single-preview-container" style="display: none !important;">
+            <div class="px-3 py-1 border-bottom border-secondary d-flex align-items-center justify-content-between" style="background: #131923; border-color: #272f3d !important; height: 38px; min-height: 38px;">
+              <div class="d-flex align-items-center gap-2 me-3" style="min-width: 0; flex: 1 1 auto;">
+                <span class="text-secondary small fw-medium text-nowrap" style="font-size: 11px;">Viewing:</span>
+                <select id="rev-select-single" class="form-select form-select-sm text-light py-0 px-2" style="max-width: 420px; font-size: 12px; height: 28px; background-color: #1e2638; border-color: #334155; color: #e2e8f0;">
+                  <option value="">Loading revisions...</option>
+                </select>
+              </div>
+              <span class="text-secondary small text-truncate flex-shrink-0" id="rev-single-meta-info" style="font-size: 11px; max-width: 240px; opacity: 0.8;">--</span>
+            </div>
+            <div class="flex-grow-1 position-relative bg-white">
+              <iframe id="rev-single-iframe" class="w-100 h-100 border-0" src="about:blank"></iframe>
+              <div class="position-absolute top-50 start-50 translate-middle text-center text-secondary d-none" id="rev-single-loader">
+                <div class="spinner-border spinner-border-sm text-secondary mb-1"></div>
+                <div class="small" style="font-size: 11px;">Loading...</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>

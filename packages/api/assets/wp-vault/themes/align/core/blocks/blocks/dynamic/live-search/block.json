@@ -1,0 +1,43 @@
+{
+  "apiVersion": 3,
+  "name": "align/live-search",
+  "title": "Live Search",
+  "icon": "search",
+  "category": "align-category",
+  "description": "A live search input that queries posts in real-time and returns HTML results via AJAX.",
+  "textdomain": "align-function",
+  "attributes": {
+    "placeholder": { "type": "string", "default": "Search..." },
+    "postType": { "type": "string", "default": "post" },
+    "customPostType": { "type": "string", "default": "" },
+    "selectedPostTypes": {
+      "type": "array",
+      "default": ["all"],
+      "items": {
+        "type": "string"
+      }
+    },
+    "filterTaxonomy": { "type": "string", "default": "" },
+    "filterTermIds": { "type": "string", "default": "" },
+    "postsPerPage": { "type": "number", "default": 5 },
+    "showThumbnail": { "type": "boolean", "default": true },
+    "showExcerpt": { "type": "boolean", "default": false },
+    "showPostType": { "type": "boolean", "default": false },
+    "searchPageUrl": { "type": "string", "default": "" },
+    "className": { "type": "string", "default": "" },
+    "enableLiveSearch": { "type": "boolean", "default": true },
+    "allowModeToggle": { "type": "boolean", "default": true },
+    "defaultMode": { "type": "string", "default": "live" },
+    "enableCategoryFilter": { "type": "boolean", "default": false },
+    "categoryFilterTaxonomy": { "type": "string", "default": "category" },
+    "categoryFilterTerms": { "type": "string", "default": "all" },
+    "categoryFilterAllLabel": { "type": "string", "default": "All Categories" }
+  },
+  "supports": {
+    "html": false,
+    "customClassName": false,
+    "anchor": false,
+    "align": ["wide", "full"]
+  },
+  "editorScript": "align-live-search-editor"
+}

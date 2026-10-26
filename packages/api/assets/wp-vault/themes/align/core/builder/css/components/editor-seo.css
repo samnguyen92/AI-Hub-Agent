@@ -1,0 +1,482 @@
+/**
+ * Align Theme Builder - SEO Inspector Stylesheet
+ *
+ * Styles for:
+ * 1. SEO Tab navigation and panels
+ * 2. SEO Form fields, inputs, and counters
+ * 3. AI Generate & Save buttons
+ * 4. Google SERP live preview
+ *
+ * @package Align
+ */
+
+/* =========================================================================
+   1. SEO Tab & Inspector Panel
+   ========================================================================= */
+
+.align-seo-tab-nav .nav-link {
+    font-size: 11px !important;
+}
+
+.align-seo-tab-nav .nav-link i {
+    margin-right: 3px;
+}
+
+.align-seo-panel-wrap {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+    font-size: 12px;
+}
+
+.align-seo-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    flex-shrink: 0;
+}
+
+.align-seo-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    color: #f1f5f9;
+    font-size: 12.5px;
+}
+
+.align-seo-title i {
+    color: #38bdf8;
+    font-size: 14px;
+}
+
+.align-seo-badge {
+    font-size: 9.5px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.03em;
+}
+
+.align-seo-badge-rankmath {
+    background: rgba(224, 86, 36, 0.18);
+    color: #f97316;
+    border: 1px solid rgba(224, 86, 36, 0.35);
+}
+
+.align-seo-badge-seopress {
+    background: rgba(37, 99, 235, 0.18);
+    color: #60a5fa;
+    border: 1px solid rgba(37, 99, 235, 0.35);
+}
+
+.align-seo-badge-none {
+    background: rgba(100, 116, 139, 0.18);
+    color: #94a3b8;
+    border: 1px solid rgba(100, 116, 139, 0.3);
+}
+
+/* Loading overlay */
+.align-seo-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 24px;
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+/* Fields wrapper */
+.align-seo-fields {
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+}
+
+.align-seo-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.align-seo-group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.align-seo-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0;
+}
+
+.align-seo-label i {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.align-seo-counter {
+    font-size: 9.5px;
+    color: #64748b;
+    font-family: monospace;
+}
+
+.align-seo-counter.good {
+    color: #4ade80;
+}
+
+.align-seo-counter.over {
+    color: #f87171;
+}
+
+.align-seo-input,
+.align-seo-textarea {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    color: #e2e8f0;
+    font-size: 11.5px;
+    padding: 6px 9px;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.15s ease;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.align-seo-input:focus,
+.align-seo-textarea:focus {
+    border-color: #0284c7;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.align-seo-textarea {
+    resize: vertical;
+    min-height: 58px;
+    line-height: 1.45;
+    color-scheme: dark;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+
+.align-seo-textarea::-webkit-scrollbar,
+.align-seo-panel-wrap::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.align-seo-textarea::-webkit-scrollbar-track,
+.align-seo-panel-wrap::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.align-seo-textarea::-webkit-scrollbar-thumb,
+.align-seo-panel-wrap::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+/* Section divider */
+.align-seo-divider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 0;
+    color: #475569;
+    font-size: 9.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.align-seo-divider::before,
+.align-seo-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+/* Actions footer */
+.align-seo-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 12px 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    flex-shrink: 0;
+}
+
+.align-seo-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    background: transparent;
+}
+
+.align-seo-btn-ai {
+    border-color: rgba(139, 92, 246, 0.4);
+    color: #a78bfa;
+}
+
+.align-seo-btn-ai:hover {
+    background: rgba(139, 92, 246, 0.12);
+    border-color: #8b5cf6;
+}
+
+.align-seo-btn-fix {
+    border-color: rgba(16, 185, 129, 0.4);
+    color: #34d399;
+    background: rgba(16, 185, 129, 0.08);
+}
+
+.align-seo-btn-fix:hover {
+    background: rgba(16, 185, 129, 0.18);
+    border-color: #10b981;
+    color: #6ee7b7;
+}
+
+.align-seo-btn-save {
+    border-color: rgba(2, 132, 199, 0.4);
+    color: #38bdf8;
+}
+
+.align-seo-btn-save:hover {
+    background: rgba(2, 132, 199, 0.12);
+    border-color: #0284c7;
+}
+
+.align-seo-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.align-seo-serp-preview {
+    padding: 10px 12px 14px;
+    flex-shrink: 0;
+}
+
+.serp-label {
+    font-size: 9.5px;
+    color: #475569;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 7px;
+}
+
+.serp-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 7px;
+    padding: 10px 12px;
+}
+
+.serp-url {
+    font-size: 10px;
+    color: #4ade80;
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.serp-title {
+    font-size: 13px;
+    color: #93c5fd;
+    font-weight: 500;
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.serp-desc {
+    font-size: 10.5px;
+    color: #94a3b8;
+    line-height: 1.5;
+}
+
+/* =========================================================================
+   6. AI Translator & Copy from Original Styles
+   ========================================================================= */
+
+.align-ai-copy-orig-btn {
+    background: rgba(14, 165, 233, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    color: #38bdf8;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.18s ease;
+}
+
+.align-ai-copy-orig-btn:hover {
+    background: rgba(14, 165, 233, 0.3);
+    color: #ffffff;
+    border-color: #38bdf8;
+}
+
+.align-seo-translation-card {
+    margin: 8px 12px 4px;
+    background: rgba(30, 41, 59, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.align-trans-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.align-trans-card-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #f1f5f9;
+}
+
+.align-trans-card-title i {
+    color: #a855f7;
+    font-size: 13px;
+}
+
+.align-trans-lang-tag {
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+}
+
+.align-trans-lang-tag.zh {
+    background: rgba(245, 158, 11, 0.18);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+.align-trans-lang-tag.en {
+    background: rgba(56, 189, 248, 0.18);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.align-trans-card-body {
+    padding: 8px 10px 10px;
+}
+
+.align-trans-meta {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    line-height: 1.3;
+}
+
+.align-trans-meta strong {
+    color: #e2e8f0;
+}
+
+.align-trans-id {
+    color: #64748b;
+    font-size: 10px;
+}
+
+.align-trans-btn-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.align-trans-btn {
+    height: 30px;
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    background: transparent;
+}
+
+.align-trans-btn-copy {
+    border: 1px solid rgba(56, 189, 248, 0.45);
+    color: #38bdf8;
+}
+
+.align-trans-btn-copy:hover {
+    background: #0284c7;
+    color: #ffffff;
+    border-color: #0284c7;
+}
+
+.align-trans-btn-trans {
+    border: 1px solid rgba(168, 85, 247, 0.45);
+    color: #c084fc;
+}
+
+.align-trans-btn-trans:hover {
+    background: #9333ea;
+    color: #ffffff;
+    border-color: #9333ea;
+}
+
+.align-trans-btn-sync {
+    border: 1px solid rgba(129, 140, 248, 0.45);
+    color: #a5b4fc;
+    background: rgba(99, 102, 241, 0.08);
+}
+
+.align-trans-btn-sync:hover {
+    background: #4f46e5;
+    color: #ffffff;
+    border-color: #4f46e5;
+}
+
+.align-trans-default-notice {
+    font-size: 10.5px;
+    color: #64748b;
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+    line-height: 1.4;
+}

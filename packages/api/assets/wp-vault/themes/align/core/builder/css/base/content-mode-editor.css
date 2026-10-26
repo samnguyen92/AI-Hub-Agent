@@ -1,0 +1,225 @@
+/**
+ * Align Theme Builder CSS - Content Mode Editor & Affordances
+ * @package Align
+ */
+
+/* Content Mode Canvas Indicators (Builder Overlay) */
+.content-mode-active #vvveb-builder #highlight-box {
+  border-color: #0284c7;
+}
+
+.content-mode-active #vvveb-builder #highlight-box.align-editable-chip-text #highlight-name::after {
+  content: "Click to edit";
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 14px;
+  border-radius: 3px;
+  background-color: #0284c7;
+  color: #ffffff;
+  vertical-align: middle;
+  text-transform: none;
+}
+
+.content-mode-active #vvveb-builder #highlight-box.align-editable-chip-locked #highlight-name::after {
+  content: "Locked component";
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 14px;
+  border-radius: 3px;
+  background-color: #64748b;
+  color: #ffffff;
+  vertical-align: middle;
+  text-transform: none;
+}
+
+/* Page Content Panel Styles */
+.content-panel-section {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.content-panel-list-container {
+  overflow-y: auto;
+  flex: 1 1 auto;
+  max-height: calc(100vh - 160px);
+}
+
+.content-panel-section-group {
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--bs-border-color, #e2e8f0);
+  padding-bottom: 0.75rem;
+}
+
+.content-panel-section-group:last-child {
+  border-bottom: none;
+}
+
+.content-panel-section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--bs-secondary, #64748b);
+  margin-bottom: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background-color: rgba(var(--bs-secondary-rgb, 100, 116, 139), 0.08);
+  border-radius: 4px;
+}
+
+.content-panel-row {
+  margin-bottom: 0.75rem;
+  padding: 0.5rem;
+  border: 1px solid var(--bs-border-color, #e2e8f0);
+  border-radius: 4px;
+  background-color: var(--bs-body-bg, #ffffff);
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.content-panel-row:hover {
+  border-color: #0284c7;
+}
+
+.content-panel-row.is-active {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 1px #0284c7;
+}
+
+.content-panel-row.d-none {
+  display: none !important;
+}
+
+.content-panel-label-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.35rem;
+}
+
+.content-panel-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--bs-body-color, #1e293b);
+  margin-bottom: 0;
+}
+
+.content-panel-tag-badge {
+  font-size: 0.65rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.content-panel-textarea {
+  width: 100%;
+  min-height: 48px;
+  resize: none;
+  overflow: hidden;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--bs-border-color, #cbd5e1);
+  border-radius: 4px;
+  background-color: var(--bs-body-bg, #ffffff);
+  color: var(--bs-body-color, #1e293b);
+  transition: height 0.1s ease;
+}
+
+.content-panel-textarea:focus {
+  outline: none;
+  border-color: #0284c7;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+}
+
+.content-panel-readonly-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.content-panel-readonly-preview {
+  font-size: 0.75rem;
+  color: var(--bs-secondary, #64748b);
+  background: rgba(0, 0, 0, 0.03);
+  padding: 0.35rem 0.5rem;
+  border-radius: 3px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 60px;
+  overflow: hidden;
+}
+
+.content-panel-btn-edit {
+  background: transparent;
+  border: 1px solid var(--bs-border-color, #cbd5e1);
+  color: var(--bs-body-color, #1e293b);
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: all 0.15s ease-in-out;
+}
+
+.content-panel-btn-edit:hover,
+.content-panel-btn-edit:focus {
+  border-color: #0284c7;
+  color: #0284c7;
+  background: rgba(2, 132, 199, 0.05);
+}
+
+/* Phase 3 M3.1 & M3.2: Right Panel Textarea Auto-grow & Warning Notice */
+.component-properties textarea.form-control,
+.component-properties .vvveb-input-textareainput textarea {
+  min-height: calc(1.5em * 3 + 0.75rem + 2px); /* min 3 rows */
+  max-height: 50vh;
+  resize: vertical;
+  overflow-y: auto;
+  transition: height 0.1s ease;
+}
+
+.align-textarea-formatting-notice {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.625rem;
+  border: 1px solid #fed7aa;
+  background-color: #fffbeb;
+  border-radius: 4px;
+}
+
+.align-textarea-warning-text {
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: #9a3412;
+  margin: 0;
+}
+
+.align-textarea-edit-btn {
+  align-self: flex-start;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #0284c7;
+  background: #ffffff;
+  border: 1px solid #0284c7;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.align-textarea-edit-btn:hover,
+.align-textarea-edit-btn:focus {
+  background-color: #0284c7;
+  color: #ffffff;
+}
+
+

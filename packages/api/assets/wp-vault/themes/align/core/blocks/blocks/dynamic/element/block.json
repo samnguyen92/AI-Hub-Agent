@@ -1,0 +1,95 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "align/element",
+  "title": "Element",
+  "category": "align-category",
+  "icon": "block-default",
+  "keywords": [
+    "element",
+    "div",
+    "section",
+    "article",
+    "header",
+    "footer",
+    "paragraph",
+    "heading",
+    "list",
+    "span",
+    "link"
+  ],
+  "description": "Create custom HTML elements dynamically.",
+  "attributes": {
+    "type": {
+      "type": "string",
+      "default": "inner"
+    },
+    "tag": {
+      "type": "string",
+      "default": "div"
+    },
+    "elementId": {
+      "type": "string",
+      "default": ""
+    },
+    "dataEditId": {
+      "type": "string",
+      "default": ""
+    },
+    "customAttributes": {
+      "type": "string",
+      "default": ""
+    },
+    "href": {
+      "type": "string",
+      "default": ""
+    },
+    "hrefId": {
+      "type": "number",
+      "default": 0
+    },
+    "target": {
+      "type": "string",
+      "default": ""
+    },
+    "rel": {
+      "type": "string",
+      "default": ""
+    },
+    "ariaLabel": {
+      "type": "string",
+      "default": ""
+    },
+    "svgInnerCode": {
+      "type": "string",
+      "default": ""
+    },
+    "content": {
+      "type": "string",
+      "default": ""
+    },
+    "className": {
+      "type": "string",
+      "default": ""
+    },
+    "enableAnchor": {
+      "type": "boolean",
+      "default": false
+    },
+    "anchorId": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "providesContext": {
+    "align/parentEditId": "dataEditId"
+  },
+  "usesContext": [
+    "align/parentEditId"
+  ],
+  "supports": {
+    "align": ["wide", "full"],
+    "html": false,
+    "customClassName": false
+  }
+}

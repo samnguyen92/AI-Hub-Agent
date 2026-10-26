@@ -1,0 +1,421 @@
+/**
+ * Align Theme Builder CSS - Modals, Code Editor & Sortable Indicators
+ * @package Align
+ */
+
+.tags-input .tag .remove-btn {
+  color: var(--bs-link-color);
+}
+
+.tags-input input.form-control {
+  box-shadow: none;
+}
+
+.btn-icon {
+  margin-bottom: 0px;
+  position: relative;
+  box-shadow: 0 4px 4px #08080814, 0 1px 2px #08080833, inset 0 6px 12px #ffffff1f, inset 0 1px 1px #fff3;
+  box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.07), 1px 1px 2px 1px rgba(255, 255, 255, 0.15) inset;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.08), 0 6px 12px rgba(0, 0, 0, 0.012), 0 6px 12px rgba(255, 255, 255, 0.12) inset, 0 1px 1px rgba(255, 255, 255, 0.2) inset;
+  font-weight: 500;
+  /*
+	i:first-child {
+		display: inline-block;
+		margin-right:0.3rem;
+		//font-size: 21px;
+		//opacity:0.7;
+	}
+	*/
+}
+
+.btn-icon.btn-outline-primary {
+  border-width: 0px;
+  box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(var(--bs-primary-rgb), 0.15) 0px 1px 2px 0px, rgba(var(--bs-primary-rgb), 0.2) 0px 0px 0px 1px;
+}
+
+.btn-icon.btn-outline-primary:hover {
+  color: var(--bs-link-color);
+  background: var(--bs-border-color);
+}
+
+.btn-icon.btn-outline-primary i {
+  background: transparent;
+}
+
+.btn-icon.btn-outline-secondary,
+.btn-icon.btn-outline-success,
+.btn-icon.btn-outline-danger {
+  box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.12) 0px 1px 2px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+  border: none;
+  --bs-border-width: 0;
+}
+
+.btn-icon.btn-secondary {
+  box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.07), -1px 1px 2px 0px rgba(255, 255, 255, 0.15) inset;
+}
+
+.btn-icon.btn-secondary i {
+  background: transparent;
+}
+
+.btn-icon.btn-primary {
+  --bs-btn-border-color: rgba(var(--bs-primary-rgb), 0.5);
+  --bs-btn-bg: #0030C0;
+  padding-left: 1.2rem;
+  padding-right: 1.2rem;
+}
+
+.btn-icon.btn-primary i {
+  /*background: rgba(255, 255, 255, 0.1);*/
+}
+
+.btn-icon.btn-sm,
+.btn-group-sm>.btn-icon.btn {
+  border: none;
+}
+
+.btn-icon.btn-sm i,
+.btn-group-sm>.btn-icon.btn i {
+  /*padding: 0.5rem 0.5rem;*/
+}
+
+.btn-icon:after {
+  content: ".";
+  background-image: linear-gradient(white, rgba(255, 255, 255, 0));
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.16;
+}
+
+.btn-icon.btn-outline-secondary:after,
+.btn-icon.btn-outline-primary:after,
+.btn-icon.btn-outline-secondary:after {
+  background-image: linear-gradient(rgba(0, 0, 0, 0), black);
+  opacity: 0.03;
+}
+
+.btn.btn-outline-dark {
+  border-color: var(--bs-border-color);
+}
+
+.btn.btn-outline-secondary {
+  /*
+	--bs-btn-color: var(--bs-body-color);
+    --bs-btn-border-color: var(--bs-body-color-rgb);
+	--bs-btn-hover-color:var(--bs-body-color);
+	--bs-btn-hover-bg:#eee;
+	--bs-btn-hover-border-color: var(--bs-border-color);
+	--bs-btn-active-bg:var(--bs-body-color-rgb);
+	--bs-btn-active-color:#222;*/
+  --bs-btn-bg: var(--bs-body-bg);
+  --bs-btn-border-color: var(--bs-border-color);
+  --bs-btn-hover-bg: var(--bs-primary-bg-subtle);
+  --bs-btn-hover-color: var(--bs-body-color);
+  --bs-btn-hover-border: var(--bs-body-color);
+  --bs-btn-hover-border-color: var(--bs-border-color);
+  --bs-btn-active-bg: var(--bs-border-color);
+  --bs-btn-active-color: var(--bs-body-color);
+  --bs-btn-active-border-color: var(--bs-border-color);
+}
+
+.btn-group>.save-btn {
+  padding: 0rem 1rem 0.2rem 1rem
+}
+
+.btn-group>.save-btn i {
+  font-size: 1rem;
+  line-height: 21px;
+}
+
+.save-btn.dropdown-toggle.dropdown-toggle-split {
+  padding: 0 .4rem 0 0;
+  box-shadow: none;
+  margin-left: 0 !important;
+}
+
+.save-btn.dropdown-toggle.dropdown-toggle-split:before {
+  vertical-align: 3px;
+  font-size: 50%;
+  border-left: 1px solid rgba(255, 255, 255, 0.5);
+  padding-left: 0.4rem;
+  display: block;
+}
+
+.dropdown-toggle::after {
+  border: none;
+  font-family: "Line Awesome Free";
+  font-weight: 900;
+  font-size: 80%;
+  content: "\f107";
+  vertical-align: text-bottom;
+}
+
+.btn-icon.dropdown-toggle::before {
+  border: none;
+  font-family: "Line Awesome Free";
+  font-weight: 900;
+  font-size: 80%;
+  content: "\f107";
+  vertical-align: text-bottom;
+}
+
+.dropdown-toggle.chevron-big::after {
+  width: 12px !important;
+  height: 12px !important;
+  font-size: 100%;
+}
+
+.btn-xs {
+  --bs-btn-font-size: 0.75rem;
+  --bs-btn-font-weight: 500;
+  --bs-btn-padding-y: 0.5rem;
+  --bs-btn-padding-x: 1rem;
+}
+
+label.form-check .form-check-input {
+  float: none;
+  vertical-align: middle;
+  margin-right: 0.2rem;
+}
+
+.form-check .form-check-input {
+  position: relative;
+  box-shadow: 0px 0px 2px 1px rgba(var(--bs-body-color-rgb), 0.07) inset;
+}
+
+.modal-full .modal-dialog.modal-xl {
+  max-width: 90%;
+}
+
+.modal-full .modal-dialog.modal-xl.modal-dialog-scrollable .modal-content {
+  min-height: 50%;
+}
+
+.align-left {
+  float: left;
+  margin-bottom: 25px;
+  max-width: 50%;
+}
+
+.align-right {
+  float: right;
+  margin-bottom: 25px;
+  max-width: 50%;
+}
+
+.align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+video,
+audio {
+  max-width: 100%;
+}
+
+.btn.btn-outline-secondary {
+  --bs-btn-bg: var(--bs-body-bg);
+  --bs-btn-border-color: var(--bs-border-color);
+  --bs-btn-hover-bg: var(--bs-primary-bg-subtle);
+  --bs-btn-hover-color: var(--bs-body-color);
+  --bs-btn-hover-border: var(--bs-body-color);
+  --bs-btn-hover-border-color: var(--bs-border-color);
+  --bs-btn-active-bg: var(--bs-border-color);
+  --bs-btn-active-color: var(--bs-body-color);
+  --bs-btn-active-border-color: var(--bs-border-color);
+}
+
+/* Code Editor Centered Modal & Backdrop Blur Styling */
+.modal-backdrop.show {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background-color: rgba(15, 23, 42, 0.65) !important;
+}
+
+#codeEditorModal .modal-dialog {
+  max-width: 90vw;
+  width: 1200px;
+}
+
+#codeEditorModal .modal-content {
+  height: 70vh;
+  min-height: 480px;
+  border-radius: 12px;
+  border: 1px solid var(--bs-border-color, rgba(255, 255, 255, 0.15));
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+#codeEditorModal .modal-header {
+  background: var(--bs-body-bg, #1e1e2e);
+  border-bottom: 1px solid var(--bs-border-color, rgba(255, 255, 255, 0.1));
+}
+
+#codeEditorModal .nav-pills .nav-link {
+  color: var(--bs-body-color, #a6adc8);
+  border-radius: 6px;
+  padding: 0.35rem 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+}
+
+#codeEditorModal .nav-pills .nav-link.active {
+  background-color: var(--bs-primary, #4f46e5);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.4);
+}
+
+#codeEditorModal #code-editor-format-btn {
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 6px;
+  color: var(--bs-body-color, #cdd6f4);
+  border-color: rgba(255, 255, 255, 0.2);
+  background: transparent;
+  transition: all 0.2s ease;
+}
+
+#codeEditorModal #code-editor-format-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+#codeEditorModal .modal-body {
+  background-color: #1e1e2e;
+}
+
+#codeEditorModal #vvveb-code-editor,
+#codeEditorModal .tab-content,
+#codeEditorModal .tab-pane {
+  height: 100%;
+}
+
+#codeEditorModal .CodeMirror {
+  height: 100% !important;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   Revision Comparison Studio Modal
+   ========================================================================== */
+
+#revisionsModal.modal .modal-dialog,
+#revisionsModal.modal .modal-dialog.modal-fullscreen {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#revisionsModal .modal-content {
+  width: 100% !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  border-radius: 0 !important;
+  border: 0 !important;
+}
+
+#revisionsModal .d-none,
+#revisionsModal [hidden],
+#rev-split-preview-container.d-none,
+#rev-single-preview-container.d-none {
+  display: none !important;
+}
+
+#revisionsModal .modal-header .btn,
+#revisionsModal .modal-header .badge,
+#revisionsModal .btn-group .btn {
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+#rev-item-title-badge {
+  max-width: 240px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#revisionsModal .form-select {
+  min-width: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#rev-master-scrollbar {
+  position: absolute;
+  top: 38px !important;
+  bottom: 0 !important;
+  right: 0 !important;
+  width: 8px !important;
+  background: rgba(15, 23, 42, 0.7);
+  z-index: 1000;
+  cursor: pointer;
+}
+
+#rev-master-thumb {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 60px;
+  min-height: 30px;
+  opacity: 0.6;
+  margin: 1px;
+  cursor: grab;
+  touch-action: none;
+  transition: opacity 0.15s ease, background-color 0.15s ease;
+}
+
+#rev-master-thumb:hover,
+#revisionsModal.rev-is-dragging #rev-master-thumb {
+  opacity: 1 !important;
+  background-color: var(--bs-light, #f8fafc) !important;
+}
+
+#revisionsModal.rev-is-dragging iframe {
+  pointer-events: none !important;
+  user-select: none !important;
+}
+
+/* Template Code Icon Preview inside Section / Layout Card */
+#vvveb-builder #add-section-box .sections-list ol li .template-icon-preview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--bs-primary-rgb, 13, 110, 253), 0.05);
+  color: var(--bs-primary, #0d6efd);
+  font-size: 38px;
+  border-radius: inherit;
+  pointer-events: none;
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  z-index: 1;
+}
+
+#vvveb-builder #add-section-box .sections-list ol li:hover .template-icon-preview {
+  background: rgba(var(--bs-primary-rgb, 13, 110, 253), 0.1);
+  color: #0d6efd;
+}
+
+#vvveb-builder #add-section-box .sections-list ol li .template-icon-preview i {
+  transition: transform 0.2s ease;
+}
+
+#vvveb-builder #add-section-box .sections-list ol li:hover .template-icon-preview i {
+  transform: scale(1.15);
+}
+
+
+

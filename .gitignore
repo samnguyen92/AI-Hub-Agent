@@ -50,6 +50,7 @@ build/
 Thumbs.db
 postgres_data/
 workspace_data/
+/assets/
 
 # IDE
 .idea/

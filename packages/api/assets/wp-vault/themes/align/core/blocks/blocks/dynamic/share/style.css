@@ -1,0 +1,95 @@
+.align-share-block {
+    display: block;
+    margin: 16px 0;
+}
+.align-share-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+.align-share-layout-column .align-share-buttons {
+    flex-direction: column;
+    align-items: flex-start;
+}
+.align-share-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    position: relative;
+}
+.align-share-style-icon_only .align-share-btn {
+    padding: 8px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+}
+.align-share-icon {
+    flex-shrink: 0;
+}
+.align-share-fb {
+    background-color: #1877f2;
+    color: #ffffff !important;
+}
+.align-share-fb:hover {
+    background-color: #166fe5;
+}
+.align-share-x {
+    background-color: #0f1419;
+    color: #ffffff !important;
+}
+.align-share-x:hover {
+    background-color: #272c30;
+}
+.align-share-linkedin {
+    background-color: #0a66c2;
+    color: #ffffff !important;
+}
+.align-share-linkedin:hover {
+    background-color: #0856a4;
+}
+.align-share-email {
+    background-color: #64748b;
+    color: #ffffff !important;
+}
+.align-share-email:hover {
+    background-color: #475569;
+}
+.align-share-copy {
+    background-color: #0f172a;
+    color: #ffffff !important;
+}
+.align-share-copy:hover {
+    background-color: #1e293b;
+}
+.align-share-toast {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background-color: #0f172a;
+    color: #ffffff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+.align-share-copy.is-copied .align-share-toast {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}

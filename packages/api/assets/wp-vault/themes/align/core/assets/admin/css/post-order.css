@@ -1,0 +1,54 @@
+/**
+ * Align Post Order - Inline List Table Drag & Drop Styles
+ */
+
+/* Relative positioning on check-column cell */
+table.wp-list-table td.check-column {
+    position: relative !important;
+    text-align: center !important;
+    padding-bottom: 18px !important;
+}
+
+/* Small drag handle icon centered directly BELOW the checkbox input */
+.check-column .align-drag-handle {
+    position: absolute;
+    bottom: 9px;
+    left: 63%;
+    transform: translateX(-50%);
+    display: block;
+    cursor: grab;
+    color: #a7aaad;
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+    line-height: 1;
+    user-select: none;
+    transition: color 0.15s ease, transform 0.15s ease;
+}
+
+/* Hover state */
+.check-column .align-drag-handle:hover,
+table.wp-list-table #the-list tr:hover .check-column .align-drag-handle {
+    color: #2271b1;
+    transform: translateX(-50%) scale(1.25);
+}
+
+/* Active dragging state */
+table.wp-list-table #the-list tr.ui-sortable-helper {
+    background-color: #ffffff !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+    display: table;
+}
+
+table.wp-list-table #the-list tr.ui-sortable-helper .align-drag-handle {
+    cursor: grabbing !important;
+    color: #2271b1 !important;
+}
+
+/* Placeholder row style */
+table.wp-list-table #the-list tr.align-order-placeholder td {
+    background: #f0f6fc !important;
+    border: 2px dashed #2271b1 !important;
+    height: 45px;
+    padding: 0 !important;
+}

@@ -1,0 +1,299 @@
+/**
+ * Align Theme Builder CSS - Autocomplete Dropdowns & Responsive Overrides
+ * @package Align
+ */
+
+body>section .background-container,
+body>section .overlay,
+body>footer .background-container,
+body>footer .overlay,
+body>header .background-container,
+body>header .overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body>section .background-container img,
+body>section .background-container video,
+body>section .overlay img,
+body>section .overlay video,
+body>footer .background-container img,
+body>footer .background-container video,
+body>footer .overlay img,
+body>footer .overlay video,
+body>header .background-container img,
+body>header .background-container video,
+body>header .overlay img,
+body>header .overlay video {
+  width: auto;
+  height: auto;
+  max-width: initial;
+  min-height: 100%;
+  min-width: 100%;
+  /*
+				@include media-breakpoint-down(md) { 
+					margin: 0 0 0 -25%;
+				}
+				
+				@include media-breakpoint-down(sm) {
+					margin: 0 0 0 -50%;	
+				}
+				*/
+}
+
+body>section .background-container img,
+body>section .overlay img,
+body>footer .background-container img,
+body>footer .overlay img,
+body>header .background-container img,
+body>header .overlay img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 100%;
+  width: auto;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+body>section .overlay,
+body>footer .overlay,
+body>header .overlay {
+  z-index: -1;
+  background: var(--bs-black);
+  opacity: 0.7;
+}
+
+body>section .separator,
+body>footer .separator,
+body>header .separator {
+  z-index: 2;
+  position: absolute;
+  width: 100%;
+  color: #fff;
+  /*> svg, */
+}
+
+body>section .separator>img,
+body>footer .separator>img,
+body>header .separator>img {
+  width: 100%;
+  height: 100%;
+}
+
+body>section .separator.bottom,
+body>footer .separator.bottom,
+body>header .separator.bottom {
+  bottom: 0;
+}
+
+body>section .separator.top,
+body>footer .separator.top,
+body>header .separator.top {
+  top: 0px;
+}
+
+.modal .modal-content {
+  height: 100%;
+}
+
+.percent {
+  display: inline-block;
+  position: relative;
+}
+
+.percent input {
+  width: 50px;
+  margin-top: 3px;
+  font-size: 11px;
+  font-weight: 500;
+  text-align: right;
+  border-color: transparent;
+  padding: 0.3rem 0.1rem 0.2rem 0.4rem;
+  /*  
+  -moz-appearance: textfield;
+  -webkit-appearance: textfield;
+  appearance: textfield;
+*/
+}
+
+.percent input:hover {
+  text-align: left;
+}
+
+.percent:hover::after,
+.percent:focus-within::after {
+  display: none;
+}
+
+.percent::after {
+  font-size: 11px;
+  position: absolute;
+  top: 0.55rem;
+  right: 0.4rem;
+  transition: all .05s ease-in-out;
+  content: '%';
+}
+
+.gallery {
+  column-count: 4;
+  column-gap: 20px;
+}
+
+.gallery.flex {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.gallery.flex .item {
+  flex: 1 0 21%;
+}
+
+.gallery.has-shadow .item img {
+  box-shadow: 2px 2px 4px 0 #ccc;
+}
+
+.gallery.masonry {
+  margin: 0px;
+  padding: 0;
+}
+
+.gallery .item {
+  margin-bottom: 20px;
+  width: 100%;
+  transition: 1s ease all;
+  box-sizing: border-box;
+}
+
+.gallery .item a {
+  display: block;
+}
+
+.gallery .item img {
+  max-width: 100%;
+}
+
+@media only screen and (max-width: 320px) {
+  .gallery .masonry {
+    column-count: 1;
+  }
+}
+
+@media only screen and (min-width: 321px) and (max-width: 768px) {
+  .gallery .masonry {
+    column-count: 2;
+  }
+}
+
+@media only screen and (min-width: 769px) and (max-width: 1200px) {
+  .gallery .masonry {
+    column-count: 3;
+  }
+}
+
+@media only screen and (min-width: 1201px) {
+  .gallery .masonry {
+    column-count: 4;
+  }
+}
+
+/* autocomplete */
+input.autocomplete-loading {
+  background-image: url(../../libs/autocomplete/autocomplete.gif);
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+
+ul.autocomplete~.btn-close {
+  position: absolute;
+  right: 1.5rem;
+  margin-top: -1.5rem;
+  display: none;
+}
+
+.autocomplete-open~button.btn-close {
+  display: block;
+}
+
+ul.autocomplete {
+  position: absolute;
+  overflow: hidden;
+  background-color: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
+  border-top: none;
+  margin-top: -1px;
+  margin: 0px;
+  padding: 0px;
+  list-style: none;
+  color: var(--bs-body-color);
+  display: none;
+  z-index: 1000;
+}
+
+ul.autocomplete li {
+  display: block;
+  padding: 0.3em;
+  overflow: hidden;
+  width: 100%;
+  cursor: pointer;
+}
+
+ul.autocomplete li:hover {
+  background-color: var(--bs-primary);
+  color: var(--bs-body-bg);
+}
+
+ul.autocomplete li.selected {
+  background-color: Highlight;
+  background-color: var(--bs-primary);
+  color: var(--bs-body-bg);
+  color: var(--bs-white);
+}
+
+input.autocomplete-list {
+  border-radius: 5px 5px 0px 0px;
+}
+
+div.autocomplete-list {
+  border-radius: 0px 0px 5px 5px;
+  overflow: auto;
+  min-height: 150px;
+  height: 150px;
+  resize: vertical;
+}
+
+.autocomplete-list>div {
+  padding: 0.3rem 0.3rem 0.3rem 1rem;
+  border-bottom: 1px dashed var(--bs-border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.autocomplete-list>div .btn-close {
+  vertical-align: middle;
+  margin: 0.5rem;
+}
+
+.tags-input {
+  padding: 4px 6px !important;
+  min-height: 38px;
+}
+
+.tags-input .tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 0 0.3rem;
+  border: 1px solid var(--bs-primary-bg-subtle);
+  background-color: var(--bs-primary-bg-subtle);
+  background-color: rgba(var(--bs-primary-rgb), 0.1);
+  color: var(--bs-primary-text-emphasis);
+  border-radius: 4px;
+  margin: 0.2rem;
+}

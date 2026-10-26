@@ -1,0 +1,294 @@
+<!-- Align Builder - Select, Dropdowns & Grid Input Templates -->
+
+<script id="vvveb-input-select" type="text/html">
+
+	<div>
+
+		<select class="form-select" name="{%=key%}">
+			{% var optgroup = false; for ( var i = 0; i < options.length; i++ ) { %}
+				{% if (options[i].optgroup) {  %}
+					{% if (optgroup) {  %}
+						</optgroup>
+					{% } %}
+					<optgroup label="{%=options[i].optgroup%}">
+				{% optgroup = true; } else { %}
+			<option value="{%=options[i].value%}" 
+				{% 
+					for (attr in options[i]) {
+							if (attr != "value" && attr != "text") {
+						 %} 
+							{%=attr%}={%=options[i][attr]%} 
+						{% } 
+					} %}>
+			{%=options[i].text%}</option>
+			{% } } %}
+		</select>
+	
+	</div>
+	
+</script>
+
+<script id="vvveb-input-icon-select" type="text/html">
+
+	<div class="input-list-select">
+		
+		<div class="elements">
+			<div class="row">
+				{% for ( var i = 0; i < options.length; i++ ) { %}
+				<div class="col">
+					<div class="element">
+						{%=options[i].value%}
+						<label>{%=options[i].text%}</label>
+					</div>
+				</div>
+				{% } %}
+			</div>
+		</div>
+	</div>
+	
+</script>
+
+<script id="vvveb-input-html-list-select" type="text/html">
+
+	<div class="input-html-list-select">
+		
+		<div class="current-element">
+		</div>
+		
+		<div class="popup">
+			<select class="form-select">
+				{% var optgroup = false; for ( var i = 0; i < options.length; i++ ) { %}
+					{% if (options[i].optgroup) {  %}
+						{% if (optgroup) {  %}
+							</optgroup>
+						{% } %}
+						<optgroup label="{%=options[i].optgroup%}">
+					{% optgroup = true; } else { %}
+					<option value="{%=options[i].value%}">{%=options[i].text%}</option>
+				{% } } %}
+			</select>
+			
+			<div class="search">
+				  <input class="form-control search" placeholder="Search elements" type="text">
+				  <button class="clear-backspace">
+					  <i class="la la-times"></i>
+				  </button>
+			</div>
+			
+			<div class="elements">
+				{%=elements%}
+			</div>
+		</div>
+	</div>
+	
+</script>
+
+<script id="vvveb-input-html-list-dropdown" type="text/html">
+
+	<div class="input-html-list-select" {% if (typeof id !== "undefined") { %} id={%=id%} {% } %}>
+		
+		<div class="current-element">
+		
+		</div>
+		
+		<div class="popup">
+			<select class="form-select">
+				{% var optgroup = false; for ( var i = 0; i < options.length; i++ ) { %}
+					{% if (options[i].optgroup) {  %}
+						{% if (optgroup) {  %}
+							</optgroup>
+						{% } %}
+						<optgroup label="{%=options[i].optgroup%}">
+					{% optgroup = true; } else { %}
+					<option value="{%=options[i].value%}">{%=options[i].text%}</option>
+				{% } } %}
+			</select>
+
+		   <div class="search">
+				  <input class="form-control search" placeholder="Search elements" type="text">
+				  <button class="clear-backspace">
+					  <i class="la la-times"></i>
+				  </button>
+			</div>
+			
+			<div class="elements">
+					{%=elements%}
+			</div>
+		</div>
+	</div>
+	
+</script>
+
+<script id="vvveb-input-listinput" type="text/html">
+
+	<div class="sections-container p-0">
+
+		{% for ( var i = 0; i < options.length; i++ ) { %}
+		<div class="section-item" draggable="true">
+			<div class="controls">
+				<div class="handle"></div>
+				<div class="info">
+					<div class="name">{%=options[i].name%}
+						<div class="type">{%=options[i].type%}</div>
+					</div>
+				</div>
+				<div class="buttons">
+					<a class="delete-btn" href="" title="Remove section"><i class="icon-trash-outline text-danger"></i></a>
+					<!-- 
+					<a class="up-btn" href="" title="Move element up"><i class="la la-arrow-up"></i></a>
+					<a class="down-btn" href="" title="Move element down"><i class="la la-arrow-down"></i></a>
+					<a class="properties-btn" href="" title="Properties"><i class="icon-settings-outline"></i></a>
+					-->
+			</div>
+			</div>
+
+
+			<input class="header_check" type="checkbox" id="section-components-{%=key%}-{%=i%}">
+
+			<label for="section-components-{%=key%}-{%=i%}"> 
+				<div class="header-arrow"></div>
+			</label>
+			
+			<div class="tree">
+				{%=options[i].name%}
+			</div>
+		</div>
+		
+
+
+
+		{% } %}
+
+
+		{% if (typeof hide_remove === 'undefined') { %}
+		<div class="mt-3">
+		
+			<button class="btn btn-sm btn-outline-primary btn-new btn-icon">
+				<i class="la la-plus la-lg"></i> Add new
+			</button>
+			
+		</div>
+		{% } %}
+			
+	</div>
+	
+</script>
+
+<script id="vvveb-input-grid" type="text/html">
+
+	<div class="row g-2">
+		<div class="col-6">
+		
+			<label class="form-label">Extra small</label>
+			<select class="form-select" name="col" autocomplete="off">
+				
+				<option value="">None</option>
+				{% for ( var i = 1; i <= 12; i++ ) { %}
+				<option value="{%=i%}" {% if ((typeof col !== 'undefined') && col == i) { %} selected {% } %}>{%=i%}</option>
+				{% } %}
+				
+			</select>
+		</div>
+
+				
+		<div class="col-6">
+			<label class="form-label">Small</label>
+			<select class="form-select" name="col-sm" autocomplete="off">
+				
+				<option value="">None</option>
+				{% for ( var i = 1; i <= 12; i++ ) { %}
+				<option value="{%=i%}" {% if ((typeof col_sm !== 'undefined') && col_sm == i) { %} selected {% } %}>{%=i%}</option>
+				{% } %}
+				
+			</select>
+		</div>
+		
+		<div class="col-6">
+			<label class="form-label">Medium</label>
+			<select class="form-select" name="col-md" autocomplete="off">
+				
+				<option value="">None</option>
+				{% for ( var i = 1; i <= 12; i++ ) { %}
+				<option value="{%=i%}" {% if ((typeof col_md !== 'undefined') && col_md == i) { %} selected {% } %}>{%=i%}</option>
+				{% } %}
+				
+			</select>
+		</div>
+		
+		<div class="col-6">
+			<label class="form-label">Large</label>
+			<select class="form-select" name="col-lg" autocomplete="off">
+				
+				<option value="">None</option>
+				{% for ( var i = 1; i <= 12; i++ ) { %}
+				<option value="{%=i%}" {% if ((typeof col_lg !== 'undefined') && col_lg == i) { %} selected {% } %}>{%=i%}</option>
+				{% } %}
+				
+			</select>
+		</div>
+		
+		
+		<div class="col-6">
+			<label class="form-label">Extra large </label>
+			<select class="form-select" name="col-xl" autocomplete="off">
+				
+				<option value="">None</option>
+				{% for ( var i = 1; i <= 12; i++ ) { %}
+				<option value="{%=i%}" {% if ((typeof col_xl !== 'undefined') && col_xl == i) { %} selected {% } %}>{%=i%}</option>
+				{% } %}
+				
+			</select>
+		</div>
+		
+		<div class="col-6">
+			<label class="form-label">Extra extra large</label>
+			<select class="form-select" name="col-xxl" autocomplete="off">
+				
+				<option value="">None</option>
+				{% for ( var i = 1; i <= 12; i++ ) { %}
+				<option value="{%=i%}" {% if ((typeof col_xxl !== 'undefined') && col_xxl == i) { %} selected {% } %}>{%=i%}</option>
+				{% } %}
+				
+			</select>
+		</div>
+		
+		{% if (typeof hide_remove === 'undefined') { %}
+		<div class="col-12">
+		
+			<button class="btn btn-sm btn-outline-secondary text-danger">
+				<i class="la la-trash la-lg"></i> Remove
+			</button>
+			
+		</div>
+		{% } %}
+		
+	</div>
+	
+</script>
+
+<script id="vvveb-input-textvalue" type="text/html">
+
+	<div class="row">
+		<div class="col-6 mb-1">
+			<label class="form-label">Value</label>
+			<input name="value" type="text" value="{%=value%}" class="form-control" autocomplete="off" />
+		</div>
+
+		<div class="col-6 mb-1">
+			<label class="form-label">Text</label>
+			<input name="text" type="text" value="{%=text%}" class="form-control" autocomplete="off" />
+		</div>
+
+		{% if (typeof hide_remove === 'undefined') { %}
+		<div class="col-12">
+		
+			<button class="btn btn-sm btn-outline-secondary text-danger">
+				<i class="la la-trash la-lg"></i> Remove
+			</button>
+			
+		</div>
+		{% } %}
+
+	</div>
+	
+</script>

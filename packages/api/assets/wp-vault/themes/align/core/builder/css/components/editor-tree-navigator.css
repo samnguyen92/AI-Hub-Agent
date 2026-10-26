@@ -1,0 +1,497 @@
+/**
+ * Align Theme Builder CSS - DOM Tree Navigator & Sidepanes
+ * @package Align
+ */
+
+.drag-elements-sidepane ul > li ol li[data-type]:hover .add-section-btn { visibility: visible; }
+
+.sections-container {
+  width: 100%;
+  background: var(--bs-body-bg);
+  padding: 1rem;
+}
+
+.sections-container > div.section-item {
+  box-shadow: 0px 0px 1px 2px rgba(18, 83, 205, 0.03);
+  border: 1px solid var(--bs-border-color);
+  background: var(--bs-body-bg);
+  margin: 0 0 1rem;
+  padding: 0.3rem 0.5rem 0.3rem 1.4rem;
+  position: relative;
+  border-radius: 3px;
+}
+
+.sections-container > div.section-item .controls {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+}
+
+.sections-container > div.section-item .controls .handle {
+  width: 20px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  cursor: grab;
+}
+
+.sections-container > div.section-item .controls .handle::after {
+  content: "...";
+  color: #bbb;
+  width: 5px;
+  font-size: 28px;
+  word-wrap: break-word;
+  line-height: 7px;
+  vertical-align: middle;
+  display: inline-block;
+  margin-left: 5px;
+  margin-top: 3px;
+}.sections-container > div.section-item .controls .name { text-transform: capitalize; font-weight: 400; }.sections-container > div.section-item .controls .type { color: #777; }.sections-container > div.section-item .controls .info { margin-left: 0.2rem; }.sections-container > div.section-item .controls .info .name { font-size: 12px; }.sections-container > div.section-item .controls .info .type { font-size: 11px; }.sections-container > div.section-item .controls .buttons { margin-right: 2rem; margin-top: 0.2rem; }.sections-container > div.section-item .controls .buttons a { padding: 0.3rem 0.5rem; display: inline-block; }.sections-container > div.section-item .controls .buttons a:hover { background-color: rgba(18, 83, 205, 0.1); text-decoration: none; }.sections-container > div.section-item .controls .buttons .delete-btn,
+.sections-container > div.section-item .controls .buttons .up-btn,
+.sections-container > div.section-item .controls .buttons .down-btn { visibility: hidden; }.sections-container > div.section-item .controls .buttons:hover .delete-btn,
+.sections-container > div.section-item .controls .buttons:hover .up-btn,
+.sections-container > div.section-item .controls .buttons:hover .down-btn { visibility: visible; }.sections-container > div.section-item.drag-over { border: 2px dashed var(--bs-link-color); border-radius: 5px; }.sections-container > div.section-item .header_check ~ label { color: var(--bs-link-color); display: block; }.sections-container > div.section-item .header_check ~ label .header-arrow { right: 0.5rem; top: 0.7rem; padding: 0.1rem 0.5rem; }.sections-container > div.section-item .header_check ~ label .header-arrow:hover { background: rgba(18, 83, 205, 0.1); }.sections-container > div.section-item .header_check ~ label .header-arrow:before { content: "\f105"; }.sections-container > div.section-item .header_check:checked ~ label .header-arrow:before { content: "\f107"; }.sections-container > div.section-item .header_check:checked ~ .tree { display: block; }
+
+.sections-container > div.section-item .tree {
+  display: none;
+  border-top: 1px solid var(--bs-border-color);
+  padding: 0.5rem 0 0;
+  margin: 0.5rem 0 0;
+}
+
+.blocks .block-preview,
+.sections .block-preview,
+.styles .block-preview {
+  position: absolute;
+  left: 100%;
+  height: auto;
+  z-index: 1000;
+  border: 1px solid var(--bs-border-color);
+  box-shadow: 0px 0px 1px 2px rgba(18, 83, 205, 0.05);
+}
+
+.blocks .drag-elements-sidepane li[data-type],
+.sections .drag-elements-sidepane li[data-type],
+.styles .drag-elements-sidepane li[data-type] {
+  width: 95%;
+  height: auto;
+  min-height: 100px;
+  position: relative;
+  text-align: center;
+  font-weight: normal;
+  font-size: 11px;
+  color: var(--bs-body-color);
+  background-repeat: no-repeat;
+  padding: 0;
+  margin: 0.5rem;
+  display: flex;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0;
+  background-position: center;
+  background-size: 100%;
+  z-index: 100;
+  cursor: grab;
+  opacity: 1;
+  background-color: var(--bs-body-bg);
+}.blocks .drag-elements-sidepane li[data-type],
+.styles .drag-elements-sidepane li[data-type] { width: 42%; box-shadow: 0px 1px 4px 0px rgba(var(--bs-body-color-rgb), 0.05); }
+
+.blocks .drag-elements-sidepane li[data-type] .name,
+.sections .drag-elements-sidepane li[data-type] .name,
+.styles .drag-elements-sidepane li[data-type] .name {
+  background: rgba(var(--bs-body-bg-rgb), 0.9);
+  color: var(--bs-body-color);
+  padding: 0.5rem 0;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  left: 0;
+  font-size: 12px;
+  border-top: 1px solid rgba(var(--bs-body-color-rgb), 0.1);
+  visibility: hidden;
+}.blocks .drag-elements-sidepane li[data-type]:hover,
+.blocks .drag-elements-sidepane li[data-type].active,
+.sections .drag-elements-sidepane li[data-type]:hover,
+.sections .drag-elements-sidepane li[data-type].active,
+.styles .drag-elements-sidepane li[data-type]:hover,
+.styles .drag-elements-sidepane li[data-type].active { border-color: var(--bs-link-color); box-shadow: 0px 1px 5px 2px rgba(var(--bs-link-color-rgb), 0.25); }.blocks .drag-elements-sidepane li[data-type]:hover:before,
+.blocks .drag-elements-sidepane li[data-type].active:before,
+.sections .drag-elements-sidepane li[data-type]:hover:before,
+.sections .drag-elements-sidepane li[data-type].active:before,
+.styles .drag-elements-sidepane li[data-type]:hover:before,
+.styles .drag-elements-sidepane li[data-type].active:before { opacity: 0.1; }.blocks .drag-elements-sidepane li[data-type]:hover .name,
+.blocks .drag-elements-sidepane li[data-type].active .name,
+.sections .drag-elements-sidepane li[data-type]:hover .name,
+.sections .drag-elements-sidepane li[data-type].active .name,
+.styles .drag-elements-sidepane li[data-type]:hover .name,
+.styles .drag-elements-sidepane li[data-type].active .name,
+.blocks .drag-elements-sidepane li[data-type][data-section="Reusable"] .name,
+.sections .drag-elements-sidepane li[data-type][data-section="Reusable"] .name,
+.styles .drag-elements-sidepane li[data-type][data-section="Reusable"] .name { visibility: visible; }
+
+.blocks .drag-elements-sidepane li[data-type]:before,
+.sections .drag-elements-sidepane li[data-type]:before,
+.styles .drag-elements-sidepane li[data-type]:before {
+  content: " ";
+  background: var(--bs-primary);
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 0.5s;
+}.blocks .drag-elements-sidepane li[data-type] img.preview,
+.sections .drag-elements-sidepane li[data-type] img.preview,
+.styles .drag-elements-sidepane li[data-type] img.preview { max-width: 100%; }
+
+.components .drag-elements-sidepane li[data-type] {
+  width: var(--builder-component-list-element-width);
+  min-width: 80px;
+  height: 80px;
+  margin: 0 1% 3% 3%;
+  text-align: center;
+  font-weight: normal;
+  font-size: 11px;
+  color: var(--bs-body-color);
+  background-repeat: no-repeat;
+  padding: 50px 5px 7px 5px;
+  border: 1px solid rgba(var(--bs-secondary-rgb), 0.25);
+  border-radius: 3px;
+  background-color: var(--bs-body-bg);
+  background-position: 50% 20%;
+  background-size: auto 42px;
+  z-index: 100;
+  cursor: grab;
+}
+
+/* Tree Navigator Header & Alignment */
+
+#tree-list .header,
+#vvveb-builder #tree-list .header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 0 8px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: var(--bs-body-color, #e4e4e7) !important;
+  border-bottom: 1px solid var(--bs-border-color, #374151) !important;
+  background: var(--bs-body-bg, #1e1e2e) !important;
+  user-select: none;
+}
+
+#tree-list .header > div {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 1 !important;
+}#tree-list .header > div:before { display: none !important; }#tree-list .header span { display: inline-flex !important; align-items: center !important; gap: 3px !important; }
+
+#tree-list .header .btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 22px !important;
+  height: 22px !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  color: var(--bs-body-color, #adb5bd) !important;
+  border-radius: 4px !important;
+  opacity: 0.75;
+  transition: all 0.15s ease !important;
+}
+
+#tree-list .header .btn:hover {
+  opacity: 1 !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: var(--bs-emphasis-color, #ffffff) !important;
+}
+
+#tree-list .header .btn i {
+  font-size: 12px !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Tree Navigator Nodes & Expand/Collapse Hierarchy */
+
+#tree-list .tree {
+  padding: 4px 0 !important;
+  font-size: 12px !important;
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(var(--bs-body-color-rgb, 255, 255, 255), 0.2) transparent !important;
+}
+#tree-list .tree::-webkit-scrollbar { height: 4px !important; width: 4px !important; }
+#tree-list .tree::-webkit-scrollbar-track { background: transparent !important; }
+#tree-list .tree::-webkit-scrollbar-thumb { background: rgba(var(--bs-body-color-rgb, 255, 255, 255), 0.2) !important; border-radius: 4px !important; }
+#tree-list .tree::-webkit-scrollbar-thumb:hover { background: rgba(var(--bs-body-color-rgb, 255, 255, 255), 0.35) !important; }
+#tree-list .tree::-webkit-scrollbar-corner { background: transparent !important; }
+
+#tree-list .tree ol {
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+#tree-list .tree li {
+  position: relative !important;
+  margin: 0 0 1px 0 !important;
+  list-style: none !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+#tree-list .tree li > label {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  height: 26px !important;
+  min-height: 26px !important;
+  line-height: 26px !important;
+  padding: 0 50px 0 42px !important;
+  margin: 0 !important;
+  background-position: 20px center !important;
+  background-size: 16px 16px !important;
+  background-repeat: no-repeat !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  border-radius: 4px !important;
+  white-space: nowrap !important;
+  transition: background-color 0.15s ease, border-color 0.15s ease !important;
+}
+
+#tree-list .tree li.file > label {
+  padding: 0 50px 0 42px !important;
+  background-position: 20px center !important;
+  background-size: 16px 16px !important;
+  background-repeat: no-repeat !important;
+  height: 26px !important;
+  min-height: 26px !important;
+  line-height: 26px !important;
+  margin: 0 !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  white-space: nowrap !important;
+}
+#tree-list .tree li > label:hover { background-color: rgba(255, 255, 255, 0.06) !important; }
+
+/* Single Selected Node */
+#tree-list .tree li > label.active {
+  background-color: rgba(56, 189, 248, 0.12) !important;
+  border: 1px solid rgba(56, 189, 248, 0.3) !important;
+  color: #38bdf8 !important;
+}
+
+/* Multi-Selected Nodes */
+#tree-list .tree li > label.multi-selected {
+  background-color: rgba(56, 189, 248, 0.16) !important;
+  border: 1px dashed rgba(56, 189, 248, 0.5) !important;
+  color: #38bdf8 !important;
+}
+
+/* Multi-Selected Primary Active Node */
+#tree-list .tree li > label.multi-selected.active {
+  background-color: rgba(56, 189, 248, 0.26) !important;
+  border: 1px solid rgba(56, 189, 248, 0.85) !important;
+  color: #ffffff !important;
+}
+
+#tree-list .tree li > label .tree-node-text {
+  white-space: nowrap !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  line-height: 1.2 !important;
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+#tree-list .tree li > label .tree-node-name {
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+#tree-list .tree li > label .tree-node-title,
+#tree-list .tree li > label .text-secondary {
+  white-space: nowrap !important;
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+  color: #adb5bd !important;
+  display: inline-block !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+#tree-list .tree li > input {
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 22px !important;
+  height: 26px !important;
+  margin: 0 !important;
+  opacity: 1 !important;
+  z-index: 5 !important;
+  cursor: pointer !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  background: url(../../libs/builder/icons/arrow-right.svg) 6px 7px no-repeat !important;
+  background-size: 12px 12px !important;
+  border: none !important;
+  outline: none !important;
+}
+#tree-list .tree li > input:checked {
+  background: url(../../libs/builder/icons/arrow-down.svg) 6px 7px no-repeat !important;
+  background-size: 12px 12px !important;
+}
+#tree-list .tree li.file > input {
+  display: none !important;
+}
+
+#tree-list .tree li > input + ol {
+  display: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: none !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+#tree-list .tree li > input:checked + ol {
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 0 0 14px !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  height: auto !important;
+  overflow: visible !important;
+  background: none !important;
+}
+
+#tree-list .tree li > input + ol > li,
+#tree-list .tree li > input:checked + ol > li {
+  display: block !important;
+  margin: 0 0 1px 0 !important;
+  padding: 0 !important;
+}
+
+/* Tree Navigator Drop Indicators (SortableJS 3-Zone) */
+
+#tree-list .tree li.tree-drop-inside > label {
+  background-color: rgba(13, 110, 253, 0.25) !important;
+  outline: 2px dashed #0d6efd !important;
+  outline-offset: -2px;
+}#tree-list .tree li.tree-drop-before > label { box-shadow: inset 0 2px 0 0 #0d6efd !important; }#tree-list .tree li.tree-drop-after > label { box-shadow: inset 0 -2px 0 0 #0d6efd !important; }
+
+/* Tree Navigator Hover Actions (Duplicate & Delete on Node Hover) */
+
+#tree-list .tree .tree-node-actions {
+  position: absolute !important;
+  right: 6px !important;
+  top: 2px !important;
+  height: 22px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transition: opacity 0.15s ease, visibility 0.15s ease !important;
+  z-index: 25 !important;
+  pointer-events: none;
+}
+
+#tree-list .tree li > label:hover + .tree-node-actions,
+#tree-list .tree li > .tree-node-actions:hover,
+#tree-list .tree li:has(> label:hover) > .tree-node-actions,
+#tree-list .tree li:has(> .tree-node-actions:hover) > .tree-node-actions {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+#tree-list .tree .tree-node-action {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 4px !important;
+  color: #adb5bd !important;
+  font-size: 12px !important;
+  line-height: 1 !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+  transition: all 0.15s ease !important;
+}
+
+#tree-list .tree .tree-node-action i {
+  font-size: 12px !important;
+  line-height: 1 !important;
+  display: inline-block !important;
+}
+
+#tree-list .tree .tree-node-action.tree-node-clone:hover {
+  background-color: #0d6efd !important;
+  border-color: #0d6efd !important;
+  color: #ffffff !important;
+  transform: scale(1.1);
+}
+
+#tree-list .tree .tree-node-action.tree-node-delete:hover {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: #ffffff !important;
+  transform: scale(1.1);
+}
+
+/* Tree Navigator Hidden Elements */
+#tree-list .tree .tree-node-hidden-icon {
+  color: #f59e0b !important;
+  font-size: 13px !important;
+  margin-right: 4px !important;
+  vertical-align: middle !important;
+}
+#tree-list .tree li.is-element-hidden > label {
+  opacity: 0.6 !important;
+  font-style: italic !important;
+  color: #9ca3af !important;
+}
+#tree-list .tree li.is-element-hidden > label .tree-node-name {
+  text-decoration: line-through !important;
+  text-decoration-color: #f59e0b !important;
+}
+#tree-list .tree li.is-element-hidden > label.active,
+#tree-list .tree li.is-element-hidden > label.multi-selected.active {
+  background-color: rgba(245, 158, 11, 0.15) !important;
+  border: 1px dashed rgba(245, 158, 11, 0.6) !important;
+  color: #fbbf24 !important;
+}
+#tree-list .tree li.is-element-hidden > label.active .tree-node-name {
+  text-decoration: line-through !important;
+  text-decoration-color: #f59e0b !important;
+}

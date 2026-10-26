@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Fixtures: Compound Elements (Link, Button, Span, Typography, List-Item)</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            padding: 32px;
+            background: #f8fafc;
+            color: #1e293b;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+        .card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: #0f172a;
+        }
+        .card-desc {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 16px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            background: #e0f2fe;
+            color: #0284c7;
+            margin-right: 6px;
+        }
+        .test-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            background: #ffffff;
+            color: #334155;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .test-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #0284c7;
+            text-decoration: none;
+        }
+        .test-card-link {
+            display: block;
+            padding: 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            text-decoration: none;
+            color: inherit;
+            background: #f1f5f9;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Compound Elements Test Suite</h1>
+    <p>Use these test cases to verify conditional rendering of the "Text" property in Align Builder sidebar.</p>
+
+    <!-- Case 1: Simple Link with pure text -->
+    <div class="card">
+        <h3 class="card-title">Case 1: Simple Link (Plain Text)</h3>
+        <p class="card-desc">Expected: "Text" property MUST be visible in sidebar (no child element nodes).</p>
+        <div>
+            <a href="https://example.com" class="test-link" id="test-case-1">Click Here to Visit Website</a>
+        </div>
+    </div>
+
+    <!-- Case 2: Compound Link with SVG icon and span text -->
+    <div class="card">
+        <h3 class="card-title">Case 2: Compound Link (SVG Icon + Span)</h3>
+        <p class="card-desc">Expected: "Text" property MUST be hidden on &lt;a&gt; (contains child elements). Visible on child &lt;span&gt; when clicked.</p>
+        <div>
+            <a href="https://example.com" class="test-link" id="test-case-2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 16 16 12 12 8"></polyline>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+                <span id="test-case-2-span">Explore Features</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Case 3: Compound Card Link with nested heading and paragraph -->
+    <div class="card">
+        <h3 class="card-title">Case 3: Card Link (Nested Image + Heading + Paragraph)</h3>
+        <p class="card-desc">Expected: "Text" property MUST be hidden on outer &lt;a&gt; wrapper.</p>
+        <div>
+            <a href="https://example.com" class="test-card-link" id="test-case-3">
+                <h4 style="margin: 0 0 8px 0;">Special Promotion Announcement</h4>
+                <p style="margin: 0; font-size: 13px; color: #64748b;">Read our latest company updates and industry insights.</p>
+            </a>
+        </div>
+    </div>
+
+    <!-- Case 4: Simple Button with pure text -->
+    <div class="card">
+        <h3 class="card-title">Case 4: Simple Button (Plain Text)</h3>
+        <p class="card-desc">Expected: "Text" property MUST be visible in sidebar (no child element nodes).</p>
+        <div>
+            <button type="button" class="test-btn" id="test-case-4">Save Changes</button>
+        </div>
+    </div>
+
+    <!-- Case 5: Compound Button with icon and span text -->
+    <div class="card">
+        <h3 class="card-title">Case 5: Compound Button (Icon + Span)</h3>
+        <p class="card-desc">Expected: "Text" property MUST be hidden on &lt;button&gt; (contains child elements).</p>
+        <div>
+            <button type="button" class="test-btn" id="test-case-5">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                <span id="test-case-5-span">Submit Application</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Case 6: Simple Span vs Compound Span -->
+    <div class="card">
+        <h3 class="card-title">Case 6: Span Element (Simple vs Compound)</h3>
+        <p class="card-desc">Expected: "Text" property visible for simple span; hidden for span containing child elements.</p>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div>
+                <span class="test-simple-span" id="test-case-6-simple">This is a standalone span element without children.</span>
+            </div>
+            <div>
+                <span class="test-compound-span" id="test-case-6-compound">
+                    <span class="badge">Featured</span>
+                    <span class="label">Compound span container</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Case 7: Simple List Item vs Compound List Item -->
+    <div class="card">
+        <h3 class="card-title">Case 7: List Item (Simple vs Compound with Badge)</h3>
+        <p class="card-desc">Expected: "Text" property visible for simple &lt;li&gt;; hidden for &lt;li&gt; containing child &lt;span&gt; badge.</p>
+        <ul>
+            <li id="test-case-7-simple">Simple list item text</li>
+            <li id="test-case-7-compound">
+                <span class="badge">Step 1</span>
+                <span>Configure project environment settings</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Case 8: Paragraph (Simple vs Compound with code, b, br) -->
+    <div class="card">
+        <h3 class="card-title">Case 8: Paragraph (Plain vs Compound with code, b, br)</h3>
+        <p class="card-desc">Expected: "Text" property MUST be visible for simple &lt;p&gt;; hidden for &lt;p&gt; containing &lt;code&gt;, &lt;b&gt;, &lt;br&gt; child elements.</p>
+        <div>
+            <p id="test-case-8-simple">This is a plain text paragraph without any formatting tags or children.</p>
+            <p id="test-case-8-compound">
+                This is an <b>important notice</b> regarding the <code>npm run build</code> CLI command.<br>
+                Please verify that your configuration files are saved.
+            </p>
+        </div>
+    </div>
+
+    <!-- Case 9: Heading (Simple vs Compound with span) -->
+    <div class="card">
+        <h3 class="card-title">Case 9: Heading (Plain vs Compound with span)</h3>
+        <p class="card-desc">Expected: "Text" property MUST be visible for simple &lt;h2&gt;; hidden for &lt;h2&gt; containing child &lt;span&gt; elements.</p>
+        <div>
+            <h2 id="test-case-9-simple">Simple Heading Text</h2>
+            <h2 id="test-case-9-compound">
+                Documentation &amp; Guides <span class="badge">v2.0</span>
+            </h2>
+        </div>
+    </div>
+</div>
+</body>
+</html>

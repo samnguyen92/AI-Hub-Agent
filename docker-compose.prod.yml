@@ -116,8 +116,8 @@ services:
       api:
         condition: service_healthy
     ports:
-      # Map thẳng cổng 80 của VPS vào Next.js để truy cập http://<IP_VPS> không cần gõ :3000
-      - "80:3000"
+      # Map cổng 3100 của VPS vào Next.js (để Nginx Proxy Manager trỏ vào mà không đụng port 80)
+      - "3100:3000"
     environment:
       - INTERNAL_API_URL=http://api:8000
       - NEXT_PUBLIC_API_URL=/api/backend

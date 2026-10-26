@@ -1,0 +1,40 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "align/breadcrumb",
+  "title": "Breadcrumb",
+  "category": "align-category",
+  "icon": "format-status",
+  "description": "Dynamic SEO & ADA compliant breadcrumbs for posts, pages, and archives.",
+  "attributes": {
+    "separator": {
+      "type": "string",
+      "default": "/"
+    },
+    "homeText": {
+      "type": "string",
+      "default": "Home"
+    },
+    "showCurrent": {
+      "type": "boolean",
+      "default": true
+    },
+    "customClass": {
+      "type": "string",
+      "default": ""
+    },
+    "elementId": {
+      "type": "string",
+      "default": ""
+    },
+    "ariaLabel": {
+      "type": "string",
+      "default": "Breadcrumb"
+    }
+  },
+  "supports": {
+    "align": ["wide", "full"],
+    "html": false,
+    "customClassName": false
+  }
+}

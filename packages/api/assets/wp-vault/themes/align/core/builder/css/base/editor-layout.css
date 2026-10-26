@@ -1,0 +1,455 @@
+/**
+ * Align Theme Builder CSS - Core Layout & Global Reset
+ * @package Align
+ */
+
+#container {
+  min-height: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+#content,
+.main {
+  display: flex;
+  flex-flow: column;
+}
+
+.sidebar {
+  /*
+	position: sticky;
+	float:left;
+	top: 0px;
+	bottom: 0;
+	left: 0;*/
+  min-width: 250px;
+  z-index: 1000;
+  display: none;
+  /*
+	background:-moz-linear-gradient(left, var(--bs-body-bg); 75%, #fafbfc 100%);
+	background:-webkit-linear-gradient(left, var(--bs-body-bg); 75%, #fafbfc 100%);
+	background:linear-gradient(left, var(--bs-body-bg); 75%, #fafbfc 100%);
+*/
+  /*box-shadow: -1px -3px 2px #eee inset;*/
+  /*box-shadow: -1px -2px 1px #f3f3f3 inset;*/
+  /*box-shadow: 2px 0px 7px rgba(var(--bs-body-color-rgb),0.07);*/
+  /*box-shadow:2px 0px 7px 2px rgba(var(--bs-body-color-rgb),0.02) inset;*/
+  border-right: 1px solid var(--bs-secondary-bg);
+  height: 100%;
+}
+
+.sidebar:hover {
+  bottom: auto;
+}
+
+.sidebar .logo {
+  align-items: center;
+  display: flex;
+  vertical-align: middle;
+  justify-content: center;
+  margin-bottom: 0rem;
+  margin: 4rem 0rem 0 2rem;
+  margin: 2rem 1.2rem 0rem 2rem;
+  position: relative;
+}
+
+.sidebar .logo #color-theme-switch {
+  position: absolute;
+  top: 0.2rem;
+  color: var(--bs-gray-500);
+  font-size: 1rem;
+  /*
+			width: 11px;
+			height: 11px;
+			background: transparent;
+			border: 1px solid var(--bs-gray-500);
+			border-radius: 50px;
+			*/
+  padding: 3px;
+  right: 42px;
+  cursor: pointer;
+  /*
+			&::after {
+				content: ".";
+				background: var(--bs-gray-500);
+				left: 0px;
+				top: 0px;
+				width: 50%;
+				height: 100%;
+				position: absolute;
+				color: transparent;
+				border-top-left-radius: 50px;
+				border-bottom-left-radius: 50px;
+			}*/
+}
+
+.sidebar .logo #search-btn {
+  color: var(--bs-gray-500);
+  font-size: 1rem;
+  padding: 3px;
+  cursor: pointer;
+}
+
+.sidebar .logo .img {
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+
+.sidebar .logo .img [data-v-site-logo] {
+  display: block;
+}
+
+.sidebar .logo .img [data-v-site-logo-dark] {
+  display: none;
+}
+
+.sidebar .logo .img img {
+  max-width: 120px;
+  max-height: 80px;
+}
+
+.sidebar .logo .img div {
+  overflow: clip;
+  max-width: 130px;
+  margin-left: 0.3rem;
+  vertical-align: middle;
+  text-overflow: ellipsis;
+  display: inline-block;
+}
+
+.sidebar .logo a.menu-toggle {
+  font-size: 1rem;
+  margin-right: 1.4rem;
+  margin-left: 0.5rem;
+  margin-top: 0.3rem;
+  outline: none;
+  display: inline-block;
+  vertical-align: top;
+  cursor: pointer;
+  float: right;
+}
+
+.sidebar .logo a.menu-toggle i {
+  color: var(--bs-gray-500);
+  vertical-align: middle;
+  vertical-align: middle;
+}
+
+.sidebar .navbar-expand-md #search-btn {
+  right: auto;
+}
+
+.sidebar .navbar {
+  text-align: left;
+  margin: 1rem auto 0;
+  position: static;
+  padding: 0px;
+  width: 99%;
+}
+
+.sidebar .navbar .nav-item {
+  font-size: 14px;
+  padding-left: 1.5rem;
+  margin: 0;
+}
+
+.sidebar .navbar .nav-item.no-permission {
+  display: none;
+}
+
+.sidebar .navbar .nav-item.align-top>.sub-menu {
+  bottom: 0;
+  top: auto;
+}
+
+.sidebar .navbar .nav-item.align-middle>.sub-menu {
+  bottom: 0;
+  top: auto;
+  margin-bottom: -50%;
+}
+
+.sidebar .navbar .nav-item.columns-2>.sub-menu {
+  columns: 2;
+  min-width: 400px;
+  width: 200%;
+}
+
+.sidebar .navbar .nav-item.heading {
+  font-size: 10px;
+  margin-top: 0.5rem;
+  margin-bottom: 0.1rem;
+}
+
+.sidebar .navbar .nav-item.heading a {
+  font-weight: normal;
+  padding-bottom: 0.2rem;
+}
+
+.sidebar .navbar .nav-item.heading i {
+  display: none;
+}
+
+.sidebar .navbar .nav-item.heading span {
+  text-transform: uppercase;
+  color: rgba(var(--bs-secondary-rgb), 0.85);
+}
+
+.sidebar .navbar .nav-link {
+  padding-top: 0.52rem;
+  padding-bottom: 0.52rem;
+  margin: 0;
+}
+
+.sidebar .navbar .nav-link i,
+.sidebar .navbar .nav-link img {
+  color: var(--bs-secondary-color);
+  vertical-align: middle;
+  font-size: 1.2rem;
+  line-height: 1;
+  width: 24px;
+  margin-right: 0.45rem;
+}
+
+.sidebar .navbar .nav-link i.la-lg,
+.sidebar .navbar .nav-link img.la-lg {
+  font-size: 1.8rem;
+}
+
+.sidebar .navbar .nav-link img {
+  max-width: 24px;
+}
+
+.sidebar .navbar .sub-menu .nav-item.heading {
+  margin: 0;
+}
+
+.sidebar .navbar .sub-menu .nav-item.heading a {
+  padding-bottom: 0;
+}
+
+.sidebar .navbar .sub-menu .nav-item.heading a:hover {
+  background: var(--bs-gray-100);
+}
+
+.sidebar .navbar .sub-menu .nav-item .nav-link {
+  color: var(--bs-body-color);
+}
+
+.sidebar .navbar .sub-menu .nav-item .nav-link i,
+.sidebar .navbar .sub-menu .nav-item .nav-link img {
+  color: #999;
+  line-height: 1.1;
+  max-width: 24px;
+  max-height: 24px;
+}
+
+[data-bs-theme="dark"] .sidebar .navbar .sub-menu .nav-item .nav-link img[src$=".svg"] {
+  filter: invert(93%) hue-rotate(180deg);
+}
+
+.sidebar .navbar .sub-menu .nav-item:hover {
+  color: var(--bs-body-color);
+}
+
+.sidebar .navbar .sub-menu .nav-item:hover>i {
+  color: var(--bs-link-color);
+}
+
+.sidebar .navbar .nav-link.items {
+  position: relative;
+}
+
+.sidebar .navbar .nav-link.items:after {
+  /*
+				border-top-color: #aaa;
+				display: inline-block;
+				width: 0;
+				height: 0;
+				margin-left: 0.3em;
+				vertical-align: middle;
+				content: "";
+				border-top: 0.3em solid;
+				border-right: 0.3em solid transparent;
+				border-left: 0.3em solid transparent;
+
+
+				background: $custom-select-indicator no-repeat right center;
+				width: 8px !important;
+				height: 8px !important;
+				border:none !important;
+				vertical-align:0em !important;
+				margin-right:1rem;
+				position:absolute;
+				right:0.5rem;
+				top:1rem;
+				opacity:0.5;
+				
+				transform:rotate(270deg);
+				z-index:0;*/
+  content: "\f105";
+  font-family: 'Line Awesome Free';
+  font-weight: 900;
+  margin-right: 1rem;
+  position: absolute;
+  right: 0.5rem;
+  top: 0.7rem;
+  opacity: 0.3;
+  transition: opacity 2s;
+  vertical-align: middle;
+  font-style: normal;
+  font-size: 12px;
+}
+
+/* ==========================================================================
+   Content Mode - Locking layout & code editing, allowing text, link & media
+   ========================================================================== */
+
+#vvveb-builder #top-panel .btn-content-mode {
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0 7px;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 4px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--bs-secondary-color, #94a3b8);
+  transition: all 0.15s ease-in-out;
+  line-height: 1;
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+
+#vvveb-builder #top-panel .btn-content-mode:hover {
+  color: var(--bs-body-color, #e2e8f0);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+#vvveb-builder #top-panel .btn-content-mode.active {
+  background: rgba(56, 189, 248, 0.08);
+  border-color: rgba(56, 189, 248, 0.25);
+  color: #38bdf8;
+  box-shadow: none;
+}
+
+#vvveb-builder #top-panel .btn-content-mode i {
+  font-size: 11px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#vvveb-builder #top-panel .btn-content-mode .btn-content-mode-label {
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+#vvveb-builder #top-panel .btn-content-mode .badge-content-mode {
+  position: relative;
+  top: 0;
+  font-size: 8.5px;
+  font-weight: 600;
+  height: 14px;
+  line-height: 1;
+  padding: 1.5px 4px;
+  border-radius: 3px;
+  letter-spacing: 0.3px;
+  border: none;
+  margin-left: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#vvveb-builder #top-panel .btn-content-mode .badge-content-mode.is-off,
+#vvveb-builder #top-panel .btn-content-mode:not(.active) .badge-content-mode {
+  background: rgba(148, 163, 184, 0.12);
+  color: #94a3b8;
+  border: none;
+}
+
+#vvveb-builder #top-panel .btn-content-mode .badge-content-mode.is-on,
+#vvveb-builder #top-panel .btn-content-mode.active .badge-content-mode {
+  background: rgba(56, 189, 248, 0.16);
+  color: #38bdf8;
+  border: none;
+}
+
+/* Light mode overrides for Content Mode button */
+html[data-bs-theme="light"] #vvveb-builder #top-panel .btn-content-mode {
+  border-color: #cbd5e1;
+  color: #64748b;
+  background: transparent;
+}
+
+html[data-bs-theme="light"] #vvveb-builder #top-panel .btn-content-mode:hover {
+  background: #f8fafc;
+  color: #334155;
+  border-color: #94a3b8;
+}
+
+html[data-bs-theme="light"] #vvveb-builder #top-panel .btn-content-mode.active {
+  background: #f0f9ff;
+  border-color: #bae6fd;
+  color: #0284c7;
+}
+
+html[data-bs-theme="light"] #vvveb-builder #top-panel .btn-content-mode .badge-content-mode.is-off,
+html[data-bs-theme="light"] #vvveb-builder #top-panel .btn-content-mode:not(.active) .badge-content-mode {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+html[data-bs-theme="light"] #vvveb-builder #top-panel .btn-content-mode.active .badge-content-mode {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+/* When Content Mode is active on builder / body */
+.content-mode-active #vvveb-builder #top-panel #select-actions #up-btn,
+.content-mode-active #vvveb-builder #top-panel #select-actions #down-btn,
+.content-mode-active #vvveb-builder #top-panel #select-actions #clone-btn,
+.content-mode-active #vvveb-builder #top-panel #select-actions #delete-btn,
+.content-mode-active #vvveb-builder #top-panel #select-actions #save-reusable-btn,
+.content-mode-active #vvveb-builder #top-panel #select-actions #parent-btn,
+.content-mode-active #vvveb-builder #select-box #drag-btn,
+.content-mode-active #vvveb-builder #select-box .resize,
+.content-mode-active #vvveb-builder #section-actions,
+.content-mode-active #vvveb-builder #add-section-box,
+.content-mode-active #vvveb-builder .add-section-btn,
+.content-mode-active #vvveb-builder #bottom-panel #code-editor-btn,
+.content-mode-active #vvveb-builder #sidebarNav .components-tab,
+.content-mode-active #vvveb-builder #sidebarNav .sections-tab,
+.content-mode-active #vvveb-builder #sidebarNav .component-configuration-tab,
+.content-mode-active #vvveb-builder #filemanager #add-item-dropdown,
+.content-mode-active #vvveb-builder #filemanager #new-file-btn,
+.content-mode-active #vvveb-builder #tree-list .tree-node-clone,
+.content-mode-active #vvveb-builder #tree-list .tree-node-delete,
+.content-mode-active #vvveb-builder .component-properties #properties-tabs .style-tab,
+.content-mode-active #vvveb-builder .component-properties #properties-tabs .advanced-tab,
+.content-mode-active #vvveb-builder .component-properties #style-tab,
+.content-mode-active #vvveb-builder .component-properties #advanced-tab,
+.content-mode-active #vvveb-builder .component-properties #style-left-panel-tab,
+.content-mode-active #vvveb-builder .component-properties #advanced-left-panel-tab {
+  display: none !important;
+}
+
+.content-mode-active #vvveb-builder #tree-list .tree ol li label {
+  cursor: pointer !important;
+}
+
+.content-mode-active #vvveb-builder #tree-list .tree .tree-drop-inside,
+.content-mode-active #vvveb-builder #tree-list .tree .tree-drop-before,
+.content-mode-active #vvveb-builder #tree-list .tree .tree-drop-after {
+  outline: none !important;
+  box-shadow: none !important;
+}

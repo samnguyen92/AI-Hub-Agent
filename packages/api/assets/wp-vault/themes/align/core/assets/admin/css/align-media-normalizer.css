@@ -1,0 +1,58 @@
+/**
+ * Media Filename Normalizer Stylesheet for Align Theme.
+ *
+ * @package Align
+ */
+
+/* Accordion Header & Toggle */
+.align-normalizer-accordion.is-accordion .align-card-header { cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center; border-bottom: none !important; }
+.align-normalizer-accordion.is-open .align-card-header { border-bottom: 1px solid #e2e8f0 !important; }
+.align-normalizer-accordion .align-normalizer-toggle-icon { transition: transform 0.2s ease; font-size: 16px; width: 16px; height: 16px; }
+.align-normalizer-accordion.is-open .align-normalizer-toggle-icon { transform: rotate(180deg); }
+
+/* Stats Grid */
+.align-normalizer-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.align-normalizer-stat-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px 14px; }
+.align-normalizer-stat-label { font-size: 11.5px; color: #64748b; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.align-normalizer-stat-val { font-size: 20px; font-weight: 700; color: #0f172a; line-height: 1.2; }
+.align-normalizer-stat-box.is-changed .align-normalizer-stat-val { color: #0284c7; }
+.align-normalizer-stat-box.is-clean .align-normalizer-stat-val { color: #16a34a; }
+.align-normalizer-stat-box.is-error .align-normalizer-stat-val { color: #dc2626; }
+
+/* Progress Bar */
+.align-normalizer-progress-bar-bg { background: #f1f5f9; border-radius: 4px; height: 14px; overflow: hidden; }
+.align-normalizer-progress-bar-fill { background: #0284c7; height: 100%; width: 0%; transition: width 0.25s ease; }
+
+/* Console Logger */
+.align-normalizer-console-wrapper { border-radius: 6px; overflow: hidden; border: 1px solid #1e293b; }
+.align-normalizer-console-header { display: flex; justify-content: space-between; align-items: center; background: #0f172a; color: #94a3b8; padding: 8px 12px; font-size: 11.5px; font-weight: 600; }
+.align-normalizer-console-clear-btn { background: transparent; border: none; color: #94a3b8; cursor: pointer; font-size: 11px; }
+.align-normalizer-console-clear-btn:hover { color: #f8fafc; }
+.align-normalizer-console-body { background: #1e293b; color: #f8fafc; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11.5px; padding: 10px 12px; max-height: 200px; overflow-y: auto; line-height: 1.6; }
+.align-normalizer-log-entry { word-break: break-all; margin-bottom: 2px; }
+.align-log-time { color: #64748b; }
+.align-log-tag.is-info { color: #38bdf8; }
+.align-log-tag.is-success { color: #4ade80; }
+.align-log-tag.is-clean { color: #94a3b8; }
+.align-log-tag.is-error { color: #f87171; }
+
+/* Modal on upload.php */
+.align-normalizer-modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(2px); z-index: 999999; display: flex; align-items: center; justify-content: center; }
+.align-normalizer-modal-content { background: #ffffff; border-radius: 8px; width: 660px; max-width: 92vw; max-height: 88vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); border: 1px solid #cbd5e1; padding: 24px; box-sizing: border-box; }
+.align-normalizer-modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+.align-normalizer-modal-title { margin: 0 0 4px 0; font-size: 16px; font-weight: 700; color: #0f172a; }
+.align-normalizer-modal-desc { margin: 0; font-size: 12.5px; color: #64748b; }
+.align-normalizer-modal-close { background: transparent; border: none; font-size: 24px; line-height: 1; color: #94a3b8; cursor: pointer; padding: 0 4px; }
+.align-normalizer-modal-close:hover { color: #0f172a; }
+
+/* Modal Transparent Buttons (Align Button Standards) */
+.align-normalizer-modal-content .button { background: transparent !important; border: 1px solid #cbd5e1; height: 32px; border-radius: 6px; font-size: 12.5px; font-weight: 600; line-height: 30px; padding: 0 12px; cursor: pointer; box-shadow: none !important; }
+.align-normalizer-modal-content .button-primary { border-color: #0284c7 !important; color: #0284c7 !important; }
+.align-normalizer-modal-content .button-primary:hover { background: #0284c7 !important; color: #ffffff !important; }
+.align-normalizer-modal-content .button-secondary { border-color: #bae6fd !important; color: #0284c7 !important; }
+.align-normalizer-modal-content .button-secondary:hover { background: #f0f9ff !important; }
+.align-normalizer-modal-content .button-danger { border-color: #fecaca !important; color: #dc2626 !important; }
+.align-normalizer-modal-content .button-danger:hover { background: #fef2f2 !important; }
+
+/* Row Action Link */
+.row-actions .align_format_name a { color: #0284c7 !important; font-weight: 600; }

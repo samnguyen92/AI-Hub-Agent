@@ -1,0 +1,52 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "align/icon",
+  "title": "Icon",
+  "category": "align-category",
+  "icon": "star-filled",
+  "description": "Custom icon block supporting Lucide SVG search library, custom SVG code, and media library images.",
+  "attributes": {
+    "iconMode": {
+      "type": "string",
+      "default": "lucide"
+    },
+    "lucideIcon": {
+      "type": "string",
+      "default": "star"
+    },
+    "customSvg": {
+      "type": "string",
+      "default": ""
+    },
+    "customImgId": {
+      "type": "number",
+      "default": 0
+    },
+    "customImgUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "iconSize": {
+      "type": "number",
+      "default": 24
+    },
+    "iconColor": {
+      "type": "string",
+      "default": ""
+    },
+    "customClass": {
+      "type": "string",
+      "default": ""
+    },
+    "elementId": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "supports": {
+    "align": ["wide", "full"],
+    "html": false,
+    "customClassName": false
+  }
+}

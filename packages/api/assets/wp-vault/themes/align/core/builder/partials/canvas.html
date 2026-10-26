@@ -1,0 +1,347 @@
+        <div id="canvas">
+          <div id="iframe-wrapper">
+            <div id="iframe-layer">
+
+              <div class="loading-message active">
+                <div class="animation-container">
+                  <div class="dot dot-1"></div>
+                  <div class="dot dot-2"></div>
+                  <div class="dot dot-3"></div>
+                </div>
+
+                <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                  <defs>
+                    <filter id="goo">
+                      <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+                      <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 27 -7" />
+                    </filter>
+                  </defs>
+                </svg>
+              </div>
+
+              <div id="highlight-box">
+                <div id="highlight-name">
+                  <span class="name"></span>
+                  <span class="type"></span>
+                </div>
+
+                <div id="section-actions">
+                  <a id="add-section-btn" href="" title="Add element">
+                    <i class="la la-plus"></i>
+                  </a>
+                </div>
+              </div>
+
+              <div id="select-box">
+
+                <div id="wysiwyg-editor" class="default-editor">
+                  <a id="bold-btn" href="" title="Bold">
+                    <svg height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+                      <path clip-rule="evenodd" d="M56 40V216H148C176.719 216 200 192.719 200 164C200 147.849 192.637 133.418 181.084 123.88C187.926 115.076 192 104.014 192 92C192 63.2812 168.719 40 140 40H56ZM88 144V184H148C159.046 184 168 175.046 168 164C168 152.954 159.046 144 148 144H88ZM88 112V72H140C151.046 72 160 80.9543 160 92C160 103.046 151.046 112 140 112H88Z" fill="#252525" fill-rule="evenodd"/>
+                    </svg>	
+                  </a>
+                  <a id="italic-btn" href="" title="Italic">
+                    <svg height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M202 40H84V64H126.182L89.8182 192H54V216H172V192H129.818L166.182 64H202V40Z" fill="#252525"/>
+                    </svg>
+                  </a>
+                  <a id="underline-btn" href="" title="Underline">
+                    <svg height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+                      <path clip-rule="evenodd" d="M80 40C80 35.5817 76.4183 32 72 32C67.5817 32 64 35.5817 64 40V104C64 139.346 92.6538 168 128 168C163.346 168 192 139.346 192 104V40C192 35.5817 188.418 32 184 32C179.582 32 176 35.5817 176 40V104C176 130.51 154.51 152 128 152C101.49 152 80 130.51 80 104V40ZM48 208C48 203.582 51.5817 200 56 200H200C204.418 200 208 203.582 208 208C208 212.418 204.418 216 200 216H56C51.5817 216 48 212.418 48 208Z" fill="#252525" fill-rule="evenodd"/>
+                    </svg>
+                  </a>
+                  <a id="strike-btn" href="" title="Strikeout">
+                    <del>S</del>
+                  </a>
+                  <a id="link-btn" href="" title="Create link">
+                    <i class="la la-link"></i>
+                  </a>
+                  <div class="dropdown">
+                    <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i class="la la-align-left"></i>
+                    </button>
+                    <div id="justify-btn" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                      <a class="dropdown-item" href="#" data-value="Left"><i class="la la-lg la-align-left"></i> Align Left</a>
+                      <a class="dropdown-item" href="#" data-value="Center"><i class="la la-lg la-align-center"></i> Align Center</a>
+                      <a class="dropdown-item" href="#" data-value="Right"><i class="la la-lg la-align-right"></i> Align Right</a>
+                      <a class="dropdown-item" href="#" data-value="Full"><i class="la la-lg la-align-justify"></i> Align Justify</a>
+                    </div>
+                  </div>
+                  <input id="fore-color" name="color" type="color" aria-label="color" pattern="#[a-f0-9]{6}" class="form-control form-control-color">
+                  <input id="back-color" name="background-color" type="color" aria-label="background color" pattern="#[a-f0-9]{6}" class="form-control form-control-color">
+                  <select id="font-size" class="form-select">
+                    <option value="">Default</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                  </select>
+                  <select id="font-family" class="form-select">
+                    <option value="">Default</option>
+                    <optgroup label="System Fonts">
+                      <option value="Arial, Helvetica, sans-serif">Arial</option>
+                      <option value="'Lucida Sans Unicode', 'Lucida Grande', sans-serif">Lucida Grande</option>
+                      <option value="'Palatino Linotype', 'Book Antiqua', Palatino, serif">Palatino Linotype</option>
+                      <option value="'Times New Roman', Times, serif">Times New Roman</option>
+                      <option value="Georgia, serif">Georgia, serif</option>
+                      <option value="Tahoma, Geneva, sans-serif">Tahoma</option>
+                      <option value="'Comic Sans MS', cursive, sans-serif">Comic Sans</option>
+                      <option value="Verdana, Geneva, sans-serif">Verdana</option>
+                      <option value="Impact, Charcoal, sans-serif">Impact</option>
+                      <option value="'Arial Black', Gadget, sans-serif">Arial Black</option>
+                      <option value="'Trebuchet MS', Helvetica, sans-serif">Trebuchet</option>
+                      <option value="'Courier New', Courier, monospace">Courier New</option>
+                      <option value="'Brush Script MT', sans-serif">Brush Script</option>
+                    </optgroup>
+                    <optgroup label="Google Fonts">
+                      <option value="'Open Sans', sans-serif">Open Sans</option>
+                      <option value="'Roboto', sans-serif">Roboto</option>
+                      <option value="'Lato', sans-serif">Lato</option>
+                      <option value="'Montserrat', sans-serif">Montserrat</option>
+                      <option value="'Oswald', sans-serif">Oswald</option>
+                      <option value="'Raleway', sans-serif">Raleway</option>
+                      <option value="'Merriweather', serif">Merriweather</option>
+                      <option value="'Nunito', sans-serif">Nunito</option>
+                      <option value="'Poppins', sans-serif">Poppins</option>
+                    </optgroup>
+                  </select>
+                </div>
+
+                <div class="resize">
+                  <!-- top -->
+                  <div class="top-left"></div>
+                  <div class="top-center"></div>
+                  <div class="top-right"></div>
+                  <!-- center -->
+                  <div class="center-left"></div>
+                  <div class="center-right"></div>
+                  <!-- bottom -->
+                  <div class="bottom-left"></div>
+                  <div class="bottom-center"></div>
+                  <div class="bottom-right"></div>
+                </div>
+
+              </div>
+
+              <div id="drop-highlight-box">
+              </div>
+
+              <!-- Word Editor Floating Bubble Toolbar -->
+              <div id="word-bubble-toolbar" class="word-bubble-toolbar" style="display: none;">
+                <div class="word-toolbar-group">
+                  <button type="button" class="word-btn" data-word-action="bold" title="Bold (Ctrl+B)">
+                    <i class="la la-bold"></i>
+                  </button>
+                  <button type="button" class="word-btn" data-word-action="italic" title="Italic (Ctrl+I)">
+                    <i class="la la-italic"></i>
+                  </button>
+                  <button type="button" class="word-btn" data-word-action="underline" title="Underline (Ctrl+U)">
+                    <i class="la la-underline"></i>
+                  </button>
+                  <button type="button" class="word-btn" data-word-action="strike" title="Strikethrough">
+                    <i class="la la-strikethrough"></i>
+                  </button>
+                </div>
+                <div class="word-toolbar-divider"></div>
+                <div class="word-toolbar-group">
+                  <select class="word-select" id="word-block-format" title="Paragraph Style">
+                    <option value="p">Paragraph</option>
+                    <option value="h1">Heading 1</option>
+                    <option value="h2">Heading 2</option>
+                    <option value="h3">Heading 3</option>
+                    <option value="h4">Heading 4</option>
+                    <option value="h5">Heading 5</option>
+                    <option value="h6">Heading 6</option>
+                    <option value="blockquote">Quote</option>
+                  </select>
+                </div>
+                <div class="word-toolbar-divider"></div>
+                <div class="word-toolbar-group">
+                  <button type="button" class="word-btn" data-word-action="link" title="Link">
+                    <i class="la la-link"></i>
+                  </button>
+                  <button type="button" class="word-btn" data-word-action="unlink" title="Remove Link">
+                    <i class="la la-unlink"></i>
+                  </button>
+                  <button type="button" class="word-btn" data-word-action="bullet-list" title="Bullet List">
+                    <i class="la la-list-ul"></i>
+                  </button>
+                  <button type="button" class="word-btn" data-word-action="numbered-list" title="Numbered List">
+                    <i class="la la-list-ol"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Word Editor Gutter Quick Inserter (+) -->
+              <div id="word-gutter-inserter" class="word-gutter-inserter" style="display: none;">
+                <button type="button" class="word-gutter-btn" id="word-gutter-toggle-btn" title="Add block">
+                  <i class="la la-plus"></i>
+                </button>
+                <div class="word-gutter-menu" id="word-gutter-menu" style="display: none;">
+                  <button type="button" class="word-menu-item" data-insert="image">
+                    <i class="la la-image"></i>
+                    <span>Image</span>
+                  </button>
+                  <button type="button" class="word-menu-item" data-insert="h2">
+                    <i class="la la-header"></i>
+                    <span>Heading 2</span>
+                  </button>
+                  <button type="button" class="word-menu-item" data-insert="bullet-list">
+                    <i class="la la-list-ul"></i>
+                    <span>Bullet List</span>
+                  </button>
+                  <button type="button" class="word-menu-item" data-insert="numbered-list">
+                    <i class="la la-list-ol"></i>
+                    <span>Numbered List</span>
+                  </button>
+                  <button type="button" class="word-menu-item" data-insert="blockquote">
+                    <i class="la la-quote-right"></i>
+                    <span>Quote</span>
+                  </button>
+                  <button type="button" class="word-menu-item" data-insert="hr">
+                    <i class="la la-minus"></i>
+                    <span>Divider</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Word Editor Image Quick Bar -->
+              <div id="word-image-toolbar" class="word-image-toolbar" style="display: none;">
+                <div class="word-toolbar-group">
+                  <button type="button" class="word-btn word-size-btn" data-img-size="25">25%</button>
+                  <button type="button" class="word-btn word-size-btn" data-img-size="50">50%</button>
+                  <button type="button" class="word-btn word-size-btn" data-img-size="75">75%</button>
+                  <button type="button" class="word-btn word-size-btn" data-img-size="100">100%</button>
+                </div>
+                <div class="word-toolbar-divider"></div>
+                <div class="word-toolbar-group">
+                  <button type="button" class="word-btn" data-img-align="left" title="Align Left">
+                    <i class="la la-align-left"></i>
+                  </button>
+                  <button type="button" class="word-btn" data-img-align="center" title="Align Center">
+                    <i class="la la-align-center"></i>
+                  </button>
+                  <button type="button" class="word-btn" data-img-align="right" title="Align Right">
+                    <i class="la la-align-right"></i>
+                  </button>
+                </div>
+                <div class="word-toolbar-divider"></div>
+                <div class="word-toolbar-group">
+                  <button type="button" class="word-btn" id="word-img-replace-btn" title="Replace Image">
+                    <i class="la la-sync"></i>
+                  </button>
+                  <button type="button" class="word-btn text-danger" id="word-img-delete-btn" title="Delete Image">
+                    <i class="la la-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <iframe src="" id="iframe1">
+            </iframe>
+          </div>
+
+          <!-- add section box -->
+          <div id="add-section-box" class="drag-elements">
+            <div class="header">
+              <div class="section-box-header d-flex align-items-center justify-content-between">
+                <ul class="nav nav-pills" id="box-elements-tabs" role="tablist">
+                  <li class="nav-item component-tab">
+                    <a class="nav-link active" id="box-components-tab" data-bs-toggle="tab" href="#box-components" role="tab" aria-controls="components" aria-selected="true">
+                      <i class="icon-cube-outline"></i>
+                      <span>Components</span>
+                    </a>
+                  </li>
+                  <li class="nav-item blocks-tab" style="display: none !important;">
+                    <a class="nav-link" id="box-blocks-tab" data-bs-toggle="tab" href="#box-blocks" role="tab" aria-controls="blocks" aria-selected="false">
+                      <i class="icon-copy-outline"></i>
+                      <span>Blocks</span>
+                    </a>
+                  </li>
+                  <li class="nav-item sections-tab">
+                    <a class="nav-link" id="box-sections-tab" data-bs-toggle="tab" href="#box-sections" role="tab" aria-controls="sections" aria-selected="false">
+                      <i class="icon-layers-outline"></i>
+                      <span>Template</span>
+                    </a>
+                  </li>
+                </ul>
+
+                <div class="section-box-actions d-flex align-items-center">
+                  <div class="btn-group btn-group-sm insert-mode-segmented" role="group" aria-label="Insert Mode">
+                    <input type="radio" class="btn-check" name="add-section-insert-mode" id="add-section-insert-mode-after" value="after" checked="checked" autocomplete="off">
+                    <label class="btn btn-outline-secondary" for="add-section-insert-mode-after">After</label>
+
+                    <input type="radio" class="btn-check" name="add-section-insert-mode" id="add-section-insert-mode-inside" value="inside" autocomplete="off">
+                    <label class="btn btn-outline-secondary" for="add-section-insert-mode-inside">Inside</label>
+                  </div>
+                  <button type="button" id="close-section-btn" class="btn btn-close-modal" aria-label="Close" title="Close">
+                    <i class="la la-times"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="tab-content">
+                <div class="tab-pane show active" id="box-components" role="tabpanel" aria-labelledby="box-components-tab">
+                  <div class="search search-wrapper">
+                    <div class="expand">
+                      <button type="button" title="Toggle categories" data-vvveb-action="toggleSections" data-closed="true">
+                        <i class="la la-plus"></i>
+                      </button>
+                    </div>
+                    <input class="form-control component-search" placeholder="Search components..." type="text" data-vvveb-action="search" data-vvveb-on="keyup">
+                    <button type="button" class="clear-backspace" data-vvveb-action="clearSearch" title="Clear search">
+                      <i class="la la-times"></i>
+                    </button>
+                  </div>
+                  <div class="overflow-y-auto">
+                    <div>
+                      <ul class="components-list" data-type="addbox"></ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="tab-pane" id="box-blocks" role="tabpanel" aria-labelledby="box-blocks-tab">
+                  <div class="search search-wrapper">
+                    <div class="expand">
+                      <button type="button" title="Toggle categories" data-vvveb-action="toggleSections" data-closed="true">
+                        <i class="la la-plus"></i>
+                      </button>
+                    </div>
+                    <input class="form-control block-search" placeholder="Search blocks..." type="text" data-vvveb-action="search" data-vvveb-on="keyup">
+                    <button type="button" class="clear-backspace" data-vvveb-action="clearSearch" title="Clear search">
+                      <i class="la la-times"></i>
+                    </button>
+                  </div>
+                  <div class="overflow-y-auto">
+                    <div>
+                      <ul class="blocks-list" data-type="addbox"></ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="tab-pane" id="box-sections" role="tabpanel" aria-labelledby="box-sections-tab">
+                  <div class="search search-wrapper">
+                    <div class="expand">
+                      <button type="button" title="Toggle categories" data-vvveb-action="toggleSections" data-closed="true">
+                        <i class="la la-plus"></i>
+                      </button>
+                    </div>
+                    <input class="form-control section-search" placeholder="Search templates..." type="text" data-vvveb-action="search" data-vvveb-on="keyup">
+                    <button type="button" class="clear-backspace" data-vvveb-action="clearSearch" title="Clear search">
+                      <i class="la la-times"></i>
+                    </button>
+                  </div>
+                  <div class="overflow-y-auto">
+                    <div>
+                      <ul class="sections-list" data-type="addbox"></ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- //add section box -->
+        </div>

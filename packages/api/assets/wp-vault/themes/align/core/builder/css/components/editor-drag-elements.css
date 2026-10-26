@@ -1,0 +1,279 @@
+/**
+ * Align Theme Builder CSS - Drag & Drop Elements & WYSIWYG Editor
+ * @package Align
+ */
+
+#vvveb-builder #section-actions a#add-section-btn:hover {
+  text-decoration: none;
+  filter: brightness(1.2);
+}
+
+#vvveb-builder #highlight-name {
+  background: var(--bs-primary);
+  color: var(--bs-white);
+  font-size: 12px;
+  position: relative;
+  top: -22px;
+  left: -1px;
+  width: auto;
+  padding: 2px 5px;
+  display: inline-block;
+  border-radius: 3px 3px 0px 0px;
+}
+
+#vvveb-builder #highlight-name .type {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+#vvveb-builder #elements-tabs .nav-item {
+  background: var(--bs-body-bg);
+  overflow: hidden;
+}
+
+#vvveb-builder #elements-tabs a {
+  font-size: 1.4rem;
+  outline: none;
+  border: none;
+  padding: 0.3rem 0.2rem 0.4rem;
+}
+
+#vvveb-builder #elements-tabs a i {
+  padding: 0.3rem 0rem;
+  font-size: 1rem;
+  max-width: 70px;
+  margin: auto;
+  border-radius: 5px;
+  display: block;
+  border: 1px solid transparent;
+}
+
+#vvveb-builder #elements-tabs a:hover i {
+  border: 1px solid rgba(var(--bs-link-color-rgb), 0.2);
+}
+
+#vvveb-builder #elements-tabs a.active {
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-top-color: rgba(var(--bs-link-color-rgb), 0.7);
+  color: var(--bs-link-color);
+  box-shadow: none;
+}
+
+#vvveb-builder #elements-tabs a.active i {
+  background: rgba(var(--bs-primary-rgb), 0.08);
+  color: var(--bs-link-hover-color);
+}
+
+#vvveb-builder .nav-tabs .nav-item:first-child .nav-link {
+  border-left: none;
+}
+
+#vvveb-builder .nav-tabs .nav-link {
+  /*
+		border-top:none;
+		border-left:none;
+		border-right:none;
+		border-bottom-width: 1px;
+		*/
+  text-align: center;
+  --bs-nav-link-color: var(--bs-secondary-color);
+}
+
+#vvveb-builder .nav-tabs .nav-link i {
+  font-size: 1rem;
+  line-height: 1;
+  vertical-align: text-top;
+}
+
+#vvveb-builder .nav-tabs .nav-link.active,
+#vvveb-builder .nav-tabs .nav-item.show .nav-link {
+  font-weight: normal;
+}
+
+#vvveb-builder .nav-tabs .nav-link.active i,
+#vvveb-builder .nav-tabs .nav-item.show .nav-link i {
+  color: var(--bs-link-hover-color);
+}
+
+#vvveb-builder .nav-fill .nav-item {
+  background-color: rgba(var(--bs-body-color-rgb), 0.025);
+}
+
+#vvveb-builder .nav-fill .nav-item .nav-link {
+  padding: 0.5rem 0;
+}
+
+#vvveb-builder .sections-tabs .nav-link i,
+#vvveb-builder .sections-tabs .nav-link div {
+  display: inline-block;
+  vertical-align: bottom;
+}
+
+#vvveb-builder .sections-tabs .nav-link i {
+  margin-right: 0.1rem;
+}
+
+/* style for drag element */
+li[data-type] {
+  width: var(--builder-component-list-element-width);
+  min-width: 80px;
+  height: 80px;
+  margin: 0% 1% 3% 3%;
+  text-align: center;
+  font-weight: normal;
+  font-size: 11px;
+  color: var(--bs-body-color);
+  background-repeat: no-repeat;
+  padding-top: 60px;
+  padding-bottom: 7px;
+  padding: 50px 5px 7px 5px;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 3px;
+  /*		  
+		border-left-width:1px;
+		border-top-width:1px;
+		*/
+  background-color: var(--bs-body-bg);
+  border-color: var(--bs-border-color);
+  border-color: rgba(var(--bs-secondary-rgb), 0.25);
+  background-position: 50% 20%;
+  background-size: auto 42px;
+  z-index: 100;
+  cursor: move;
+  cursor: grab;
+  box-shadow: 0px 1px 4px 0px rgba(var(--bs-body-color-rgb), 0.05);
+  box-shadow: none;
+  /*border-width:1px;*/
+}
+
+li[data-type] a,
+li[data-type] span {
+  min-height: 20px;
+  white-space: break-spaces;
+  display: block;
+  line-height: 1.2;
+}
+
+html[data-bs-theme="dark"] .components .drag-elements-sidepane li[data-type][data-drag-type="component"] {
+  border-color: var(--bs-border-color);
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+
+html[data-bs-theme="dark"] .components .drag-elements-sidepane li[data-type][data-drag-type="component"] a {
+  color: var(--bs-body-color);
+}
+
+.drag-elements-sidepane {
+  z-index: 0;
+  margin: 0;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.drag-elements-sidepane>div {
+  overflow: hidden;
+  margin-bottom: 5rem;
+}
+
+.drag-elements-sidepane>div:hover {
+  overflow-y: auto;
+}
+
+.drag-elements-sidepane .block-preview,
+.drag-elements-sidepane .style-preview {
+  margin: 0;
+}
+
+.drag-elements-sidepane ul {
+  z-index: 1;
+  margin: 0;
+  padding: 0;
+  padding-bottom: 2rem;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.drag-elements-sidepane ul>li {
+  float: none;
+  clear: both;
+}
+
+.drag-elements-sidepane ul>li.header {
+  height: auto;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  position: relative;
+}
+
+.drag-elements-sidepane ul>li.header label {
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 28px;
+  text-align: left;
+  padding: 0.3rem 1rem;
+  padding: 0.5rem 1.8rem;
+}
+
+.drag-elements-sidepane ul>li.header label>a {
+  padding-left: 1rem;
+  color: var(--bs-link-color);
+}
+
+.drag-elements-sidepane ul>li.header:first-child {
+  margin-top: 0rem;
+}
+
+.drag-elements-sidepane ul>li ol {
+  margin: 0px;
+  padding: 0rem;
+  padding-bottom: 0rem;
+  list-style: none;
+}
+
+.drag-elements-sidepane ul>li ol li {
+  float: left;
+}
+
+.drag-elements-sidepane ul>li ol li a {
+  color: var(--bs-body-color);
+  text-decoration: none;
+  text-shadow: none;
+}
+
+.drag-elements-sidepane ul>li ol li[data-type] {
+  border: none;
+}
+
+.drag-elements-sidepane ul>li ol li[data-type]:hover {
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+  background-color: var(--bs-body-bg);
+  opacity: 1;
+  text-align: center;
+}
+
+/* Temporarily hide standard component groups (Base, Elements, Bootstrap 5, Widgets, Embeds) */
+/* Preserved in memory for Code Editor, Style Manager, and Inspector */
+#vvveb-builder .components-list > li.header[data-section="Base" i],
+#vvveb-builder .components-list > li.header[data-section="Elements" i],
+#vvveb-builder .components-list > li.header[data-section="Bootstrap 5" i],
+#vvveb-builder .components-list > li.header[data-section="Widgets" i],
+#vvveb-builder .components-list > li.header[data-section="Embeds" i] {
+  display: none !important;
+}
+

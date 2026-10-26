@@ -1,0 +1,484 @@
+/**
+ * Align Theme Builder CSS - Canvas, Iframe & Responsive Scales
+ * @package Align
+ */
+
+#vvveb-builder #bottom-panel #vvveb-code-editor textarea {
+  height: 100%;
+  width: 100%;
+  border: none;
+  font-size: 14px;
+  margin-bottom: 10px;
+  background: rgba(var(--bs-secondary-color-rgb), 0.03);
+}
+
+#vvveb-builder.bottom-panel-expand #bottom-panel { height: 50%; }
+#vvveb-builder.bottom-panel-expand #canvas { height: 50%; position: relative; }
+
+#vvveb-builder .drag-elements { flex: 1 1; overflow: hidden; padding-top: 0; height: 100%; }
+#vvveb-builder .drag-elements > .header { height: 100%; display: flex; flex-direction: column; }
+
+#vvveb-builder .drag-elements .nav-item a.nav-link {
+  text-align: center;
+  border-top-color: var(--bs-body-bg);
+  min-width: 4.5rem;
+  padding: 0.3rem 0;
+  --bs-nav-link-color: var(--bs-secondary-color);
+  line-height: 1.4;
+}
+#vvveb-builder .drag-elements .nav-item a.nav-link i { font-size: 14px; vertical-align: middle; }
+#vvveb-builder .drag-elements .nav-item a.nav-link small,
+#vvveb-builder .drag-elements .nav-item a.nav-link .small { font-size: 0.8rem; }
+
+#vvveb-builder .search { position: relative; }
+#vvveb-builder .search .form-control {
+  border-color: var(--bs-body-bg);
+  border-radius: 0;
+  box-shadow: none;
+  font-size: 12px;
+}
+#vvveb-builder .search .form-control:focus { border-color: #80bdff; }
+#vvveb-builder .search .form-control::placeholder { font-size: .75rem; }
+
+#vvveb-builder .search .clear-backspace {
+  border: none;
+  background: none;
+  position: absolute;
+  top: 0.20rem;
+  right: 12px;
+  opacity: 0.5;
+}
+#vvveb-builder .search .clear-backspace:hover { opacity: 1; background: var(--bs-border-color); }
+#vvveb-builder .search i { font-size: 13px; }
+
+#vvveb-builder .search input:focus + .clear-backspace,
+#vvveb-builder .search input:hover + .clear-backspace {
+  opacity: 1;
+  background: var(--bs-border-color);
+}
+
+#vvveb-builder .search .expand { position: absolute; top: 3px; right: 5px; }
+#vvveb-builder .search .expand button {
+  padding: 0.05rem 0.25rem;
+  background: transparent;
+  border: none;
+  color: var(--bs-body-color);
+}
+#vvveb-builder .search .expand button:hover { background: var(--bs-border-color); }
+#vvveb-builder .search .expand ~ .clear-backspace { right: 26px; }
+
+#vvveb-builder .components-list,
+#vvveb-builder .blocks-list,
+#vvveb-builder .component-properties,
+#vvveb-builder .sections-list {
+  list-style: none;
+  user-select: none;
+}
+
+/* Add Section Modal Popup */
+#vvveb-builder #add-section-box {
+  width: 90vw;
+  max-width: 720px;
+  height: 82vh;
+  max-height: 580px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--bs-body-bg);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.28), 0 0 0 1px var(--bs-border-color);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 10px;
+  pointer-events: auto;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1060;
+  animation: popup-animation 0.15s cubic-bezier(0, 0, 0.2, 1) 0s forwards;
+}
+
+#vvveb-builder #add-section-box.only-sections { max-width: 860px; max-height: 640px; height: 82vh; }
+#vvveb-builder #add-section-box.only-sections .nav-pills .nav-item,
+#vvveb-builder #add-section-box.only-sections .section-box-actions .insert-mode-segmented { visibility: hidden; }
+#vvveb-builder #add-section-box.only-base .sections-list li:not([data-section="Base"]) { display: none; }
+
+/* Modal Header & Navigation */
+#vvveb-builder #add-section-box .section-box-header {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--bs-border-color);
+  background: var(--bs-body-bg);
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+#vvveb-builder #add-section-box #box-elements-tabs { gap: 6px; margin: 0; padding: 0; border: none; }
+#vvveb-builder #add-section-box #box-elements-tabs .nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 6px;
+  color: var(--bs-secondary-color);
+  border: 1px solid transparent;
+  background: transparent;
+  transition: all 0.15s ease;
+}
+#vvveb-builder #add-section-box #box-elements-tabs .nav-link i { font-size: 15px; }
+#vvveb-builder #add-section-box #box-elements-tabs .nav-link:hover {
+  color: var(--bs-body-color);
+  background: rgba(var(--bs-secondary-rgb), 0.08);
+}
+#vvveb-builder #add-section-box #box-elements-tabs .nav-link.active {
+  color: #fff;
+  background: var(--bs-primary);
+  box-shadow: 0 2px 6px rgba(var(--bs-primary-rgb), 0.35);
+}
+
+/* Insert Mode Segmented Buttons & Close Button */
+#vvveb-builder #add-section-box .section-box-actions { display: flex; align-items: center; gap: 8px; }
+#vvveb-builder #add-section-box .insert-mode-segmented {
+  background: rgba(var(--bs-secondary-rgb), 0.1);
+  padding: 2px;
+  border-radius: 6px;
+  border: 1px solid var(--bs-border-color);
+}
+#vvveb-builder #add-section-box .insert-mode-segmented .btn {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border: none;
+  border-radius: 4px;
+  color: var(--bs-secondary-color);
+  background: transparent;
+  box-shadow: none;
+  transition: all 0.15s ease;
+}
+#vvveb-builder #add-section-box .insert-mode-segmented .btn-check:checked + .btn {
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+#vvveb-builder #add-section-box .btn-close-modal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--bs-secondary-color);
+  font-size: 14px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+#vvveb-builder #add-section-box .btn-close-modal:hover {
+  background: rgba(var(--bs-secondary-rgb), 0.12);
+  color: var(--bs-body-color);
+}
+
+/* Search Bar in Modal */
+#vvveb-builder #add-section-box .search-wrapper {
+  position: relative;
+  padding: 8px 12px;
+  background: var(--bs-body-bg);
+  border-bottom: 1px solid var(--bs-border-color);
+  flex-shrink: 0;
+}
+#vvveb-builder #add-section-box .search-wrapper .form-control {
+  border-radius: 6px;
+  font-size: 12px;
+  padding: 6px 30px 6px 10px;
+  border: 1px solid var(--bs-border-color);
+  background: rgba(var(--bs-secondary-rgb), 0.04);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+#vvveb-builder #add-section-box .search-wrapper .form-control:focus {
+  border-color: var(--bs-primary);
+  background: var(--bs-body-bg);
+  box-shadow: 0 0 0 2px rgba(var(--bs-primary-rgb), 0.15);
+}
+#vvveb-builder #add-section-box .search-wrapper .expand {
+  position: absolute;
+  top: 50%;
+  right: 18px;
+  transform: translateY(-50%);
+  z-index: 4;
+}
+#vvveb-builder #add-section-box .search-wrapper .expand button {
+  padding: 2px 4px;
+  background: transparent;
+  border: none;
+  color: var(--bs-secondary-color);
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+#vvveb-builder #add-section-box .search-wrapper .expand button:hover { color: var(--bs-primary); }
+#vvveb-builder #add-section-box .search-wrapper .clear-backspace {
+  position: absolute;
+  top: 50%;
+  right: 42px;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--bs-secondary-color);
+  opacity: 0.6;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+#vvveb-builder #add-section-box .search-wrapper .clear-backspace:hover { opacity: 1; color: var(--bs-danger); }
+
+/* Category List and Accordion Headers in Modal */
+#vvveb-builder #add-section-box .components-list,
+#vvveb-builder #add-section-box .blocks-list,
+#vvveb-builder #add-section-box .sections-list {
+  width: 100%;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  user-select: none;
+}
+#vvveb-builder #add-section-box li.header { list-style: none; margin: 0; padding: 0; }
+#vvveb-builder #add-section-box label.header {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 8px 14px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--bs-secondary-color);
+  border-top: 1px solid var(--bs-border-color);
+  background: rgba(var(--bs-secondary-rgb), 0.03);
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+#vvveb-builder #add-section-box li.header:first-child > label.header { border-top: none; }
+#vvveb-builder #add-section-box label.header:hover {
+  background: rgba(var(--bs-secondary-rgb), 0.06);
+  color: var(--bs-body-color);
+}
+#vvveb-builder #add-section-box label.header .header-arrow {
+  position: static;
+  padding: 0;
+  font-size: 13px;
+  color: var(--bs-secondary-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  transition: color 0.15s ease;
+}
+#vvveb-builder #add-section-box label.header .header-arrow:before {
+  content: "\f067";
+  font-family: "Line Awesome Free";
+  font-weight: 900;
+}
+#vvveb-builder #add-section-box input.header_check { display: none; }
+#vvveb-builder #add-section-box input.header_check:checked + label.header .header-arrow:before,
+#vvveb-builder #add-section-box li.header:has(> input.header_check:checked) label.header .header-arrow:before,
+#vvveb-builder #add-section-box input.header_check:checked ~ label.header .header-arrow:before {
+  content: "\f068";
+}
+#vvveb-builder #add-section-box input.header_check:checked ~ ol { display: grid; height: auto; opacity: 1; }
+#vvveb-builder #add-section-box li.header > ol { display: none; opacity: 0; transition: opacity 0.2s ease; }
+
+/* Components Grid & Cards */
+#vvveb-builder #add-section-box .components-list ol {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 10px;
+  padding: 8px 12px 16px;
+  margin: 0;
+  list-style: none;
+}
+#vvveb-builder #add-section-box .components-list ol li[data-type] {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  min-height: 94px;
+  height: 94px;
+  width: auto;
+  float: none;
+  margin: 0;
+  padding: 8px 6px;
+  border-radius: 8px;
+  border: 1px solid var(--bs-border-color);
+  background-color: var(--bs-body-bg);
+  cursor: grab;
+  position: relative;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+#vvveb-builder #add-section-box .components-list ol li[data-type]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: var(--bs-primary);
+  background-color: rgba(var(--bs-primary-rgb), 0.04);
+}
+#vvveb-builder #add-section-box .components-list ol li[data-type] .component-icon {
+  width: 32px;
+  height: 32px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: var(--bs-primary);
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+#vvveb-builder #add-section-box .components-list ol li[data-type]:hover .component-icon {
+  transform: scale(1.08);
+}
+#vvveb-builder #add-section-box .components-list ol li[data-type] a,
+#vvveb-builder #add-section-box .components-list ol li[data-type] span {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--bs-body-color);
+  text-align: center;
+  word-break: break-word;
+  line-height: 1.25;
+  margin: 0;
+  text-decoration: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-height: 30px;
+  width: 100%;
+}
+#vvveb-builder #add-section-box .components-list ol li[data-type]:hover a,
+#vvveb-builder #add-section-box .components-list ol li[data-type]:hover span {
+  color: var(--bs-primary);
+}
+
+/* Sections & Blocks Grid & Cards */
+#vvveb-builder #add-section-box .blocks-list ol,
+#vvveb-builder #add-section-box .sections-list ol {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+  padding: 8px 14px 18px;
+  margin: 0;
+  list-style: none;
+}
+#vvveb-builder #add-section-box .blocks-list ol li,
+#vvveb-builder #add-section-box .sections-list ol li {
+  display: block;
+  position: relative;
+  aspect-ratio: 16/10;
+  width: 100%;
+  height: auto;
+  float: none;
+  margin: 0;
+  padding: 0;
+  border-radius: 8px;
+  border: 1px solid var(--bs-border-color);
+  background-color: var(--bs-tertiary-bg);
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+#vvveb-builder #add-section-box .blocks-list ol li:hover,
+#vvveb-builder #add-section-box .sections-list ol li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  border-color: var(--bs-primary);
+}
+#vvveb-builder #add-section-box .blocks-list ol li img,
+#vvveb-builder #add-section-box .sections-list ol li img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  transition: transform 0.25s ease;
+}
+#vvveb-builder #add-section-box .blocks-list ol li:hover img,
+#vvveb-builder #add-section-box .sections-list ol li:hover img { transform: scale(1.04); }
+#vvveb-builder #add-section-box .blocks-list ol li span,
+#vvveb-builder #add-section-box .sections-list ol li span {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 8px 10px;
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.75) 100%);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  visibility: visible;
+  z-index: 2;
+  transition: opacity 0.2s ease;
+}
+#vvveb-builder #add-section-box .blocks-list ol li .add-section-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.85);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--bs-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  opacity: 0;
+  visibility: visible;
+  pointer-events: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  z-index: 3;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+#vvveb-builder #add-section-box .blocks-list ol li:hover .add-section-btn {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+#vvveb-builder #add-section-box .sections-list ol li .add-section-btn {
+  display: none !important;
+}
+
+#vvveb-builder .component-properties-sidepane {
+  z-index: 0;
+  margin: 0;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  height: 100%;
+}

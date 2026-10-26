@@ -1,0 +1,45 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "align/custom-html",
+  "title": "Align Builder Content",
+  "category": "align-category",
+  "icon": "html",
+  "description": "Renders custom HTML, CSS, JS and shortcodes from Align Builder",
+  "attributes": {
+    "content": {
+      "type": "string",
+      "source": "raw",
+      "role": "content",
+      "default": ""
+    },
+    "blockId": {
+      "type": "string",
+      "default": ""
+    },
+    "enableShortcode": {
+      "type": "boolean",
+      "default": true
+    },
+    "styleId": {
+      "type": "string",
+      "default": ""
+    },
+    "scriptId": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "supports": {
+    "html": false,
+    "lock": false,
+    "customClassName": true
+  },
+  "usesContext": [
+    "postId",
+    "postType",
+    "templatePart/slug",
+    "templatePart/theme",
+    "templateSlug"
+  ]
+}

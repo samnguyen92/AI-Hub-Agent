@@ -1,0 +1,45 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "align/marquee",
+  "title": "Marquee",
+  "category": "align-category",
+  "icon": "slides",
+  "description": "Infinite custom marquee block using Splide.js.",
+  "textdomain": "align-function",
+  "attributes": {
+    "speed": {
+      "type": "number",
+      "default": 1
+    },
+    "direction": {
+      "type": "string",
+      "default": "ltr"
+    },
+    "pauseOnHover": {
+      "type": "boolean",
+      "default": true
+    },
+    "spaceBetween": {
+      "type": "number",
+      "default": 20
+    },
+    "slidesPerView": {
+      "type": "string",
+      "default": "auto"
+    },
+    "slidesPerViewTablet": {
+      "type": "string",
+      "default": "auto"
+    },
+    "slidesPerViewMobile": {
+      "type": "string",
+      "default": "auto"
+    }
+  },
+  "supports": {
+    "align": ["wide", "full"],
+    "html": false,
+    "customClassName": true
+  }
+}

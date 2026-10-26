@@ -1,0 +1,402 @@
+/**
+ * Align Theme Builder - WordPress Media Library Modal Styling & Scoping
+ *
+ * Provides isolation, accessibility utility classes, and fixes layout conflicts
+ * between WordPress Media Modal (wp.media) and Builder / Bootstrap styles.
+ *
+ * @package Align
+ */
+
+/* 1. WordPress Core Accessibility Utilities */
+.screen-reader-text,
+.screen-reader-text span,
+.ui-helper-hidden-accessible {
+  border: 0 !important;
+  clip: rect(1px, 1px, 1px, 1px) !important;
+  -webkit-clip-path: inset(50%) !important;
+  clip-path: inset(50%) !important;
+  height: 1px !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  position: absolute !important;
+  width: 1px !important;
+  word-wrap: normal !important;
+  word-break: normal !important;
+}
+
+.media-views-heading {
+  border: 0 !important;
+  clip: rect(1px, 1px, 1px, 1px) !important;
+  -webkit-clip-path: inset(50%) !important;
+  clip-path: inset(50%) !important;
+  height: 1px !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  position: absolute !important;
+  width: 1px !important;
+  word-wrap: normal !important;
+}
+
+/* 2. Media Modal Shell & Backdrop Isolation */
+.media-modal-backdrop {
+  z-index: 159900 !important;
+  background: rgba(15, 23, 42, 0.75) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.media-modal {
+  z-index: 160000 !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important;
+}
+
+.media-modal-content {
+  background: #ffffff !important;
+  color: #2c3338 !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4) !important;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+/* 3. Media Modal Close Button */
+.media-modal-close {
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  width: 50px !important;
+  height: 50px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #646970 !important;
+  z-index: 1000 !important;
+  cursor: pointer !important;
+  outline: none !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  transition: color 0.15s ease-in-out, background 0.15s ease-in-out !important;
+}
+
+.media-modal-close:hover,
+.media-modal-close:focus {
+  color: #2271b1 !important;
+  background: #f0f0f1 !important;
+  box-shadow: none !important;
+}
+
+.media-modal-close .media-modal-icon {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-image: none !important;
+}
+
+.media-modal-close .media-modal-icon:before {
+  content: "\f158" !important;
+  font: normal 20px/50px dashicons !important;
+  vertical-align: middle !important;
+  text-align: center !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  speak: never;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 4. Toolbar, Filter Selects & Search Input */
+.media-frame .attachments-browser .media-toolbar {
+  background: #ffffff !important;
+  padding: 10px 16px !important;
+  min-height: 52px;
+}
+
+.media-frame select,
+.media-modal select,
+.wp-core-ui .media-frame select {
+  background-color: #ffffff !important;
+  color: #2c3338 !important;
+  border: 1px solid #8c8f94 !important;
+  border-radius: 4px !important;
+  padding: 0 24px 0 8px !important;
+  font-size: 13px !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  line-height: 30px !important;
+  box-shadow: 0 0 0 transparent !important;
+}
+
+.media-frame input[type="search"],
+.media-modal input[type="search"],
+.wp-core-ui .media-frame input[type="search"] {
+  background-color: #ffffff !important;
+  color: #2c3338 !important;
+  border: 1px solid #8c8f94 !important;
+  border-radius: 4px !important;
+  padding: 4px 8px !important;
+  font-size: 13px !important;
+  height: 32px !important;
+  line-height: 22px !important;
+  box-shadow: 0 0 0 transparent !important;
+}
+
+.media-frame select:focus,
+.media-frame input[type="search"]:focus {
+  border-color: #2271b1 !important;
+  box-shadow: 0 0 0 1px #2271b1 !important;
+  outline: 2px solid transparent !important;
+}
+
+/* 5. Attachments Grid & Selection Checkmark */
+.media-frame .attachment .check {
+  display: none;
+  height: 24px !important;
+  width: 24px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  position: absolute !important;
+  z-index: 10 !important;
+  top: 0 !important;
+  right: 0 !important;
+  outline: none !important;
+  background: #eee;
+  cursor: pointer !important;
+  box-shadow: 0 0 0 1px #fff, 0 0 0 2px rgba(0, 0, 0, 0.15) !important;
+}
+
+.media-frame .attachment.selected .check {
+  display: block !important;
+}
+
+.media-frame .attachment .check .media-modal-icon {
+  display: block !important;
+  width: 24px !important;
+  height: 24px !important;
+  margin: 0 !important;
+}
+
+.media-frame .attachment .check .media-modal-icon {
+  background-position: -55px 4px !important;
+}
+
+/* 6. Navigation Router Tabs */
+.media-frame .media-router {
+  background: #ffffff !important;
+}
+
+.media-frame .media-router .media-menu-item {
+  color: #2c3338 !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  border: 0 !important;
+  border-bottom: 3px solid transparent !important;
+  padding: 8px 10px !important;
+  background: transparent !important;
+}
+
+.media-frame .media-router .media-menu-item.active {
+  color: #000000 !important;
+  border-bottom-color: #2271b1 !important;
+  font-weight: 600 !important;
+}
+
+/* 7. Attachment Details Right Sidebar */
+.media-sidebar {
+  background: #f6f7f7 !important;
+  border-left: 1px solid #dcdcde !important;
+  color: #2c3338 !important;
+  padding: 16px !important;
+}
+
+.media-sidebar .attachment-info {
+  border-bottom: 1px solid #dcdcde !important;
+  margin-bottom: 12px !important;
+  padding-bottom: 12px !important;
+}
+
+.media-sidebar .details,
+.media-sidebar .settings {
+  color: #2c3338 !important;
+}
+
+.media-sidebar label {
+  color: #646970 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+.media-sidebar input[type="text"],
+.media-sidebar textarea {
+  background: #ffffff !important;
+  color: #2c3338 !important;
+  border: 1px solid #8c8f94 !important;
+  border-radius: 4px !important;
+  padding: 6px 8px !important;
+  font-size: 12px !important;
+  box-shadow: 0 0 0 transparent !important;
+}
+
+.media-sidebar input[type="text"]:focus,
+.media-sidebar textarea:focus {
+  border-color: #2271b1 !important;
+  box-shadow: 0 0 0 1px #2271b1 !important;
+  outline: 2px solid transparent !important;
+}
+
+/* 8. Media Buttons & Actions */
+.wp-core-ui .button-primary.media-button {
+  background: #2271b1 !important;
+  border-color: #2271b1 !important;
+  color: #ffffff !important;
+  height: 32px !important;
+  line-height: 30px !important;
+  padding: 0 12px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  border-radius: 4px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+  cursor: pointer !important;
+}
+
+.wp-core-ui .button-primary.media-button:hover,
+.wp-core-ui .button-primary.media-button:focus {
+  background: #135e96 !important;
+  border-color: #135e96 !important;
+  color: #ffffff !important;
+}
+
+/* 9. Inspector Media Responsive Breakpoints (3 Screensize Slots) */
+.align-media-sizes-slots-wrapper,
+.align-media-sizes-tags-wrapper {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 10px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+}
+
+.align-size-slots-header {
+  margin-bottom: 8px;
+}
+
+.align-size-slots-title {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.align-size-reset-btn {
+  background: transparent !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 4px !important;
+  padding: 2px 7px !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  color: #64748b !important;
+  cursor: pointer !important;
+  line-height: 1.4 !important;
+  transition: all 0.15s ease !important;
+}
+
+.align-size-reset-btn:hover {
+  border-color: #0284c7 !important;
+  color: #0284c7 !important;
+  background: #f0f9ff !important;
+}
+
+.align-size-slot-row {
+  margin-bottom: 6px;
+}
+
+.align-size-slot-row:last-child {
+  margin-bottom: 0;
+}
+
+.align-size-slot-label-group {
+  margin-bottom: 3px;
+}
+
+.align-size-slot-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #334155;
+  display: flex;
+  align-items: center;
+}
+
+.align-size-slot-badge {
+  font-size: 9.5px;
+  font-weight: 500;
+  color: #64748b;
+  background: #e2e8f0;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.align-size-slot-select {
+  font-size: 11.5px !important;
+  height: 28px !important;
+  min-height: 28px !important;
+  line-height: 26px !important;
+  padding: 0 22px 0 8px !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 4px !important;
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  width: 100% !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.align-size-slot-select:focus {
+  border-color: #0284c7 !important;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15) !important;
+  outline: none !important;
+}
+
+/* Dark Mode Support */
+[data-bs-theme="dark"] .align-media-sizes-slots-wrapper,
+[data-bs-theme="dark"] .align-media-sizes-tags-wrapper {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+[data-bs-theme="dark"] .align-size-slots-title {
+  color: #94a3b8;
+}
+
+[data-bs-theme="dark"] .align-size-reset-btn {
+  border-color: #475569 !important;
+  color: #94a3b8 !important;
+}
+
+[data-bs-theme="dark"] .align-size-reset-btn:hover {
+  border-color: #38bdf8 !important;
+  color: #38bdf8 !important;
+  background: #0f172a !important;
+}
+
+[data-bs-theme="dark"] .align-size-slot-label {
+  color: #cbd5e1;
+}
+
+[data-bs-theme="dark"] .align-size-slot-badge {
+  background: #334155;
+  color: #94a3b8;
+}
+
+[data-bs-theme="dark"] .align-size-slot-select {
+  background-color: #0f172a !important;
+  border-color: #475569 !important;
+  color: #f1f5f9 !important;
+}
+
+[data-bs-theme="dark"] .align-size-slot-select:focus {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25) !important;
+}

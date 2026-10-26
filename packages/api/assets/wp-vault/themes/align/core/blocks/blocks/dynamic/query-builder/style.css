@@ -1,0 +1,534 @@
+/* align-query-builder custom styles */
+/* ==========================================================================
+   1. GRID MODE
+   ========================================================================== */
+.align-qb-wrap--grid {
+    display: grid;
+    gap: 1.5rem;
+    /* Default to 1 column */
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+.align-qb-wrap--grid[data-qb-grid-cols="1"] { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.align-qb-wrap--grid[data-qb-grid-cols="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.align-qb-wrap--grid[data-qb-grid-cols="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.align-qb-wrap--grid[data-qb-grid-cols="4"] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.align-qb-wrap--grid[data-qb-grid-cols="5"] { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.align-qb-wrap--grid[data-qb-grid-cols="6"] { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+/* Basic responsive rules for Grid */
+@media (max-width: 1024px) {
+    .align-qb-wrap--grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+@media (max-width: 640px) {
+    .align-qb-wrap--grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+/* ==========================================================================
+   2. SLIDER MODE (EDITOR PREVIEW FIX)
+   ========================================================================== */
+
+/* ---- Fix: Splide sets visibility:hidden by default until JS init, but JS doesn't run in editor ---- */
+/* Override visibility for all splide sliders and their nested content in editor context */
+.editor-styles-wrapper .splide,
+.editor-styles-wrapper .splide__slide,
+.editor-styles-wrapper .splide__track,
+.editor-styles-wrapper .splide__list,
+.editor-styles-wrapper .align-qb-wrap--slider,
+.editor-styles-wrapper .align-splide-slide-editor {
+    visibility: visible !important;
+}
+/* Also override for nested blocks inside the slider */
+.editor-styles-wrapper .block-editor-block-list__block.splide,
+.editor-styles-wrapper .block-editor-block-list__block.wp-block-align-media {
+    visibility: visible !important;
+}
+/* Ensure video elements inside editor are visible */
+.editor-styles-wrapper video {
+    visibility: visible !important;
+}
+
+/* In the Editor screen, use Flexbox to simulate horizontal display for better preview */
+.editor-styles-wrapper [data-type="align/query-builder"] .block-editor-block-list__layout.align_custom_block,
+.editor-styles-wrapper [data-type="align/query-builder"] .block-editor-block-list__layout.splide__list,
+.editor-styles-wrapper .align-qb-wrap--slider .splide__list {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    padding-bottom: 1rem;
+}
+.editor-styles-wrapper [data-type="align/slide"].splide__slide,
+.align-qb-wrap--slider .splide__slide {
+    flex-shrink: 0 !important;
+}
+/* Ensure Splide elements stretch to fill parent height in slider mode */
+.align-qb-wrap--slider.splide,
+.align-qb-wrap--slider .splide__track,
+.align-qb-wrap--slider .splide__list,
+.align-qb-wrap--slider .splide__slide {
+    height: 100% !important;
+}
+.align-qb-wrap--slider .align-qb-slide-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+.hero-bg-swiper .splide__arrows,
+.hero-bg-swiper .splide__pagination {
+    display: none !important;
+}
+/* ==========================================================================
+   3. BASIC CARD STYLES (Prevent basic layout breakage)
+   ========================================================================== */
+.align-qb-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    font-family: inherit;
+    text-decoration: none;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+.align-qb-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+a.align-qb-card--whole-link {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+a.align-qb-card--whole-link:hover .align-qb-title {
+    color: var(--wp--preset--color--primary, #2563eb);
+}
+a.align-qb-card--whole-link:focus-visible {
+    outline: 2px solid var(--wp--preset--color--primary, #2563eb);
+    outline-offset: 3px;
+    border-radius: 8px;
+}
+.align-qb-card--overlay .align-qb-image {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+.align-qb-card--overlay .align-qb-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.align-qb-card--overlay .align-qb-content {
+    position: relative;
+    z-index: 10;
+    padding: 1.5rem;
+    margin-top: auto;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    color: #fff;
+}
+.align-qb-card--stacked .align-qb-image-link {
+    display: block;
+    position: relative;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+}
+.align-qb-card--stacked .align-qb-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.align-qb-card--stacked .align-qb-content,
+.align-qb-card--no-image .align-qb-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+.align-qb-card--no-image .align-qb-badge-wrap {
+    position: static;
+    margin-bottom: 0.75rem;
+}
+.align-qb-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin: 0.5rem 0;
+    color: inherit;
+    text-decoration: none;
+}
+.align-qb-excerpt {
+    font-size: 0.875rem;
+    color: #666;
+    margin-bottom: 1rem;
+}
+.align-qb-card--overlay .align-qb-excerpt {
+    color: #eee;
+}
+.align-qb-badge-wrap {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    z-index: 20;
+}
+.align-qb-badge {
+    background: #2563eb;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    text-transform: uppercase;
+}
+.align-qb-meta--date {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    text-transform: uppercase;
+}
+.align-qb-readmore-wrap {
+    margin-top: auto;
+}
+.align-qb-readmore {
+    color: #2563eb;
+    font-size: 0.875rem;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}
+.align-qb-icon {
+    width: 1rem;
+    height: 1rem;
+    margin-left: 0.25rem;
+}
+/* Pagination */
+.align-qb-pagination {
+    margin-top: 2rem;
+    text-align: center;
+    width: 100%;
+}
+.qb-load-more-btn {
+    padding: 0.5rem 1.5rem;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.qb-infinite-trigger {
+    padding: 2rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+.align-spinner {
+    animation: align-rotate 2s linear infinite;
+    width: 32px;
+    height: 32px;
+}
+.align-spinner .path {
+    stroke: #2563eb;
+    stroke-linecap: round;
+    animation: align-dash 1.5s ease-in-out infinite;
+}
+
+@keyframes align-rotate {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+@keyframes align-dash {
+    0% {
+        stroke-dasharray: 1, 150;
+        stroke-dashoffset: 0;
+    }
+    50% {
+        stroke-dasharray: 90, 150;
+        stroke-dashoffset: -35;
+    }
+    100% {
+        stroke-dasharray: 90, 150;
+        stroke-dashoffset: -124;
+    }
+}
+
+/* ==========================================================================
+   4. CUSTOM SELECT CONTROL STYLES (Extracted from editor.js)
+   ========================================================================== */
+.align-custom-select-wrapper {
+    position: relative !important;
+    display: block !important;
+}
+.align-custom-select-wrapper label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: #1e1e1e;
+}
+.align-custom-select-wrapper .align-select-btn {
+    width: 100%;
+    text-align: left;
+    padding: 6px 12px;
+    font-size: 13px;
+    line-height: normal;
+    background: #fff;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 6px !important;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 40px !important;
+    color: #334155 !important;
+}
+.align-custom-select-wrapper .align-select-btn:focus,
+.align-custom-select-wrapper .align-select-btn:active {
+    outline: 0 !important;
+    box-shadow: none !important;
+    border-color: #0f172a !important;
+}
+.align-custom-select-wrapper.is-open .align-select-btn {
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+.align-custom-select-wrapper .align-select-dropdown {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    width: 100% !important;
+    z-index: 999999 !important;
+    box-sizing: border-box !important;
+    background: #fff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-top: none !important;
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-left-radius: 6px !important;
+    border-bottom-right-radius: 6px !important;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08) !important;
+    max-height: 250px;
+    overflow-y: auto;
+}
+.align-custom-select-wrapper .align-select-opt {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #1e1e1e;
+}
+.align-custom-select-wrapper .align-select-opt:hover {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+}
+.align-custom-select-wrapper .align-select-opt.is-disabled {
+    opacity: 0.45;
+    cursor: not-allowed !important;
+    background: #f8fafc !important;
+    color: #94a3b8 !important;
+    pointer-events: none;
+}
+.align-custom-select-arrow {
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 4px solid #64748b !important;
+    margin-left: 8px;
+}
+.align-custom-select-wrapper.is-open .align-custom-select-arrow {
+    border-top: none;
+    border-bottom: 4px solid #64748b !important;
+}
+
+/* Prevent text/block selection highlighting on all Splide sliders (both FE and BE Editor) */
+.splide,
+.splide__slide,
+.align-splide-slider,
+.editor-styles-wrapper .splide,
+.editor-styles-wrapper .splide__slide,
+.editor-styles-wrapper .align-splide-slider {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+}
+
+/* Ensure inputs, textareas and contenteditable fields remain selectable */
+.splide input,
+.splide textarea,
+.splide [contenteditable="true"],
+.editor-styles-wrapper .splide input,
+.editor-styles-wrapper .splide textarea,
+.editor-styles-wrapper .splide [contenteditable="true"] {
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+}
+
+/* ==========================================================================
+   8. CUSTOM DOT TEXT LABELS
+   ========================================================================== */
+.align-qb-dot-text.splide__pagination__page {
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    background: transparent;
+    opacity: 0.5;
+    font-size: 14px;
+    line-height: 1.4;
+    padding: 4px 8px;
+    transition: opacity 0.3s ease, color 0.3s ease;
+}
+.align-qb-dot-text.is-active {
+    opacity: 1;
+    background: transparent;
+}
+
+/* ==========================================================================
+   9. DOT LABEL ELEMENTS (for custom JS/CSS integration)
+   Rendered by query-builder block when 'Custom Dot Labels' is enabled.
+   Hidden by default - use template CSS to display and style.
+   ========================================================================== */
+.align-qb-dot-labels {
+    display: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.align-qb-dot-label {
+    cursor: pointer;
+}
+.align-qb-dot-label-bullet {
+    display: inline-block;
+}
+
+/* ==========================================================================
+   10. SEARCH FILTER COMPONENT
+   ========================================================================== */
+.align-qb-search-wrap {
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+.align-qb-search-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+.align-qb-search-input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: currentColor;
+    background-color: var(--wp--preset--color--neutral-50, #f9fafb);
+    border: 1px solid var(--wp--preset--color--neutral-200, #e5e7eb);
+    border-radius: 0.5rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.align-qb-search-input:focus {
+    border-color: var(--wp--preset--color--primary, #3b82f6);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+.align-qb-search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--wp--preset--color--neutral-400, #9ca3af);
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   11. GUTENBERG SIDEBAR TAB PANEL (ALIGN THEME DIRECT BORDER CONTROL)
+   ========================================================================== */
+.align-tab-panel,
+.align-qb-tab-panel {
+    margin-top: 0;
+    background: #ffffff;
+}
+.align-tab-panel .components-tab-panel__tabs,
+.align-qb-tab-panel .components-tab-panel__tabs {
+    display: flex !important;
+    align-items: center !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 16px !important;
+    gap: 16px !important;
+    height: 40px !important;
+}
+
+/* Suppress WordPress Core default ::after indicator */
+.align-tab-panel .components-tab-panel__tabs-item::after,
+.align-qb-tab-panel .components-tab-panel__tabs-item::after {
+    display: none !important;
+    content: none !important;
+}
+
+.align-tab-panel .components-tab-panel__tabs-item,
+.align-qb-tab-panel .components-tab-panel__tabs-item {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 40px !important;
+    padding: 0 2px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    color: #757575 !important;
+    border: none !important;
+    border-bottom: 1px solid transparent !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    outline: none !important;
+    outline-offset: 0 !important;
+    margin-bottom: -1px !important;
+    cursor: pointer !important;
+    position: relative !important;
+    transition: color 0.15s ease, border-color 0.15s ease !important;
+}
+
+.align-tab-panel .components-tab-panel__tabs-item:focus,
+.align-tab-panel .components-tab-panel__tabs-item:focus-visible,
+.align-tab-panel .components-tab-panel__tabs-item:active,
+.align-tab-panel .components-tab-panel__tabs-item.is-active:focus,
+.align-qb-tab-panel .components-tab-panel__tabs-item:focus,
+.align-qb-tab-panel .components-tab-panel__tabs-item:focus-visible,
+.align-qb-tab-panel .components-tab-panel__tabs-item:active,
+.align-qb-tab-panel .components-tab-panel__tabs-item.is-active:focus {
+    outline: none !important;
+    outline-offset: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+.align-tab-panel .components-tab-panel__tabs-item:hover,
+.align-qb-tab-panel .components-tab-panel__tabs-item:hover {
+    color: #1e1e1e !important;
+    background: transparent !important;
+}
+
+/* 100% Direct border-bottom controlled strictly by Align Theme */
+.align-tab-panel .components-tab-panel__tabs-item.is-active,
+.align-qb-tab-panel .components-tab-panel__tabs-item.is-active {
+    color: #1e1e1e !important;
+    border-bottom: 1px solid var(--wp-admin-theme-color, #3858e9) !important;
+    background: transparent !important;
+    font-weight: 500 !important;
+}
+
+.align-tab-panel .components-tab-panel__tab-content,
+.align-qb-tab-panel .components-tab-panel__tab-content {
+    padding: 0;
+}
+
+

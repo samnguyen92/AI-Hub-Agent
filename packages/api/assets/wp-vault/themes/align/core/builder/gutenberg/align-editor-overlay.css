@@ -1,0 +1,327 @@
+/* Align Builder Gutenberg Editor Content Blur & Overlay Styles */
+
+/* Ensure title remains crisp and accessible */
+.wp-block-post-title,
+.editor-post-title,
+.editor-post-title__block,
+.editor-post-title__input,
+.edit-post-visual-editor__post-title-wrapper,
+[data-type="core/post-title"] {
+    filter: none !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    user-select: auto !important;
+    z-index: 100 !important;
+    position: relative !important;
+}
+
+/* Blur ONLY individual content blocks */
+.align-builder-blurred-canvas {
+    filter: blur(8px) grayscale(0.15) !important;
+    opacity: 0.45 !important;
+    pointer-events: none !important;
+    user-select: none !important;
+    transition: filter 0.3s ease, opacity 0.3s ease !important;
+}
+
+/* Container relative positioning */
+.editor-styles-wrapper,
+.block-editor-writing-flow,
+.edit-post-visual-editor,
+.is-root-container {
+    position: relative !important;
+}
+
+/* Overlay positioned below title in content area */
+.align-builder-editor-overlay {
+    position: relative !important;
+    width: 100% !important;
+    min-height: 280px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 9999 !important;
+    padding: 24px 20px !important;
+    box-sizing: border-box !important;
+    background: rgba(248, 250, 252, 0.65) !important;
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+    margin: 20px 0 !important;
+    border-radius: 12px !important;
+}
+
+.align-builder-overlay-card {
+    background: #ffffff !important;
+    border-radius: 14px !important;
+    box-shadow: 0 16px 24px -4px rgba(0, 0, 0, 0.1), 0 6px 8px -4px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(226, 232, 240, 0.9) !important;
+    padding: 28px 24px !important;
+    max-width: 420px !important;
+    width: 100% !important;
+    text-align: center !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    box-sizing: border-box !important;
+    animation: alignOverlayFadeIn 0.25s ease-out !important;
+    margin: auto !important;
+}
+
+@keyframes alignOverlayFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.align-builder-overlay-icon {
+    width: 48px !important;
+    height: 48px !important;
+    background: #eef2ff !important;
+    color: #6366f1 !important;
+    border-radius: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-bottom: 14px !important;
+}
+
+.align-builder-overlay-title {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    margin: 0 0 6px 0 !important;
+    line-height: 1.3 !important;
+}
+
+.align-builder-overlay-desc {
+    font-size: 13px !important;
+    color: #64748b !important;
+    margin: 0 0 18px 0 !important;
+    line-height: 1.45 !important;
+}
+
+.align-builder-btn-primary {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    background-color: #6366f1 !important;
+    color: #ffffff !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    padding: 11px 22px !important;
+    border-radius: 8px !important;
+    text-decoration: none !important;
+    border: none !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3) !important;
+    transition: all 0.2s ease !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.align-builder-btn-primary:hover {
+    background-color: #4f46e5 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 14px rgba(99, 102, 241, 0.4) !important;
+}
+
+/* -------------------------------------------------------------------------
+ * Gutenberg Embedded Align Builder Canvas & Shell Integration (Zero Scroll)
+ * ------------------------------------------------------------------------- */
+
+/* 1. Thiết lập Iframe Container full 100% kích thước vùng content */
+#align-builder-embedded-container {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: 100% !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 100 !important;
+    background: #1e1e2e !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#align-builder-embedded-frame {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: 100% !important;
+    border: none !important;
+    display: block !important;
+    flex: 1 1 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* 2. Khoá khung nội dung Gutenberg, loại bỏ thanh cuộn ngoài để hiển thị full 100% chiều cao */
+body:has(#align-builder-embedded-container) .interface-interface-skeleton__content,
+body.is-align-builder-embedded .interface-interface-skeleton__content,
+body:has(#align-builder-embedded-container) .edit-post-layout__content,
+body.is-align-builder-embedded .edit-post-layout__content {
+    position: relative !important;
+    overflow: hidden !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* 3. Ẩn Gutenberg footer bar (chứa breadcrumbs "Post", word count) khi nhúng Align Builder */
+body:has(#align-builder-embedded-container) .interface-interface-skeleton__footer,
+body.is-align-builder-embedded .interface-interface-skeleton__footer,
+body:has(#align-builder-embedded-container) .edit-post-layout__footer,
+body.is-align-builder-embedded .edit-post-layout__footer,
+body:has(#align-builder-embedded-container) .block-editor-block-breadcrumb,
+body.is-align-builder-embedded .block-editor-block-breadcrumb {
+    display: none !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    overflow: hidden !important;
+}
+
+/* 4. Ẩn các icon Gutenberg Topbar không cần thiết */
+/* Top Left: Block Inserter (+), Undo, Redo, List View */
+body:has(#align-builder-embedded-container) .editor-document-tools__left,
+body.is-align-builder-embedded .editor-document-tools__left,
+body:has(#align-builder-embedded-container) .edit-post-header-toolbar__left,
+body.is-align-builder-embedded .edit-post-header-toolbar__left {
+    display: none !important;
+}
+
+/* Top Right: View Post Link (↗), Device Preview (💻), More Options (⋮) */
+body:has(#align-builder-embedded-container) .editor-header__settings .editor-preview-dropdown,
+body.is-align-builder-embedded .editor-header__settings .editor-preview-dropdown,
+body:has(#align-builder-embedded-container) .edit-post-header__settings .editor-preview-dropdown,
+body.is-align-builder-embedded .edit-post-header__settings .editor-preview-dropdown,
+body:has(#align-builder-embedded-container) .editor-header__settings .editor-more-menu,
+body.is-align-builder-embedded .editor-header__settings .editor-more-menu,
+body:has(#align-builder-embedded-container) .edit-post-header__settings .editor-more-menu,
+body.is-align-builder-embedded .edit-post-header__settings .editor-more-menu {
+    display: none !important;
+}
+/* PRESERVE: Post Title (Center), Sidebar Toggle (◨), Gutenberg Save/Publish/Update Button */
+/* BẢO TỒN: Post Title (Center), Sidebar Toggle (◨), Nút Update/Save của Gutenberg */
+
+/* -------------------------------------------------------------------------
+ * Align Builder <> Gutenberg Header Mode Switcher Button
+ * ------------------------------------------------------------------------- */
+body:has(#align-builder-embedded-container) .align-mode-switcher-container,
+body.is-align-builder-embedded .align-mode-switcher-container,
+.align-mode-switcher-container {
+    display: inline-flex !important;
+    align-items: center !important;
+    margin-right: 8px !important;
+    vertical-align: middle !important;
+    z-index: 1000 !important;
+}
+
+.align-mode-switcher-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    height: 32px !important;
+    padding: 0 12px !important;
+    border-radius: 6px !important;
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    line-height: 1 !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    box-sizing: border-box !important;
+    transition: all 0.15s ease-in-out !important;
+    white-space: nowrap !important;
+    outline: none !important;
+    user-select: none !important;
+}
+
+/* Variant 1: "Edit with Align Builder" (Call to Action from Gutenberg) */
+.align-mode-switcher-btn.align-mode-to-builder {
+    background-color: #5850ec !important;
+    color: #ffffff !important;
+    border: 1px solid #4f46e5 !important;
+    box-shadow: 0 1px 3px rgba(79, 70, 229, 0.25) !important;
+}
+
+.align-mode-switcher-btn.align-mode-to-builder:hover {
+    background-color: #4f46e5 !important;
+    border-color: #4338ca !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(79, 70, 229, 0.4) !important;
+    transform: translateY(-0.5px) !important;
+}
+
+.align-mode-switcher-btn.align-mode-to-builder:active {
+    background-color: #4338ca !important;
+    border-color: #3730a3 !important;
+    color: #ffffff !important;
+    transform: translateY(0) !important;
+}
+
+/* Variant 2: "Switch to Gutenberg" / "Switch to FSE" (Back to Block Editor from Builder) */
+.align-mode-switcher-btn.align-mode-to-gutenberg {
+    background-color: #ffffff !important;
+    color: #4f46e5 !important;
+    border: 1px solid #c7d2fe !important;
+    box-shadow: 0 1px 2px rgba(79, 70, 229, 0.08) !important;
+}
+
+.align-mode-switcher-btn.align-mode-to-gutenberg:hover {
+    background-color: #f5f3ff !important;
+    border-color: #818cf8 !important;
+    color: #3730a3 !important;
+    box-shadow: 0 2px 5px rgba(79, 70, 229, 0.15) !important;
+    transform: translateY(-0.5px) !important;
+}
+
+.align-mode-switcher-btn.align-mode-to-gutenberg:active {
+    background-color: #ede9fe !important;
+    border-color: #6366f1 !important;
+    color: #312e81 !important;
+    transform: translateY(0) !important;
+}
+
+.align-mode-switcher-btn:disabled,
+.align-mode-switcher-btn[disabled] {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+}
+
+/* Icon styling inside mode switcher */
+.align-mode-switcher-btn svg,
+.align-mode-switcher-btn .align-btn-icon {
+    width: 14px !important;
+    height: 14px !important;
+    fill: currentColor !important;
+    display: inline-block !important;
+    flex-shrink: 0 !important;
+}
+
+/* Responsive: 782px breakpoint (standard WordPress mobile/tablet admin) */
+@media (max-width: 782px) {
+    .align-mode-switcher-btn {
+        width: 32px !important;
+        height: 32px !important;
+        padding: 0 !important;
+    }
+    .align-mode-switcher-btn span {
+        display: none !important;
+    }
+}

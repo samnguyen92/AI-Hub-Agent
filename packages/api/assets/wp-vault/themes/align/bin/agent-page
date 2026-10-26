@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+#
+# Align Theme Core Engine - Local Agent Workspace Executable Wrapper
+# Auto-discovers LocalWP PHP binary and active MySQL socket, then dispatches to core controller.
+#
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CORE_SCRIPT="$SCRIPT_DIR/agent-page-core.php"
+
+# 1. Locate LocalWP PHP Binary
+PHP_BIN=""
+CANDIDATE_PHPS=(
+    "$(which php 2>/dev/null || true)"
+    "/Users/agent/Library/Application Support/Local/lightning-services/php-8.4.4+2/bin/darwin-arm64/bin/php"
+    "/Users/agent/Library/Application Support/Local/lightning-services/php-8.2.29+0/bin/darwin-arm64/bin/php"
+    "/Applications/Local.app/Contents/Resources/extraResources/lightning-services/php-8.2.29+0/bin/darwin-arm64/bin/php"
+)
+
+for p in "${CANDIDATE_PHPS[@]}"; do
+    if [ -n "$p" ] && [ -x "$p" ]; then
+        PHP_BIN="$p"
+        break
+    fi
+done
+
+if [ -z "$PHP_BIN" ]; then
+    echo "[ERROR] PHP binary not found in system or LocalWP installation." >&2
+    exit 1
+fi
+
+# 2. Locate MySQL Socket for active site
+MYSQL_SOCK=""
+PREFER_SOCK="/Users/agent/Library/Application Support/Local/run/vt_z2ZvJJ/mysql/mysqld.sock"
+
+if [ -S "$PREFER_SOCK" ]; then
+    MYSQL_SOCK="$PREFER_SOCK"
+else
+    for s in /Users/agent/Library/Application\ Support/Local/run/*/mysql/mysqld.sock; do
+        if [ -S "$s" ]; then
+            MYSQL_SOCK="$s"
+            break
+        fi
+    done
+fi
+
+if [ -z "$MYSQL_SOCK" ]; then
+    echo "[ERROR] LocalWP MySQL socket not found." >&2
+    exit 1
+fi
+
+# 3. Dispatch to PHP Core Controller
+exec "$PHP_BIN" -d "mysqli.default_socket=$MYSQL_SOCK" "$CORE_SCRIPT" "$@"

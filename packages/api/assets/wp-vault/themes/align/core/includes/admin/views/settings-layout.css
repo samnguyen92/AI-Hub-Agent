@@ -1,0 +1,516 @@
+/**
+ * Align Theme Settings - Admin Unified Design System CSS
+ *
+ * @package Align
+ */
+
+.align-settings-wrap {
+	max-width: 1140px;
+	margin: 20px 20px 80px 0;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	color: #1e293b;
+}
+
+/* Header Banner */
+/* Admin Notices Top Placement */
+.align-settings-wrap > .notice,
+.align-settings-wrap > .updated,
+.align-settings-wrap > .error {
+	margin: 0 0 16px 0;
+	border-radius: 6px;
+	border-width: 1px 1px 1px 4px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+/* Typography-First Segmented Tab Bar (No icon clutter) */
+.align-nav-tabs-bar {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	background: #f8fafc;
+	padding: 4px;
+	border-radius: 8px;
+	margin-bottom: 22px;
+	overflow-x: auto;
+	border: 1px solid #e2e8f0;
+}
+.align-nav-tab {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 8px 14px;
+	color: #64748b;
+	font-size: 13px;
+	font-weight: 600;
+	text-decoration: none;
+	border-radius: 6px;
+	white-space: nowrap;
+	transition: all 0.15s ease;
+	border: 1px solid transparent;
+}
+.align-nav-tab:hover {
+	color: #0f172a;
+	background: #ffffff;
+}
+.align-nav-tab.is-active {
+	color: #0284c7;
+	background: #ffffff;
+	border-color: #cbd5e1;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* Two-Tier Subnav Bar & Pills */
+.align-subnav-bar {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	background: #f8fafc;
+	padding: 4px;
+	border-radius: 8px;
+	margin-bottom: 20px;
+	border: 1px solid #e2e8f0;
+	flex-wrap: wrap;
+}
+.align-subnav-pill {
+	background: transparent !important;
+	border: 1px solid transparent !important;
+	color: #64748b !important;
+	font-size: 12.5px !important;
+	font-weight: 600 !important;
+	padding: 6px 14px !important;
+	border-radius: 6px !important;
+	cursor: pointer;
+	transition: all 0.15s ease;
+	line-height: 1.4 !important;
+}
+.align-subnav-pill:hover {
+	color: #0f172a !important;
+	background: rgba(255, 255, 255, 0.8) !important;
+}
+.align-subnav-pill.is-active {
+	background: #ffffff !important;
+	color: #0284c7 !important;
+	border-color: #cbd5e1 !important;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Universal Card Design System */
+.align-settings-card {
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	margin-bottom: 22px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+	overflow: hidden;
+}
+.align-card-header {
+	padding: 18px 22px 14px;
+	border-bottom: 1px solid #f1f5f9;
+	background: #ffffff;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+.align-card-title {
+	margin: 0;
+	font-size: 15px;
+	font-weight: 700;
+	color: #0f172a;
+	line-height: 1.3;
+}
+.align-card-desc {
+	margin: 3px 0 0 0;
+	font-size: 12.5px;
+	color: #64748b;
+	line-height: 1.4;
+}
+.align-card-body {
+	padding: 20px 22px;
+}
+
+/* Card Accordion Support */
+.align-settings-card.is-accordion:not(.is-open) .align-card-header {
+	border-bottom: none;
+}
+.align-accordion-toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	color: #0284c7;
+	font-size: 12.5px;
+	font-weight: 600;
+	cursor: pointer;
+	user-select: none;
+}
+.align-accordion-toggle .dashicons {
+	transition: transform 0.2s ease;
+}
+.align-settings-card.is-open .align-accordion-toggle .dashicons {
+	transform: rotate(180deg);
+}
+
+/* Form Tables Uniform Styling */
+.align-settings-wrap .form-table {
+	margin: 0;
+}
+.align-settings-wrap .form-table th {
+	width: 220px;
+	padding: 16px 12px 16px 0;
+	font-size: 13px;
+	font-weight: 600;
+	color: #334155;
+	vertical-align: top;
+}
+.align-settings-wrap .form-table td {
+	padding: 14px 0 16px 0;
+	font-size: 13px;
+	color: #1e293b;
+}
+.align-settings-wrap .form-table td p.description {
+	margin-top: 5px;
+	font-size: 12px;
+	color: #64748b;
+	line-height: 1.4;
+}
+.align-settings-wrap input[type="text"],
+.align-settings-wrap input[type="password"],
+.align-settings-wrap input[type="url"],
+.align-settings-wrap input[type="number"],
+.align-settings-wrap select,
+.align-settings-wrap textarea {
+	border: 1px solid #cbd5e1;
+	border-radius: 6px;
+	font-size: 13px;
+	color: #0f172a;
+	box-shadow: none;
+	transition: border-color 0.15s ease;
+}
+.align-settings-wrap input:focus,
+.align-settings-wrap select:focus,
+.align-settings-wrap textarea:focus {
+	border-color: #0284c7;
+	outline: none;
+	box-shadow: 0 0 0 1px #0284c7;
+}
+
+/* Custom Code Textareas & CodeMirror */
+.align-code-textarea {
+	height: 120px;
+	font-family: Menlo, Monaco, Consolas, "Courier New", monospace !important;
+	font-size: 12.5px !important;
+	line-height: 1.45 !important;
+	resize: vertical;
+	tab-size: 2;
+}
+.align-custom-code-table .CodeMirror {
+	border: 1px solid #cbd5e1;
+	border-radius: 6px;
+	font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+	font-size: 12.5px;
+	line-height: 1.45;
+	height: auto;
+	min-height: 120px;
+}
+.align-custom-code-table .CodeMirror-focused {
+	border-color: #0284c7;
+	box-shadow: 0 0 0 1px #0284c7;
+}
+
+/* Sticky Save Bar */
+.align-sticky-save-bar {
+	position: fixed;
+	bottom: 24px;
+	right: 30px;
+	z-index: 9999;
+	display: flex;
+	align-items: center;
+}
+
+/* ==========================================================================
+   Align Unified Button Design System (Clean, Compact, Transparent / No-Background)
+   ========================================================================== */
+.align-settings-wrap .button {
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	gap: 6px !important;
+	height: 32px !important;
+	min-height: 32px !important;
+	padding: 0 13px !important;
+	font-size: 12.5px !important;
+	font-weight: 600 !important;
+	line-height: 1 !important;
+	border-radius: 6px !important;
+	background: transparent !important;
+	border: 1px solid #cbd5e1 !important;
+	color: #334155 !important;
+	box-shadow: none !important;
+	text-shadow: none !important;
+	cursor: pointer !important;
+	text-decoration: none !important;
+	white-space: nowrap !important;
+	vertical-align: middle !important;
+	box-sizing: border-box !important;
+	transition: all 0.15s ease-in-out !important;
+}
+
+/* Unified Icon & Spinner Alignment inside Align Buttons */
+.align-settings-wrap .button .dashicons {
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	width: 16px !important;
+	height: 16px !important;
+	font-size: 16px !important;
+	line-height: 1 !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	vertical-align: middle !important;
+	flex-shrink: 0 !important;
+}
+.align-settings-wrap .button .dashicons::before {
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	width: 16px !important;
+	height: 16px !important;
+	font-size: 16px !important;
+	line-height: 1 !important;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+.align-settings-wrap .button .spinner {
+	float: none !important;
+	margin: 0 !important;
+	vertical-align: middle !important;
+}
+
+.align-settings-wrap .button:hover {
+	background: #f8fafc !important;
+	border-color: #94a3b8 !important;
+	color: #0f172a !important;
+}
+
+.align-settings-wrap .button:active {
+	background: #f1f5f9 !important;
+	border-color: #64748b !important;
+	color: #0f172a !important;
+}
+
+.align-settings-wrap .button:focus {
+	outline: none !important;
+	border-color: #0284c7 !important;
+	box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15) !important;
+}
+
+/* Secondary / Accent Action (e.g., + Add Custom Size, Check Status, Test Connection) */
+.align-settings-wrap .button.button-secondary {
+	background: transparent !important;
+	border: 1px solid #bae6fd !important;
+	color: #0284c7 !important;
+}
+
+.align-settings-wrap .button.button-secondary:hover {
+	background: #f0f9ff !important;
+	border-color: #0284c7 !important;
+	color: #0369a1 !important;
+}
+
+/* Primary Action (e.g., Convert to Blocks, Update Theme, Start Import) */
+.align-settings-wrap .button.button-primary:not(.align-btn-save-sticky) {
+	background: transparent !important;
+	border: 1.5px solid #0284c7 !important;
+	color: #0284c7 !important;
+	font-weight: 600 !important;
+}
+
+.align-settings-wrap .button.button-primary:not(.align-btn-save-sticky):hover {
+	background: #0284c7 !important;
+	border-color: #0284c7 !important;
+	color: #ffffff !important;
+}
+
+/* Danger / Delete Buttons */
+.align-settings-wrap .button.button-danger,
+.align-settings-wrap .button.align-delete-size-btn,
+.align-settings-wrap .button.button-link-delete {
+	background: transparent !important;
+	border: 1px solid #fecaca !important;
+	color: #dc2626 !important;
+}
+
+.align-settings-wrap .button.button-danger:hover,
+.align-settings-wrap .button.align-delete-size-btn:hover,
+.align-settings-wrap .button.button-link-delete:hover {
+	background: #fef2f2 !important;
+	border-color: #ef4444 !important;
+	color: #b91c1c !important;
+}
+
+/* Disabled State: Clean transparent outline, no gray solid background */
+.align-settings-wrap .button:disabled,
+.align-settings-wrap .button[disabled] {
+	background: transparent !important;
+	border-color: #e2e8f0 !important;
+	color: #94a3b8 !important;
+	opacity: 0.55 !important;
+	cursor: not-allowed !important;
+	box-shadow: none !important;
+	pointer-events: none !important;
+}
+
+/* Sticky Save Changes Button in Bottom Floating Bar */
+.align-settings-wrap .align-sticky-save-bar button.button-primary,
+.align-settings-wrap .align-sticky-save-bar .button.button-primary {
+	background: #ffffff !important;
+	border: 1.5px solid #0284c7 !important;
+	color: #0284c7 !important;
+	border-radius: 20px !important;
+	padding: 0 20px !important;
+	height: 34px !important;
+	font-size: 13px !important;
+	font-weight: 600 !important;
+	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+	transition: all 0.15s ease-in-out !important;
+}
+
+.align-settings-wrap .align-sticky-save-bar button.button-primary:hover,
+.align-settings-wrap .align-sticky-save-bar .button.button-primary:hover {
+	background: #0284c7 !important;
+	border-color: #0284c7 !important;
+	color: #ffffff !important;
+	box-shadow: 0 6px 18px rgba(2, 132, 199, 0.28) !important;
+	transform: translateY(-1px);
+}
+
+.align-settings-wrap .align-sticky-save-bar button.button-primary:active,
+.align-settings-wrap .align-sticky-save-bar .button.button-primary:active {
+	background: #0369a1 !important;
+	border-color: #0369a1 !important;
+	color: #ffffff !important;
+	transform: translateY(0);
+}
+
+/* Tab Transitions */
+.align-tab-content {
+	animation: alignTabFade 0.15s ease-in-out;
+}
+@keyframes alignTabFade {
+	from { opacity: 0.8; transform: translateY(2px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+/* AI Connection Two-Tab Interface & Switcher */
+.align-ai-tabs-bar {
+	display: flex;
+	gap: 8px;
+	border-bottom: 1px solid #e2e8f0;
+	padding: 0 0 14px 0;
+	margin-bottom: 20px;
+	flex-wrap: wrap;
+}
+.align-ai-tab-btn {
+	background: transparent !important;
+	border: 1px solid #cbd5e1 !important;
+	color: #475569 !important;
+	font-size: 13px !important;
+	font-weight: 600 !important;
+	padding: 8px 16px !important;
+	border-radius: 6px !important;
+	cursor: pointer;
+	transition: all 0.15s ease;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	line-height: 1.4 !important;
+}
+.align-ai-tab-btn:hover {
+	background: #f8fafc !important;
+	border-color: #94a3b8 !important;
+	color: #0f172a !important;
+}
+.align-ai-tab-btn.is-active {
+	background: #f0f9ff !important;
+	border-color: #0284c7 !important;
+	color: #0284c7 !important;
+	box-shadow: 0 1px 2px rgba(2, 132, 199, 0.08) !important;
+}
+.align-ai-status-pill {
+	display: inline-flex;
+	align-items: center;
+	font-size: 10.5px;
+	font-weight: 700;
+	padding: 2px 7px;
+	border-radius: 10px;
+	background: #f1f5f9;
+	color: #64748b;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+.align-ai-status-pill.is-active {
+	background: #dcfce7;
+	color: #15803d;
+	border: 1px solid #bbf7d0;
+}
+.align-ai-tab-pane {
+	animation: alignTabFade 0.15s ease-in-out;
+}
+.align-ai-callout {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 12px 16px;
+	border-radius: 6px;
+	margin-bottom: 20px;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+.align-ai-callout.is-active-provider {
+	background: #f0fdf4;
+	border: 1px solid #bbf7d0;
+	color: #166534;
+}
+.align-ai-callout.is-inactive-provider {
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	color: #475569;
+}
+.align-chips-group {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-top: 6px;
+}
+.align-chip-btn {
+	background: transparent !important;
+	border: 1px solid #cbd5e1 !important;
+	color: #334155 !important;
+	font-size: 11.5px !important;
+	font-weight: 500 !important;
+	padding: 3px 9px !important;
+	border-radius: 4px !important;
+	cursor: pointer;
+	transition: all 0.12s ease;
+	line-height: 1.3 !important;
+}
+.align-chip-btn:hover {
+	background: #f0f9ff !important;
+	border-color: #0284c7 !important;
+	color: #0284c7 !important;
+}
+.align-chip-btn.is-active {
+	background: #0284c7 !important;
+	border-color: #0284c7 !important;
+	color: #ffffff !important;
+}
+
+/* Custom Asset Row Edit Button State */
+.align-edit-asset-file-btn[hidden],
+.align-edit-asset-file-btn.is-hidden,
+.align-core-asset-row .align-edit-asset-file-btn,
+.align-asset-row[data-type="font"] .align-edit-asset-file-btn,
+.align-asset-row[data-is-core="1"] .align-edit-asset-file-btn {
+	display: none !important;
+}
+

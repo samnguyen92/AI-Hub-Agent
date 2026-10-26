@@ -1,0 +1,174 @@
+        <div id="top-panel">
+
+          <div class="btn-group float-start d-none" role="group">
+            <button class="btn px-2 menu-toggle" title="Toggle sidebar width" data-vvveb-action="toggleSidebar">
+              <i class="la la-bars"></i>
+            </button>
+
+            <button class="btn btn-light px-1" title="Toggle file manager" id="toggle-file-manager-btn" data-vvveb-action="toggleFileManager" data-bs-toggle="button" aria-pressed="false">
+              <img src="libs/builder/icons/file-manager-layout.svg" width="12" height="12" alt="" role="presentation">
+            </button>
+
+            <button class="btn btn-light px-1" title="Toggle left column" id="toggle-left-column-btn" data-vvveb-action="toggleLeftColumn" data-bs-toggle="button" aria-pressed="false">
+              <img src="libs/builder/icons/left-column-layout.svg" width="12" height="12" alt="" role="presentation">
+            </button>
+
+            <button class="btn btn-light px-1 active" title="Toggle right column" id="toggle-right-column-btn" data-vvveb-action="toggleRightColumn" data-bs-toggle="button" aria-pressed="true">
+              <img src="libs/builder/icons/right-column-layout.svg" width="12" height="12" alt="" role="presentation">
+            </button>
+          </div>
+
+          <div class="d-flex align-items-center h-100">
+            <a href="/wp-admin/" class="btn-back-cms me-3" id="back-to-cms-btn" title="Back to WordPress CMS Dashboard" aria-label="Back to WordPress CMS Dashboard">
+              <img src="" id="top-panel-site-icon" class="site-icon-img" width="22" height="22" alt="Site Icon" style="display:none;object-fit:cover;border-radius:4px;" onerror="this.style.display='none';document.getElementById('top-panel-site-icon-fallback').style.display='inline-block';">
+              <i class="la la-wordpress icon-cms-fallback" id="top-panel-site-icon-fallback" style="font-size:22px;"></i>
+            </a>
+
+            <div class="btn-group me-3" role="group">
+              <button class="btn btn-light" title="Undo (Ctrl/Cmd + Z)" id="undo-btn" data-vvveb-action="undo" data-vvveb-shortcut="ctrl+z">
+                <i class="la la-undo"></i>
+              </button>
+
+              <button class="btn btn-light" title="Redo (Ctrl/Cmd + Shift + Y)" id="redo-btn" data-vvveb-action="redo" data-vvveb-shortcut="ctrl+shift+z">
+                <i class="la la-undo la-flip-horizontal"></i>
+              </button>
+
+              <button class="btn btn-light" title="Revision History" id="revisions-btn" data-bs-toggle="modal" data-bs-target="#revisionsModal">
+                <i class="la la-history"></i>
+              </button>
+            </div>
+
+            <button class="btn btn-content-mode me-3" id="toggle-content-mode-btn" data-vvveb-action="toggleContentMode" title="Enable Content Mode">
+              <i class="la la-pen-fancy"></i>
+              <span class="d-none d-lg-inline btn-content-mode-label">Content Mode</span>
+              <span class="badge badge-content-mode is-off">OFF</span>
+            </button>
+
+            <div id="top-panel-shortcode-container" class="top-panel-shortcode-pill" title="Click to copy shortcode">
+              <i class="la la-code icon-code"></i>
+              <span id="top-panel-shortcode-text">[reuse-block id="0"]</span>
+              <i class="la la-copy icon-copy"></i>
+            </div>
+
+            <div id="top-panel-dynamic-pill" class="top-panel-dynamic-pill ms-2" style="display:none;" title="Dynamic Reusable Block">
+              <i class="la la-magic"></i>
+              <span>Dynamic Block</span>
+            </div>
+
+            <div id="align-page-indicator" class="align-page-indicator ms-2" style="display:none;" title="Currently editing this page — click Save to update it">
+              <i class="la la-file-alt align-page-indicator-icon"></i>
+              <span id="align-page-indicator-text" class="align-page-indicator-text">–</span>
+              <span id="align-page-indicator-badge" class="align-page-indicator-badge">Page</span>
+            </div>
+          </div>
+
+          <div class="top-panel-center d-flex align-items-center justify-content-center mx-auto">
+            <div id="select-actions" class="align-items-center" style="display:none;">
+              <div id="top-select-element-badge" class="element-badge me-2" title="Selected Element">
+                <span class="type">DIV</span>
+                <span class="name">.container</span>
+              </div>
+              <div class="toolbar-divider"></div>
+              <a id="convert-dynamic-btn" href="#" title="Convert to dynamic block" class="btn-action-tool">
+                <i class="la la-magic"></i>
+              </a>
+              <a id="translate-section-btn" href="#" title="AI Translate Section" class="btn-action-tool">
+                <i class="la la-language"></i>
+              </a>
+              <a id="copy-original-section-btn" href="#" title="Restore Section from Original (English)" class="btn-action-tool">
+                <i class="la la-history"></i>
+              </a>
+              <a id="toggle-overwrite-btn" href="" title="Allow Overwrite on Live Page" style="display:none;">
+                <i class="la la-edit"></i>
+              </a>
+              <a id="up-btn" href="" title="Move element up">
+                <i class="la la-arrow-up"></i>
+              </a>
+              <a id="down-btn" href="" title="Move element down">
+                <i class="la la-arrow-down"></i>
+              </a>
+              <a id="toggle-hide-btn" href="" title="Hide element from frontend" class="btn-action-tool">
+                <i class="la la-eye"></i>
+              </a>
+              <a id="change-img-btn" href="" title="Change image" style="display:none;">
+                <i class="la la-image"></i>
+              </a>
+              <a id="clone-btn" href="" title="Clone element">
+                <i class="icon-copy-outline"></i>
+              </a>
+              <a id="delete-btn" href="" title="Remove element">
+                <i class="icon-trash-outline"></i>
+              </a>
+            </div>
+          </div>
+
+          <div class="btn-group">
+
+            <div class="me-2">
+
+              <button class="btn btn-light btn-dark-mode" data-vvveb-action="darkMode" title="Toggle dark mode">
+                <i class="la la-moon"></i>
+              </button>
+
+              <a href="#" class="btn btn-light px-1 btn-preview-url" target="_blank" title="View page">
+                <i class="la la-external-link-alt"></i>
+              </a>
+
+              <button class="btn btn-light px-1" id="btn-export-page" type="button" title="Export Page (ZIP)">
+                <i class="la la-download"></i>
+              </button>
+
+              <button class="btn btn-light px-1" id="btn-import-page" type="button" title="Import Page (ZIP)">
+                <i class="la la-upload"></i>
+              </button>
+              <input type="file" id="align-import-page-file" accept=".zip,application/zip" style="display:none;">
+
+              <div class="btn-group responsive-btns" role="group">
+
+                <button type="button" class="btn btn-light btn-sm px-1 me-1" data-bs-toggle="dropdown" aria-expanded="false" title="Breakpoints">
+                  <i class="la la-desktop"></i>
+                </button>
+
+                <div class="dropdown-menu">
+
+                  <button id="mobile-view" data-view="mobile" class="btn btn-light w-100" title="Mobile (375px)" data-vvveb-action="viewport">
+                    <i class="la la-mobile"></i>
+                    <span>Mobile (375px)</span>
+                  </button>
+
+                  <button id="tablet-view" data-view="tablet" class="btn btn-light w-100" title="Tablet (768px)" data-vvveb-action="viewport">
+                    <i class="la la-tablet"></i>
+                    <span>Tablet (768px)</span>
+                  </button>
+
+                  <button id="desktop-view" data-view="desktop" class="btn btn-light w-100 active" title="Desktop (1920x1080)" data-vvveb-action="viewport">
+                    <i class="la la-desktop"></i>
+                    <span>Desktop (1920x1080)</span>
+                  </button>
+
+                </div>
+
+                <div class="percent">
+                  <input type="number" id="zoom" value="90" step="10" min="10" max="100" class="form-control" data-vvveb-action="zoomChange" data-vvveb-on="change">
+                </div>
+              </div>
+
+            </div>
+
+            <div class="btn-group me-2" id="save-btn-wrapper" role="group">
+
+              <div class="btn-group">
+                <button class="btn btn-primary btn-icon btn-sm save-btn" title="Save changes (Ctrl + S)" data-vvveb-action="save" data-vvveb-url="" data-v-vvveb-shortcut="ctrl+s">
+                  <span class="loading d-none">
+                    <span class="spinner-border spinner-border-sm align-middle" role="status" aria-hidden="true"></span>
+                    <span>Saving...</span>
+                  </span>
+
+                  <span class="button-text">
+                    <span>Save</span>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>

@@ -1,0 +1,493 @@
+body { scrollbar-color: rgba(var(--bs-body-color-rgb), 0.2) transparent; scrollbar-width: thin; }
+body::-webkit-scrollbar { width: 0.5rem; background-color: transparent; -webkit-box-shadow: none; }
+body::-webkit-scrollbar-track { background: transparent; -webkit-box-shadow: none; }
+body::-webkit-scrollbar-thumb { background-color: rgba(var(--bs-body-color-rgb), 0.15); outline: none; }
+
+[data-vvveb-disabled] {
+  pointer-events: none;
+  position: relative; }
+  [data-vvveb-disabled]::after {
+    content: "Non-editable area";
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    padding-top: 5px;
+    font-weight: 600;
+    font-size: 12px;
+    text-align: center;
+    background: rgba(252, 252, 252, 0.85);
+    border: 1px dashed #999;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center; }
+
+[data-vvveb-disabled-area] *:not([data-vvveb-edit-exception]) {
+  pointer-events: none;
+  position: relative; }
+  [data-vvveb-disabled-area] *:not([data-vvveb-edit-exception])::after {
+    content: "Non-editable area";
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    padding-top: 5px;
+    font-weight: 600;
+    font-size: 12px;
+    text-align: center;
+    background: rgba(252, 252, 252, 0.85);
+    border: 1px dashed #999;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center; }
+
+/* Prevents iframe mouse events that prevent clicking on the component */
+[data-component-lottie] > svg,
+[data-component-oembed] iframe,
+[data-component-oembed] > div,
+[data-component-video] > iframe,
+[data-component-maps] > iframe,
+[data-component-twitter] > iframe,
+[data-component-iframe] > iframe,
+[data-component-openstreetmap] > iframe {
+  pointer-events: none; }
+
+[contenteditable="true"] {
+  outline: none; }
+  [contenteditable="true"]:focus-visible {
+    outline: none; }
+
+.is-dragged {
+  pointer-events: none;
+  opacity: 0.15;
+  position: relative;
+  /*
+	&:after {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		left: 0;
+		background: rgba(255,255,0,0.1);
+		content: " ";
+		top: 0;
+	}*/ }
+
+.vvveb-hidden {
+  display: none !important; }
+
+body.vvveb-hidden {
+  display: unset !important; }
+  body.vvveb-hidden .vvveb-hidden, body.vvveb-hidden .d-none, body.vvveb-hidden .invisible {
+    display: unset !important;
+    visibility: visible !important;
+    overflow: hidden;
+    position: relative; }
+    body.vvveb-hidden .vvveb-hidden::after, body.vvveb-hidden .d-none::after, body.vvveb-hidden .invisible::after {
+      content: "Hidden";
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      width: 100%;
+      height: 100%;
+      padding-top: 5px;
+      font-weight: 600;
+      font-size: 12px;
+      text-align: center;
+      background: rgba(252, 252, 252, 0.85);
+      background: rgba(var(--bs-body-bg-rgb), 0.85);
+      border: 1px dashed #999;
+      border: 1px dashed var(--bs-border-color);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center; }
+    body.vvveb-hidden .vvveb-hidden:hover::after, body.vvveb-hidden .d-none:hover::after, body.vvveb-hidden .invisible:hover::after {
+      display: none; }
+
+section .container div > .row > [class*="col-"]:empty,
+section .container div > .row > .col:empty,
+section .container > .row > [class*="col-"]:empty,
+section .container > .row > .col:empty, section .container-fluid div > .row > [class*="col-"]:empty,
+section .container-fluid div > .row > .col:empty,
+section .container-fluid > .row > [class*="col-"]:empty,
+section .container-fluid > .row > .col:empty {
+  background: var(--bs-tertiary-bg);
+  min-height: 200px;
+  outline: 1px solid var(--bs-border-color);
+  outline-offset: -0.5rem;
+  margin: 0.5rem;
+  display: flex; }
+  section .container div > .row > [class*="col-"]:empty:after,
+  section .container div > .row > .col:empty:after,
+  section .container > .row > [class*="col-"]:empty:after,
+  section .container > .row > .col:empty:after, section .container-fluid div > .row > [class*="col-"]:empty:after,
+  section .container-fluid div > .row > .col:empty:after,
+  section .container-fluid > .row > [class*="col-"]:empty:after,
+  section .container-fluid > .row > .col:empty:after {
+    content: 'Drag elements here';
+    font-size: 85%;
+    color: var(--bs-secondary);
+    display: block;
+    vertical-align: middle;
+    display: flex;
+    align-self: center;
+    margin: auto; }
+
+section:hover .container div > .row > [class*="col-"],
+section:hover .container div > .row > .col, section:hover .container > .row > [class*="col-"],
+section:hover .container > .row > .col, section:hover .container-fluid div > .row > [class*="col-"],
+section:hover .container-fluid div > .row > .col, section:hover .container-fluid > .row > [class*="col-"],
+section:hover .container-fluid > .row > .col {
+  outline: 1px dashed rgba(var(--bs-success-rgb), 0.35);
+  outline-offset: -2px; }
+
+.row:hover > [class*="col-"],
+.row:hover > .col {
+  outline-offset: -2px; }
+
+/* Canvas layout safeguard: Prevent canvas body flex layouts from forcing editor helper into flex row columns and add bottom clearance */
+html[data-vvvebjs-editor] body {
+  flex-direction: column !important;
+  flex-wrap: nowrap !important;
+  padding-bottom: 75px !important;
+}
+
+/* ==========================================================================
+   ALIGN BUILDER - ISOLATED NEW SECTION / ADD COMPONENT HELPER UI
+   Positioned fixed at the bottom of canvas as a floating action dock.
+   100% immune to external / page styles, flex / grid parent constraints.
+   ========================================================================== */
+
+/* 1. Root Host Tag Isolation: <newsection id="vvvebjs-new-section"> */
+#vvvebjs-new-section,
+newsection#vvvebjs-new-section,
+[data-vvvebjs-editor] #vvvebjs-new-section {
+  all: initial !important;
+  display: block !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  flex: 0 0 auto !important;
+  flex-basis: auto !important;
+  flex-grow: 0 !important;
+  flex-shrink: 0 !important;
+  grid-column: 1 / -1 !important;
+  order: 999999 !important;
+  clear: both !important;
+  float: none !important;
+  position: fixed !important;
+  bottom: 14px !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 999999 !important;
+  margin: 0 !important;
+  padding: 0 15px !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  transform: none !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+  direction: ltr !important;
+  unicode-bidi: normal !important;
+  isolation: isolate !important;
+  pointer-events: none !important;
+}
+
+.content-mode-active #vvvebjs-new-section,
+body.content-mode-active #vvvebjs-new-section,
+html.content-mode-active #vvvebjs-new-section,
+#vvvebjs-new-section.content-mode-hidden {
+  display: none !important;
+}
+
+/* 2. Outer Container: Reset user theme .container styles */
+#vvvebjs-new-section .vvveb-new-section-container,
+#vvvebjs-new-section .container,
+#vvvebjs-new-section > div {
+  all: initial !important;
+  display: block !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 1200px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important;
+}
+
+/* 3. Row Wrapper: Reset user theme .row styles */
+#vvvebjs-new-section .vvveb-new-section-row,
+#vvvebjs-new-section .row {
+  all: initial !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  pointer-events: none !important;
+}
+
+/* 4. Col / Floating Action Dock: Clean, isolated pill container */
+#vvvebjs-new-section .vvveb-new-section-col,
+#vvvebjs-new-section .col {
+  all: initial !important;
+  display: inline-flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 10px !important;
+  box-sizing: border-box !important;
+  width: auto !important;
+  max-width: 100% !important;
+  min-height: 46px !important;
+  padding: 6px 14px !important;
+  margin: 0 auto !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border: 1.5px dashed #0030C0 !important;
+  border-radius: 30px !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  pointer-events: auto !important;
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease !important;
+}
+
+#vvvebjs-new-section .vvveb-new-section-col:hover,
+#vvvebjs-new-section .col:hover {
+  border-color: #002599 !important;
+  background: rgba(255, 255, 255, 1) !important;
+  background-color: rgba(255, 255, 255, 1) !important;
+  box-shadow: 0 6px 22px rgba(0, 48, 192, 0.22), 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* 5. Action Buttons: Complete isolation from user theme button styles */
+#vvvebjs-new-section button,
+#vvvebjs-new-section .vvveb-new-section-btn,
+#vvvebjs-new-section #new-component,
+#vvvebjs-new-section #new-section {
+  all: initial !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  box-sizing: border-box !important;
+  min-width: 125px !important;
+  height: 34px !important;
+  min-height: 34px !important;
+  padding: 0 18px !important;
+  margin: 0 !important;
+  background: #0030C0 !important;
+  background-color: #0030C0 !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  letter-spacing: 0.2px !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  text-transform: none !important;
+  text-shadow: none !important;
+  border: 1px solid #0030C0 !important;
+  border-radius: 20px !important;
+  box-shadow: 0 1px 3px rgba(0, 48, 192, 0.25) !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  outline: none !important;
+  transform: none !important;
+  filter: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease !important;
+}
+
+#vvvebjs-new-section button:hover,
+#vvvebjs-new-section .vvveb-new-section-btn:hover,
+#vvvebjs-new-section #new-component:hover,
+#vvvebjs-new-section #new-section:hover {
+  background: #002599 !important;
+  background-color: #002599 !important;
+  border-color: #002599 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 10px rgba(0, 48, 192, 0.35) !important;
+  transform: translateY(-1px) !important;
+}
+
+#vvvebjs-new-section button:active,
+#vvvebjs-new-section .vvveb-new-section-btn:active,
+#vvvebjs-new-section #new-component:active,
+#vvvebjs-new-section #new-section:active {
+  background: #001c73 !important;
+  background-color: #001c73 !important;
+  border-color: #001c73 !important;
+  transform: translateY(1px) !important;
+  box-shadow: 0 1px 2px rgba(0, 48, 192, 0.2) !important;
+}
+
+#vvvebjs-new-section button:focus-visible,
+#vvvebjs-new-section .vvveb-new-section-btn:focus-visible {
+  outline: 2px solid #0030C0 !important;
+  outline-offset: 2px !important;
+}
+
+/* Sidebar Component & Properties Accordion Arrow Indicators */
+.drag-elements-sidepane ul > li.header .header-arrow:before,
+.drag-elements-sidepane ul > li.header label .header-arrow:before,
+.component-properties label.header .header-arrow:before,
+#right-panel label.header .header-arrow:before {
+  content: "\f105";
+}
+#vvveb-builder #add-section-box label.header .header-arrow:before {
+  content: "\f067"; /* la-plus (+) when closed */
+}
+
+.drag-elements-sidepane ul > li.header:has(> input.header_check:checked) .header-arrow:before,
+.drag-elements-sidepane ul > li.header input.header_check:checked ~ label .header-arrow:before,
+.component-properties div:has(> input.header_check:checked) label.header .header-arrow:before,
+.component-properties input.header_check:checked ~ label.header .header-arrow:before,
+#right-panel div:has(> input.header_check:checked) label.header .header-arrow:before,
+#right-panel input.header_check:checked ~ label.header .header-arrow:before {
+  content: "\f107";
+}
+#vvveb-builder #add-section-box li.header:has(> input.header_check:checked) label.header .header-arrow:before,
+#vvveb-builder #add-section-box input.header_check:checked + label.header .header-arrow:before,
+#vvveb-builder #add-section-box input.header_check:checked ~ label.header .header-arrow:before {
+  content: "\f068"; /* la-minus (-) when open */
+}
+
+/* Centered Popup for Add Element / Add Section (#add-section-box) */
+#vvveb-builder #add-section-box {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 90vw !important;
+  max-width: 720px !important;
+  height: 82vh !important;
+  max-height: 580px !important;
+  z-index: 1060 !important;
+  background: var(--bs-body-bg) !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.28), 0 0 0 1px var(--bs-border-color) !important;
+  border-radius: 10px !important;
+  border: 1px solid var(--bs-border-color) !important;
+  pointer-events: auto !important;
+  display: none;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+#vvveb-builder #add-section-box.only-sections {
+  max-width: 860px !important;
+  max-height: 640px !important;
+  width: 90vw !important;
+  height: 82vh !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+#vvveb-builder #add-section-box > .header {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+#vvveb-builder #add-section-box .section-box-header {
+  flex-shrink: 0 !important;
+}
+
+#vvveb-builder #add-section-box .tab-content {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+#vvveb-builder #add-section-box .tab-pane {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+#vvveb-builder #add-section-box .tab-pane.active {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+#vvveb-builder #add-section-box .tab-pane .search,
+#vvveb-builder #add-section-box .tab-pane .search-wrapper {
+  flex-shrink: 0 !important;
+}
+
+#vvveb-builder #add-section-box .tab-pane .overflow-y-auto {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  margin-bottom: 0 !important;
+  padding: 0.5rem 0.75rem !important;
+}
+
+/* WordPress Components Shadow DOM Live Preview Canvas Container */
+[data-component-shortcode],
+[data-component-wp-block],
+[data-component-post-content] {
+  display: block !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  min-height: 24px;
+}
+
+/* Element Hide/Unhide Visual State in Builder */
+[data-align-hide="true"] {
+  opacity: 0.45 !important;
+  filter: blur(1.2px) grayscale(50%) !important;
+  outline: 1.5px dashed #f59e0b !important;
+  outline-offset: -1px;
+  position: relative;
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+[data-align-hide="true"]:hover {
+  opacity: 0.75 !important;
+  filter: blur(0.5px) grayscale(20%) !important;
+}
+[data-align-hide="true"]::before {
+  content: "Hidden (No FE)";
+  position: absolute;
+  top: 4px; left: 4px;
+  background: rgba(245, 158, 11, 0.9);
+  color: #fff;
+  font-size: 10px; font-weight: 600;
+  padding: 1px 5px; border-radius: 3px;
+  pointer-events: none; z-index: 9999;
+  line-height: 1.3;
+}

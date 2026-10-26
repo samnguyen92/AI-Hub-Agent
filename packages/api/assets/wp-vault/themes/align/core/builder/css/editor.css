@@ -1,0 +1,45 @@
+/**
+ * Align Theme Builder Master Stylesheet Entrypoint
+ *
+ * Imports all modular CSS clusters for vendor fonts, bootstrap, layout,
+ * components, inspector inputs, modals, toolbar, and dark theme.
+ *
+ * @package Align
+ */
+
+/* 1. Vendor Styles */
+@import url("vendor/line-awesome.css");
+@import url("vendor/bootstrap-custom.css");
+
+/* 2. Base & Layout Styles */
+@import url("base/editor-layout.css");
+@import url("base/content-mode-editor.css");
+@import url("base/editor-sidebar.css");
+@import url("base/editor-panels.css");
+@import url("base/editor-top-panel.css");
+@import url("base/editor-canvas.css");
+
+/* 3. Component & Canvas Interaction Styles */
+@import url("components/editor-tree-navigator.css");
+@import url("components/editor-highlight-box.css");
+@import url("components/editor-select-actions.css");
+@import url("components/editor-context-menu.css");
+@import url("components/editor-drag-elements.css");
+@import url("components/editor-sortable-drop.css");
+@import url("components/editor-word-mode.css");
+
+/* 4. Inspector Input Controls */
+@import url("components/editor-inputs-base.css");
+@import url("components/editor-inputs-select.css");
+@import url("components/editor-inputs-autocomplete.css");
+
+/* 5. Modals & Action Toolbar */
+@import url("components/editor-modals-toolbar.css");
+@import url("components/editor-wp-media.css");
+@import url("components/editor-lang.css");
+@import url("components/editor-seo.css");
+@import url("components/editor-seo-score.css");
+
+/* 6. Theme Specific & Dark Mode Overrides */
+@import url("theme/editor-sections-theme.css");
+@import url("theme/editor-dark-theme.css");

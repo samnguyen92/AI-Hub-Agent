@@ -1,0 +1,10 @@
+/**
+ * Align Theme Builder Media Modal Stylesheet Entrypoint
+ *
+ * Imports modular modal layout and grid thumbnail stylesheets.
+ *
+ * @package Align
+ */
+
+@import url("css/media-modal-layout.css");
+@import url("css/media-grid-thumbnails.css");

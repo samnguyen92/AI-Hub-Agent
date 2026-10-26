@@ -1,0 +1,92 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "align/share",
+  "title": "Share Buttons",
+  "category": "align-category",
+  "icon": "share",
+  "description": "Social share buttons for Facebook, X (Twitter), LinkedIn, Email, and Copy Link.",
+  "attributes": {
+    "showFB": {
+      "type": "boolean",
+      "default": true
+    },
+    "showX": {
+      "type": "boolean",
+      "default": true
+    },
+    "showLinkedIn": {
+      "type": "boolean",
+      "default": true
+    },
+    "showEmail": {
+      "type": "boolean",
+      "default": true
+    },
+    "showCopy": {
+      "type": "boolean",
+      "default": true
+    },
+    "buttonStyle": {
+      "type": "string",
+      "default": "icon_text"
+    },
+    "layout": {
+      "type": "string",
+      "default": "row"
+    },
+    "customClass": {
+      "type": "string",
+      "default": ""
+    },
+    "elementId": {
+      "type": "string",
+      "default": ""
+    },
+    "linkMode": {
+      "type": "string",
+      "default": "share"
+    },
+    "customFbUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "customXUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "customLinkedInUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "customEmailUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "fbIconType": { "type": "string", "default": "svg" },
+    "fbCustomSvg": { "type": "string", "default": "" },
+    "fbCustomImgId": { "type": "number", "default": 0 },
+    "fbCustomImgUrl": { "type": "string", "default": "" },
+    "xIconType": { "type": "string", "default": "svg" },
+    "xCustomSvg": { "type": "string", "default": "" },
+    "xCustomImgId": { "type": "number", "default": 0 },
+    "xCustomImgUrl": { "type": "string", "default": "" },
+    "linkedinIconType": { "type": "string", "default": "svg" },
+    "linkedinCustomSvg": { "type": "string", "default": "" },
+    "linkedinCustomImgId": { "type": "number", "default": 0 },
+    "linkedinCustomImgUrl": { "type": "string", "default": "" },
+    "emailIconType": { "type": "string", "default": "svg" },
+    "emailCustomSvg": { "type": "string", "default": "" },
+    "emailCustomImgId": { "type": "number", "default": 0 },
+    "emailCustomImgUrl": { "type": "string", "default": "" },
+    "copyIconType": { "type": "string", "default": "svg" },
+    "copyCustomSvg": { "type": "string", "default": "" },
+    "copyCustomImgId": { "type": "number", "default": 0 },
+    "copyCustomImgUrl": { "type": "string", "default": "" }
+  },
+  "supports": {
+    "align": ["wide", "full"],
+    "html": false,
+    "customClassName": false
+  }
+}

@@ -1,0 +1,9 @@
+__MACOSX/
+.DS_Store
+Thumbs.db
+*.log
+node_modules/
+
+# Child theme assets
+align-child/assets/*
+!align-child/assets/.gitkeep

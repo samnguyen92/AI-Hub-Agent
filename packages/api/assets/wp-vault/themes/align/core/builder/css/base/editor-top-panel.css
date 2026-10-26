@@ -1,0 +1,403 @@
+/**
+ * Align Theme Builder CSS - Top Panel & Action Toolbar
+ * @package Align
+ */
+
+#vvveb-builder #top-panel {
+  height: 38px;
+  min-height: 38px;
+  max-height: 38px;
+  padding: 0 10px;
+  border-bottom: 1px solid var(--bs-border-color, rgba(255, 255, 255, 0.1));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background-color: var(--bs-body-bg, #1e2227);
+  position: relative;
+  z-index: 100;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+#vvveb-builder #top-panel .btn-group .btn.btn-light {
+  padding: 0.25rem 0.5rem;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--bs-body-color, #e4e4e7);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  border-radius: 4px;
+}
+
+#vvveb-builder #top-panel .btn-group .btn.btn-light i {
+  font-size: 15px;
+  color: var(--bs-secondary-color, #a1a1aa);
+  vertical-align: middle;
+}
+
+#vvveb-builder #top-panel .btn-group .btn.btn-light:hover i,
+#vvveb-builder #top-panel .btn-group .btn.btn-light.active i {
+  color: var(--bs-body-color, #fff);
+}
+
+#vvveb-builder #top-panel .btn-back-cms {
+  padding: 4px !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  color: var(--bs-body-color, #e4e4e7);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  border-radius: 4px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+#vvveb-builder #top-panel .btn-back-cms:hover {
+  opacity: 0.85;
+  transform: scale(1.05);
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  text-decoration: none;
+}
+
+#vvveb-builder #top-panel .btn-back-cms:active {
+  transform: scale(0.96);
+}
+
+#vvveb-builder #top-panel .btn-back-cms:focus,
+#vvveb-builder #top-panel .btn-back-cms:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+#vvveb-builder #top-panel .btn-back-cms .site-icon-img {
+  width: 22px;
+  height: 22px;
+  object-fit: cover;
+  border-radius: 4px;
+  display: block;
+}
+
+#vvveb-builder #top-panel .btn-back-cms .icon-cms-fallback {
+  font-size: 22px;
+  color: #38bdf8;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+html[data-bs-theme="light"] #vvveb-builder #top-panel .btn-back-cms {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+html[data-bs-theme="light"] #vvveb-builder #top-panel .btn-back-cms:hover {
+  background: transparent !important;
+}
+
+#vvveb-builder #top-panel .btn-group .btn.btn-primary,
+#vvveb-builder #top-panel .save-btn {
+  background-color: #38bdf8 !important;
+  border-color: #38bdf8 !important;
+  color: #0f172a !important;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 4px 14px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.4;
+  gap: 5px;
+  transition: all 0.2s ease-in-out;
+}
+
+#vvveb-builder #top-panel .save-btn:hover:not(:disabled) {
+  background-color: #7dd3fc !important;
+  border-color: #7dd3fc !important;
+}
+
+#vvveb-builder #top-panel .save-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+#vvveb-builder #top-panel .save-btn .loading,
+#vvveb-builder #top-panel .save-btn .button-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+#vvveb-builder #top-panel .save-btn .la-check {
+  font-size: 13px;
+  font-weight: bold;
+}
+
+#vvveb-builder #top-panel .btn-group .btn span {
+  font-size: 12px;
+}
+
+#vvveb-builder #top-panel .btn-group.responsive-btns .btn.btn-light {
+  text-wrap-mode: nowrap;
+  text-align: unset;
+}
+
+#vvveb-builder #top-panel .btn-group.responsive-btns .dropdown-menu {
+  min-width: 155px;
+  padding: 4px;
+  background-color: var(--bs-body-bg, #1e2227);
+  border: 1px solid var(--bs-border-color, rgba(255, 255, 255, 0.15));
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  border-radius: 6px;
+  z-index: 1060;
+}
+
+#vvveb-builder #top-panel .btn-group.responsive-btns .dropdown-menu .btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 12px;
+  text-align: left;
+  justify-content: flex-start;
+  white-space: nowrap;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+}
+
+#vvveb-builder #top-panel .btn-group.responsive-btns .dropdown-menu .btn i {
+  width: 16px;
+  min-width: 16px;
+  font-size: 14px;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+#vvveb-builder #top-panel .btn-group.responsive-btns .dropdown-menu .btn span {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+#vvveb-builder #top-panel .btn-group.responsive-btns .dropdown-menu .btn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+#vvveb-builder #top-panel .btn-group.responsive-btns .dropdown-menu .btn.active {
+  background-color: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+}
+
+#vvveb-builder #top-panel .percent input#zoom {
+  width: 54px;
+  height: 26px;
+  padding: 2px 4px;
+  font-size: 11px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--bs-body-color, #e4e4e7);
+  text-align: center;
+  border-radius: 4px;
+}
+
+#vvveb-builder #top-panel .menu-toggle i,
+#vvveb-builder #top-panel #color-theme-switch i {
+  vertical-align: middle;
+  font-size: 12px;
+}
+
+/* Top Panel Reusable Block Shortcode Pill */
+#vvveb-builder #top-panel #top-panel-shortcode-container {
+  display: none;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 8px;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  border-radius: 4px;
+  font-size: 11.5px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: #38bdf8;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: all 0.15s ease;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+#vvveb-builder #top-panel #top-panel-shortcode-container:hover {
+  background: rgba(56, 189, 248, 0.18);
+  border-color: rgba(56, 189, 248, 0.5);
+  color: #7dd3fc;
+}
+
+#vvveb-builder #top-panel #top-panel-shortcode-container:active {
+  transform: scale(0.96);
+}
+
+#vvveb-builder #top-panel #top-panel-shortcode-container.copied {
+  background: rgba(34, 197, 94, 0.15) !important;
+  border-color: rgba(34, 197, 94, 0.45) !important;
+  color: #4ade80 !important;
+}
+
+#vvveb-builder #top-panel #top-panel-shortcode-container .icon-code {
+  font-size: 13px;
+  color: inherit;
+  opacity: 0.85;
+}
+
+#vvveb-builder #top-panel #top-panel-shortcode-container #top-panel-shortcode-text {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+#vvveb-builder #top-panel #top-panel-shortcode-container .icon-copy {
+  font-size: 12px;
+  color: inherit;
+  opacity: 0.75;
+  transition: transform 0.15s ease;
+}
+
+#vvveb-builder #top-panel #top-panel-shortcode-container:hover .icon-copy {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+html[data-bs-theme="dark"] #vvveb-builder #top-panel img:not(.site-icon-img) {
+  filter: invert(93%) hue-rotate(180deg);
+}
+
+html.is-embedded #vvveb-builder #top-panel #back-to-cms-btn,
+body.is-embedded #vvveb-builder #top-panel #back-to-cms-btn,
+html.is-embedded #vvveb-builder #top-panel #undo-btn,
+body.is-embedded #vvveb-builder #top-panel #undo-btn,
+html.is-embedded #vvveb-builder #top-panel #redo-btn,
+body.is-embedded #vvveb-builder #top-panel #redo-btn,
+html.is-embedded #vvveb-builder #top-panel .btn-preview-url,
+body.is-embedded #vvveb-builder #top-panel .btn-preview-url,
+html.is-embedded #vvveb-builder #top-panel .save-btn,
+body.is-embedded #vvveb-builder #top-panel .save-btn,
+html.is-embedded #vvveb-builder #top-panel #save-btn-wrapper,
+body.is-embedded #vvveb-builder #top-panel #save-btn-wrapper {
+  display: none !important;
+}
+
+/* ─── Current Page / Template Indicator Pill ─────────────────────────────── */
+#vvveb-builder #top-panel .align-page-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 8px 0 7px;
+  background: rgba(251, 191, 36, 0.08);
+  border: 1px solid rgba(251, 191, 36, 0.28);
+  border-radius: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #d97706;
+  user-select: none;
+  -webkit-user-select: none;
+  line-height: 1;
+  box-sizing: border-box;
+  max-width: 260px;
+  overflow: hidden;
+  cursor: default;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+#vvveb-builder #top-panel .align-page-indicator .align-page-indicator-icon {
+  font-size: 13px;
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+#vvveb-builder #top-panel .align-page-indicator .align-page-indicator-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+  flex: 1 1 auto;
+  letter-spacing: -0.01em;
+}
+
+#vvveb-builder #top-panel .align-page-indicator .align-page-indicator-badge {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(251, 191, 36, 0.18);
+  color: #d97706;
+  flex-shrink: 0;
+  line-height: 14px;
+}
+
+/* Template variant — blue */
+#vvveb-builder #top-panel .align-page-indicator.is-template {
+  background: rgba(59, 130, 246, 0.07);
+  border-color: rgba(59, 130, 246, 0.28);
+  color: #3b82f6;
+}
+#vvveb-builder #top-panel .align-page-indicator.is-template .align-page-indicator-badge {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+/* Template part variant — indigo */
+#vvveb-builder #top-panel .align-page-indicator.is-template-part {
+  background: rgba(99, 102, 241, 0.07);
+  border-color: rgba(99, 102, 241, 0.28);
+  color: #6366f1;
+}
+#vvveb-builder #top-panel .align-page-indicator.is-template-part .align-page-indicator-badge {
+  background: rgba(99, 102, 241, 0.15);
+  color: #6366f1;
+}
+
+/* Reusable block variant — cyan */
+#vvveb-builder #top-panel .align-page-indicator.is-reusable {
+  background: rgba(56, 189, 248, 0.07);
+  border-color: rgba(56, 189, 248, 0.28);
+  color: #0ea5e9;
+}
+#vvveb-builder #top-panel .align-page-indicator.is-reusable .align-page-indicator-badge {
+  background: rgba(56, 189, 248, 0.15);
+  color: #0ea5e9;
+}
+
+/* Dark mode */
+html[data-bs-theme="dark"] #vvveb-builder #top-panel .align-page-indicator {
+  background: rgba(251, 191, 36, 0.06);
+  border-color: rgba(251, 191, 36, 0.22);
+  color: #fbbf24;
+}
+html[data-bs-theme="dark"] #vvveb-builder #top-panel .align-page-indicator .align-page-indicator-badge {
+  background: rgba(251, 191, 36, 0.12);
+  color: #fbbf24;
+}
+html[data-bs-theme="dark"] #vvveb-builder #top-panel .align-page-indicator.is-template { color: #60a5fa; border-color: rgba(96,165,250,0.28); background: rgba(96,165,250,0.06); }
+html[data-bs-theme="dark"] #vvveb-builder #top-panel .align-page-indicator.is-template .align-page-indicator-badge { background: rgba(96,165,250,0.12); color: #60a5fa; }
+html[data-bs-theme="dark"] #vvveb-builder #top-panel .align-page-indicator.is-template-part { color: #a5b4fc; border-color: rgba(165,180,252,0.28); background: rgba(165,180,252,0.06); }
+html[data-bs-theme="dark"] #vvveb-builder #top-panel .align-page-indicator.is-template-part .align-page-indicator-badge { background: rgba(165,180,252,0.12); color: #a5b4fc; }
+html[data-bs-theme="dark"] #vvveb-builder #top-panel .align-page-indicator.is-reusable { color: #38bdf8; border-color: rgba(56,189,248,0.28); background: rgba(56,189,248,0.06); }
+html[data-bs-theme="dark"] #vvveb-builder #top-panel .align-page-indicator.is-reusable .align-page-indicator-badge { background: rgba(56,189,248,0.12); color: #38bdf8; }
+

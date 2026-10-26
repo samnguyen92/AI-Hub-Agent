@@ -1,0 +1,35 @@
+  <script id="vvveb-filemanager-folder" type="text/html">{% var rand = Math.floor(Math.random() * 10000); %}<li data-folder="{%=folder%}" class="folder"><label for="{%=folder%}{%=rand%}" title="{%=folderTitle%}"><span>{%=folderTitle%}</span></label> <input type="checkbox" id="{%=folder%}{%=rand%}" /><ol></ol></li></script>
+
+  <script id="vvveb-filemanager-page" type="text/html">
+	{% var rand = Math.floor(Math.random() * 10000); %}
+
+	<li data-url="{%=url%}" data-file="{%=file%}" data-page="{%=name%}" class="file{% if (typeof className !== 'undefined') { %} {%=className%}{% } %}" {%if (typeof post_id !== 'undefined' && post_id) { %}data-post_id="{%=post_id%}"{% } else if (typeof postId !== 'undefined' && postId) { %}data-post_id="{%=postId%}"{% } %} {%if (typeof product_id !== 'undefined') { %}data-product_id="{%=product_id%}"{% } %} {%if (typeof global !== 'undefined' && global) { %}data-global="true"{% } %}>
+		<label for="{%=name%}{%=rand%}" title="{%= (typeof description !== 'undefined' && description) ? description : title %}">
+			<span>{%=title%}</span>
+			{% if (typeof tag_label !== 'undefined' && tag_label) { %}
+				<span class="align-tree-tag align-tree-tag-{%=tag_type%}" title="Click to copy ID / shortcode">{%=tag_label%}</span>
+			{% } else if (typeof tagLabel !== 'undefined' && tagLabel) { %}
+				<span class="align-tree-tag align-tree-tag-{%=tagType%}" title="Click to copy ID / shortcode">{%=tagLabel%}</span>
+			{% } %}
+		</label>
+		<div class="file-actions">
+			{% if ((typeof isReusable !== 'undefined' && isReusable) || (typeof is_reusable !== 'undefined' && is_reusable) || (typeof tagType !== 'undefined' && tagType === 'id') || (typeof tag_type !== 'undefined' && tag_type === 'id') || (typeof folder !== 'undefined' && folder === 'Reusable Blocks')) { %}
+				<button type="button" class="copy-id btn" title="Copy Reusable Block ID & Shortcode"><i class="la la-copy"></i></button>
+			{% } %}
+			<button type="button" class="rename btn" title="Rename"><i class="la la-edit"></i></button>
+			<button type="button" class="duplicate btn" title="Duplicate"><i class="la la-clone"></i></button>
+			<button type="button" class="delete btn" title="Delete"><i class="la la-trash"></i></button>
+		</div>
+		<input type="checkbox" id="{%=name%}{%=rand%}" />
+	</li>
+  </script>
+
+  <script id="vvveb-filemanager-component" type="text/html">
+	<li data-url="{%=url%}" data-component="{%=name%}" class="component">
+		<a href="{%=url%}" title="{%=title%}"><span>{%=title%}</span></a>
+	</li>
+  </script>
+
+  <script id="vvveb-breadcrumb-navigaton-item" type="text/html">
+	<li class="breadcrumb-item"><a href="#" {% if (typeof className !== 'undefined') { %}class="{%=className%}"{% } %}>{%=name%}</a></li>
+  </script>

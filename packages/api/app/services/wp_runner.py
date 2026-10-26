@@ -27,8 +27,8 @@ class WordPressRunnerService:
         return "".join(c if c.isalnum() else "_" for c in text.lower())[:24]
 
     @staticmethod
-    def find_available_port(start_port: int = 8081, max_tries: int = 100) -> int:
-        """Find an unallocated TCP port on the host."""
+    def find_available_port(start_port: int = 8501, max_tries: int = 100) -> int:
+        """Find an unallocated TCP port on the host (defaults to 8501+)."""
         for port in range(start_port, start_port + max_tries):
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 if s.connect_ex(("127.0.0.1", port)) != 0:
@@ -199,7 +199,7 @@ class WordPressRunnerService:
         slug = self._sanitize_slug(project_id)
         container_name = f"hub_ai_wp_{slug}"
         db_name = f"wp_{slug}"
-        port = self.find_available_port(8081)
+        port = self.find_available_port(8501)
         site_url = f"http://localhost:{port}"
         admin_user = "admin"
         admin_pass = secrets.token_urlsafe(12)

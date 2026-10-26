@@ -1,0 +1,253 @@
+.align-media-uploader-row .components-button {
+    height: stretch !important;
+}
+
+
+/* Gutenberg Sidebar Inspector Controls Styling (Modern Slate Theme) */
+.block-editor-block-inspector .components-panel__body,
+.edit-post-sidebar .components-panel__body {
+    border: none !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    background: #ffffff !important;
+}
+
+.block-editor-block-inspector .components-panel__body-title,
+.edit-post-sidebar .components-panel__body-title {
+    font-weight: 600 !important;
+    color: #0f172a !important;
+}
+
+.block-editor-block-inspector .components-panel__body-title button,
+.edit-post-sidebar .components-panel__body-title button {
+    padding: 16px !important;
+    font-size: 13px !important;
+    color: #0f172a !important;
+}
+
+.block-editor-block-inspector .components-panel__body.is-opened,
+.edit-post-sidebar .components-panel__body.is-opened {
+    background: #ffffff !important;
+}
+
+/* Style input control items inside editor inspector */
+.block-editor-block-inspector .components-base-control__label,
+.edit-post-sidebar .components-base-control__label {
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    color: #334155 !important;
+    margin-bottom: 6px !important;
+}
+
+.block-editor-block-inspector input[type="text"].components-text-control__input,
+.block-editor-block-inspector input[type="url"].components-text-control__input,
+.block-editor-block-inspector input[type="number"].components-text-control__input,
+.block-editor-block-inspector input[type="password"].components-text-control__input,
+.block-editor-block-inspector textarea.components-textarea-control__input,
+.edit-post-sidebar input[type="text"].components-text-control__input,
+.edit-post-sidebar input[type="url"].components-text-control__input,
+.edit-post-sidebar input[type="number"].components-text-control__input,
+.edit-post-sidebar input[type="password"].components-text-control__input,
+.edit-post-sidebar textarea.components-textarea-control__input {
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 6px !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease !important;
+    min-height: 36px !important;
+    line-height: 1.5 !important;
+}
+
+.block-editor-block-inspector input[type="text"].components-text-control__input:focus,
+.block-editor-block-inspector input[type="url"].components-text-control__input:focus,
+.block-editor-block-inspector input[type="number"].components-text-control__input:focus,
+.block-editor-block-inspector textarea.components-textarea-control__input:focus,
+.edit-post-sidebar input[type="text"].components-text-control__input:focus,
+.edit-post-sidebar input[type="url"].components-text-control__input:focus,
+.edit-post-sidebar input[type="number"].components-text-control__input:focus,
+.edit-post-sidebar textarea.components-textarea-control__input:focus {
+    border-color: #0f172a !important;
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.1) !important;
+}
+
+/* Style Gutenberg default SelectControl to match the brand dropdown style */
+.block-editor-block-inspector select.components-select-control__input,
+.edit-post-sidebar select.components-select-control__input,
+select.components-select-control__input {
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 6px !important;
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    padding: 8px 30px 8px 12px !important;
+    font-size: 13px !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease !important;
+    min-height: 36px !important;
+    line-height: 1.5 !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2364748b'><path d='M7 10l5 5 5-5z'/></svg>") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 10px center !important;
+    background-size: 18px !important;
+}
+
+.block-editor-block-inspector select.components-select-control__input:focus,
+.edit-post-sidebar select.components-select-control__input:focus,
+select.components-select-control__input:focus {
+    border-color: #0f172a !important;
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.1) !important;
+}
+
+.block-editor-block-inspector .components-base-control .components-base-control__help,
+.edit-post-sidebar .components-base-control .components-base-control__help {
+    font-size: 12px !important;
+    color: #64748b !important;
+    margin-top: 6px !important;
+    font-style: normal !important;
+}
+
+/* Buttons inside editor inspector sidebar */
+.block-editor-block-inspector .components-button,
+.edit-post-sidebar .components-button {
+    border-radius: 6px !important;
+    transition: all 0.2s ease !important;
+}
+
+.block-editor-block-inspector .components-button.is-primary,
+.edit-post-sidebar .components-button.is-primary {
+    background: #0f172a !important;
+    border: none !important;
+    color: #ffffff !important;
+    font-weight: 500 !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+}
+
+.block-editor-block-inspector .components-button.is-primary:hover,
+.edit-post-sidebar .components-button.is-primary:hover {
+    background: #1e293b !important;
+}
+
+.block-editor-block-inspector .components-button.is-secondary,
+.edit-post-sidebar .components-button.is-secondary {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #334155 !important;
+    font-weight: 500 !important;
+}
+
+.block-editor-block-inspector .components-button.is-secondary:hover,
+.edit-post-sidebar .components-button.is-secondary:hover {
+    background: #f8fafc !important;
+    border-color: #94a3b8 !important;
+    color: #0f172a !important;
+}
+
+/* Disable default WordPress focus rings inside sidebar */
+.block-editor-block-inspector .components-button:focus,
+.block-editor-block-inspector a:focus,
+.block-editor-block-inspector input[type="checkbox"]:focus,
+.edit-post-sidebar .components-button:focus,
+.edit-post-sidebar a:focus,
+.edit-post-sidebar input[type="checkbox"]:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* ==========================================================================
+   ALIGN THEMES GLOBAL TAB PANEL STYLES (.align-tab-panel & .align-media-tabs)
+   100% Custom Control via direct border-bottom (bypassing WP core ::after)
+   ========================================================================== */
+.align-tab-panel .components-tab-panel__tabs,
+.align-qb-tab-panel .components-tab-panel__tabs,
+.align-media-tabs {
+    display: flex !important;
+    align-items: center !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+    background: #ffffff !important;
+    margin: 0 0 16px 0 !important;
+    padding: 0 16px !important;
+    gap: 16px !important;
+    height: 40px !important;
+}
+
+/* Suppress WordPress Core default ::after indicator */
+.align-tab-panel .components-tab-panel__tabs-item::after,
+.align-qb-tab-panel .components-tab-panel__tabs-item::after,
+.align-media-tabs button::after {
+    display: none !important;
+    content: none !important;
+}
+
+.align-tab-panel .components-tab-panel__tabs-item,
+.align-qb-tab-panel .components-tab-panel__tabs-item,
+.align-media-tabs button,
+.align-media-tab-item {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 40px !important;
+    padding: 0 2px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    color: #757575 !important;
+    border: none !important;
+    border-bottom: 1px solid transparent !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    outline: none !important;
+    outline-offset: 0 !important;
+    margin-bottom: -1px !important;
+    cursor: pointer !important;
+    position: relative !important;
+    flex: 1 !important;
+    transition: color 0.15s ease, border-color 0.15s ease !important;
+}
+
+.align-tab-panel .components-tab-panel__tabs-item:focus,
+.align-tab-panel .components-tab-panel__tabs-item:focus-visible,
+.align-tab-panel .components-tab-panel__tabs-item:active,
+.align-tab-panel .components-tab-panel__tabs-item.is-active:focus,
+.align-qb-tab-panel .components-tab-panel__tabs-item:focus,
+.align-qb-tab-panel .components-tab-panel__tabs-item:focus-visible,
+.align-qb-tab-panel .components-tab-panel__tabs-item:active,
+.align-qb-tab-panel .components-tab-panel__tabs-item.is-active:focus,
+.align-media-tabs button:focus,
+.align-media-tabs button:focus-visible,
+.align-media-tabs button:active,
+.align-media-tabs button.is-active:focus {
+    outline: none !important;
+    outline-offset: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+.align-tab-panel .components-tab-panel__tabs-item:hover,
+.align-qb-tab-panel .components-tab-panel__tabs-item:hover,
+.align-media-tabs button:hover {
+    color: #1e1e1e !important;
+    background: transparent !important;
+}
+
+/* 100% Direct border-bottom controlled strictly by Align Theme */
+.align-tab-panel .components-tab-panel__tabs-item.is-active,
+.align-qb-tab-panel .components-tab-panel__tabs-item.is-active,
+.align-media-tabs button.is-active {
+    color: #1e1e1e !important;
+    border-bottom: 1px solid var(--wp-admin-theme-color, #3858e9) !important;
+    background: transparent !important;
+    font-weight: 500 !important;
+}
+
+.align-tab-panel .components-tab-panel__tab-content,
+.align-qb-tab-panel .components-tab-panel__tab-content {
+    padding: 0;
+}

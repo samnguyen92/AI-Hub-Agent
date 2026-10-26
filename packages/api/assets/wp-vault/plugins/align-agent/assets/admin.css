@@ -1,0 +1,481 @@
+/**
+ * Align Agent Gateway - Admin Stylesheet
+ *
+ * Adheres strictly to the Align Settings Style Guide:
+ * Transparent button design, card architecture, and clean monospace displays.
+ */
+
+.align-agent-wrap {
+	max-width: 1100px;
+	margin: 20px 20px 40px 0;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	color: #1e293b;
+}
+
+.align-agent-header {
+	margin-bottom: 24px;
+	padding-bottom: 16px;
+	border-bottom: 1px solid #e2e8f0;
+}
+
+.align-agent-main-title {
+	font-size: 22px;
+	font-weight: 700;
+	color: #0f172a;
+	margin: 0 0 6px 0;
+	line-height: 1.3;
+}
+
+.align-agent-sub-title {
+	font-size: 13.5px;
+	color: #64748b;
+	margin: 0;
+}
+
+/* Card System */
+.align-agent-card {
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	margin-bottom: 24px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+	overflow: hidden;
+}
+
+.align-agent-card-header {
+	padding: 16px 20px;
+	border-bottom: 1px solid #f1f5f9;
+	background: #fafafa;
+}
+
+.align-agent-card-title {
+	font-size: 15px;
+	font-weight: 600;
+	color: #1e293b;
+	margin: 0 0 4px 0;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	vertical-align: middle;
+}
+
+.align-agent-card-desc {
+	font-size: 12.5px;
+	color: #64748b;
+	margin: 0;
+}
+
+.align-agent-card-body {
+	padding: 20px;
+}
+
+/* Form Tables */
+.align-agent-table th {
+	width: 160px;
+	padding: 16px 12px 16px 0;
+	font-size: 13px;
+	font-weight: 600;
+	color: #334155;
+	vertical-align: top;
+}
+
+.align-agent-table td {
+	padding: 16px 0;
+	vertical-align: top;
+}
+
+.align-agent-input-group,
+.align-agent-url-group {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.align-agent-mono-input {
+	font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+	font-size: 13px !important;
+	height: 32px !important;
+	line-height: 30px !important;
+	border: 1px solid #cbd5e1 !important;
+	border-radius: 6px !important;
+	padding: 0 10px !important;
+	width: 380px !important;
+	max-width: 100% !important;
+	background: #f8fafc !important;
+	color: #0f172a !important;
+}
+
+.align-agent-mono-input:focus {
+	border-color: #0284c7 !important;
+	box-shadow: 0 0 0 1px #0284c7 !important;
+	background: #ffffff !important;
+}
+
+.align-agent-code-badge {
+	font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+	font-size: 13px;
+	padding: 6px 12px;
+	background: #f1f5f9;
+	color: #0f172a;
+	border: 1px solid #e2e8f0;
+	border-radius: 6px;
+	display: inline-block;
+}
+
+/* Align Button Standards (100% Transparent / Zero Solid WordPress Gray) */
+.align-agent-btn,
+button.align-agent-btn {
+	background: transparent !important;
+	border: 1px solid #bae6fd !important;
+	color: #0284c7 !important;
+	height: 32px !important;
+	line-height: 30px !important;
+	padding: 0 12px !important;
+	border-radius: 6px !important;
+	font-size: 12.5px !important;
+	font-weight: 600 !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	gap: 6px !important;
+	cursor: pointer;
+	transition: all 0.15s ease-in-out !important;
+	text-decoration: none !important;
+}
+
+.align-agent-btn:hover,
+.align-agent-btn:focus {
+	background: #f0f9ff !important;
+	border-color: #0284c7 !important;
+	color: #0369a1 !important;
+}
+
+.align-agent-btn:disabled,
+button.align-agent-btn:disabled {
+	background: transparent !important;
+	border-color: #e2e8f0 !important;
+	color: #94a3b8 !important;
+	opacity: 0.55 !important;
+	cursor: not-allowed !important;
+}
+
+.align-agent-mono-input[readonly] {
+	background: #f1f5f9 !important;
+	color: #64748b !important;
+	cursor: not-allowed !important;
+}
+
+.align-agent-btn-primary,
+input[type="submit"].align-agent-btn-primary {
+	background: transparent !important;
+	border: 1px solid #0284c7 !important;
+	color: #0284c7 !important;
+	height: 34px !important;
+	line-height: 32px !important;
+	padding: 0 18px !important;
+	border-radius: 6px !important;
+	font-size: 13px !important;
+	font-weight: 600 !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	gap: 6px !important;
+	vertical-align: middle !important;
+	cursor: pointer;
+	transition: all 0.15s ease-in-out !important;
+}
+
+.align-agent-btn-primary:hover,
+.align-agent-btn-primary:focus {
+	background: #0284c7 !important;
+	border-color: #0284c7 !important;
+	color: #ffffff !important;
+}
+
+/* Unified Icon Alignment Standard (see Align Settings Style Guide §3.3). */
+.align-agent-wrap .dashicons,
+.align-agent-wrap .dashicons::before,
+.align-agent-btn .dashicons,
+.align-agent-btn .dashicons::before,
+.align-nav-tab .dashicons,
+.align-nav-tab .dashicons::before,
+.align-agent-btn-primary .dashicons,
+.align-agent-btn-primary .dashicons::before,
+.align-agent-card-title .dashicons,
+.align-agent-card-title .dashicons::before {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+	line-height: 16px;
+	margin: 0;
+	padding: 0;
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	vertical-align: middle;
+	transform: none;
+}
+
+.align-agent-card-title .dashicons {
+	color: #0284c7;
+}
+
+.align-agent-status-msg {
+	margin-top: 8px;
+	font-size: 12.5px;
+	font-weight: 600;
+}
+
+.align-agent-actions {
+	margin-top: 16px;
+	padding-top: 16px;
+	border-top: 1px solid #f1f5f9;
+}
+
+/* Endpoints Reference Table */
+.align-agent-endpoints-table {
+	border-collapse: collapse;
+	border: 1px solid #e2e8f0;
+	border-radius: 6px;
+	overflow: hidden;
+}
+
+.align-agent-endpoints-table th {
+	background: #f8fafc;
+	color: #475569;
+	font-size: 12px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	padding: 10px 14px;
+	border-bottom: 1px solid #e2e8f0;
+}
+
+.align-agent-endpoints-table td {
+	padding: 10px 14px;
+	font-size: 13px;
+	vertical-align: middle;
+	border-bottom: 1px solid #f1f5f9;
+}
+
+.align-agent-endpoints-table code {
+	font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+	font-size: 12.5px;
+	background: #f1f5f9;
+	padding: 2px 6px;
+	border-radius: 4px;
+	color: #0f172a;
+}
+
+/* Method Badges */
+.align-badge {
+	display: inline-block;
+	font-size: 11px;
+	font-weight: 700;
+	padding: 2px 6px;
+	border-radius: 4px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	line-height: 1.2;
+}
+
+.align-badge-get { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+.align-badge-post { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+.align-badge-put { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+.align-badge-danger { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+
+/* MCP Tools Scroll Table */
+.align-mcp-tools-scroll {
+	max-height: 420px;
+	overflow-y: auto;
+	border: 1px solid #e2e8f0;
+	border-radius: 6px;
+}
+
+.align-mcp-tools-scroll:focus-visible {
+	outline: 2px solid #2271b1;
+	outline-offset: 2px;
+}
+
+.align-mcp-tools-table {
+	border: 0;
+	overflow: visible;
+}
+
+.align-mcp-tools-table thead th {
+	position: sticky;
+	top: 0;
+	z-index: 1;
+}
+
+.align-mcp-tools-table td { padding: 6px 12px; }
+.align-mcp-col-name { width: 200px; }
+.align-mcp-col-endpoint { width: 290px; }
+
+/* Unified Segmented Tab Bar */
+.align-nav-tabs-bar {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	background: #f8fafc;
+	padding: 4px;
+	border-radius: 8px;
+	margin-bottom: 22px;
+	overflow-x: auto;
+	border: 1px solid #e2e8f0;
+}
+
+.align-nav-tab {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 8px 16px;
+	color: #64748b;
+	font-size: 13px;
+	font-weight: 600;
+	text-decoration: none;
+	border-radius: 6px;
+	white-space: nowrap;
+	transition: all 0.15s ease;
+	border: 1px solid transparent;
+	background: transparent;
+	cursor: pointer;
+}
+
+.align-nav-tab:hover { color: #0f172a; background: #ffffff; }
+.align-nav-tab.is-active {
+	color: #0284c7;
+	background: #ffffff;
+	border-color: #cbd5e1;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.align-agent-tab-panel { display: none; }
+.align-agent-tab-panel.is-active { display: block; }
+.align-agent-tab-panel > .align-agent-card:last-child { margin-bottom: 0; }
+
+/* Unified Meta Grid & Repo Badge */
+.align-meta-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+	gap: 14px;
+	margin-bottom: 20px;
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 6px;
+	padding: 14px;
+}
+
+.align-meta-item-label {
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	color: #64748b;
+	margin-bottom: 4px;
+}
+
+.align-repo-badge {
+	font-size: 12px;
+	font-weight: 600;
+	color: #0284c7;
+	background: #e0f2fe;
+	padding: 2px 8px;
+	border-radius: 4px;
+	font-family: monospace;
+	display: inline-block;
+}
+
+/* Telegram Pairing Code Box */
+.align-agent-pair-box {
+	margin-top: 12px;
+	padding: 16px;
+	background: #f0f9ff;
+	border: 1px solid #bae6fd;
+	border-radius: 8px;
+	max-width: 380px;
+}
+
+.align-agent-pair-code {
+	font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+	font-size: 30px;
+	font-weight: 700;
+	letter-spacing: 8px;
+	color: #0284c7;
+	text-align: center;
+	user-select: all;
+}
+
+.align-agent-pair-hint { margin: 10px 0 0; font-size: 12.5px; color: #475569; text-align: center; }
+.align-agent-pair-hint a { color: #0284c7; font-weight: 600; text-decoration: underline; }
+
+/* License Activation Gate & Active Status Bar */
+.align-license-gate-card {
+	max-width: 620px;
+}
+
+.align-license-gate-card .align-agent-card-body {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.align-license-status-bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	flex-wrap: wrap;
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	padding: 12px 16px;
+	margin-bottom: 20px;
+}
+
+.align-license-status-meta {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	flex-wrap: wrap;
+	font-size: 13px;
+	color: #334155;
+}
+
+.align-license-meta-item code {
+	font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+	font-size: 12.5px;
+	background: #ffffff;
+	border: 1px solid #cbd5e1;
+	padding: 2px 6px;
+	border-radius: 4px;
+	color: #0f172a;
+}
+
+/* Bridge 2-Column 3-Card Grid Layout */
+.align-bridge-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 20px;
+	align-items: stretch;
+}
+
+.align-bridge-card { margin-bottom: 0; display: flex; flex-direction: column; }
+.align-bridge-card .align-agent-card-body { flex: 1; display: flex; flex-direction: column; gap: 16px; }
+.align-bridge-card-full { grid-column: 1 / -1; }
+.align-bridge-subgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.align-bridge-subcol { display: flex; flex-direction: column; gap: 16px; }
+.align-bridge-field { display: flex; flex-direction: column; gap: 6px; }
+.align-bridge-label { font-size: 13px; font-weight: 600; color: #334155; line-height: 1.4; }
+.align-bridge-field .description { margin: 2px 0 0 !important; font-size: 12px !important; color: #64748b !important; line-height: 1.45 !important; }
+.align-bridge-grid .align-agent-input-group { flex-wrap: nowrap; width: 100%; }
+.align-bridge-grid .align-agent-mono-input { flex: 1 1 220px; width: auto !important; min-width: 0; }
+.align-bridge-grid .align-agent-btn { flex-shrink: 0; }
+
+@media (max-width: 959px) {
+	.align-bridge-grid,
+	.align-bridge-subgrid {
+		grid-template-columns: 1fr;
+	}
+}

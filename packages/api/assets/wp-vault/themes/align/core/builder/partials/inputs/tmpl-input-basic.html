@@ -1,0 +1,125 @@
+<!-- Align Builder - Basic Text & Toggle Input Templates -->
+
+<script id="vvveb-input-textinput" type="text/html">
+
+	<div>
+		<input name="{%=key%}" type="text" class="form-control"/>
+	</div>
+	
+</script>
+
+<script id="vvveb-input-linkinput" type="text/html">
+
+	<div class="vvveb-link-input-wrapper position-relative">
+		<!-- Unlocked State: Search and manual URL -->
+		<div class="link-unlocked-container" {% if (typeof is_locked !== 'undefined' && is_locked) { %} style="display:none;" {% } %}>
+			<div class="input-group input-group-sm link-input-group">
+				<input name="{%=key%}" type="text" class="form-control link-url-input" placeholder="Type URL or search post..." autocomplete="off"/>
+				<span class="input-group-text link-search-icon" title="Search posts">
+					<i class="la la-search"></i>
+				</span>
+			</div>
+			<div class="link-search-results dropdown-menu shadow-sm p-0 position-absolute" style="display: none;"></div>
+		</div>
+
+		<!-- Locked State: Compact card display with prominent badge ID, title, and Unlink button -->
+		<div class="link-locked-container" {% if (typeof is_locked === 'undefined' || !is_locked) { %} style="display:none;" {% } %}>
+			<div class="link-locked-card d-flex align-items-center justify-content-between">
+				<div class="d-flex align-items-center gap-1 min-w-0 flex-grow-1 text-truncate me-1">
+					<span class="badge link-locked-id-badge flex-shrink-0" title="Post ID">#<span class="locked-id-value">{% if (typeof linkId !== 'undefined') { %}{%=linkId%}{% } %}</span></span>
+					<span class="fw-medium text-truncate locked-title item-title" title="{% if (typeof title !== 'undefined') { %}{%=title%}{% } %}">{% if (typeof title !== 'undefined') { %}{%=title%}{% } %}</span>
+				</div>
+				<button type="button" class="btn btn-link btn-disconnect p-0 flex-shrink-0" title="Disconnect link" aria-label="Disconnect">
+					<i class="la la-unlink"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+	
+</script>
+
+<script id="vvveb-input-textareainput" type="text/html">
+
+	<div>
+		<textarea name="{%=key%}" {% if (typeof rows !== 'undefined') { %} rows="{%=rows%}" {% } else { %} rows="3" {% } %} class="form-control"></textarea> 
+	</div>
+	
+</script>
+
+<script id="vvveb-input-checkboxinput" type="text/html">
+
+	<div class="form-check{% if (typeof className !== 'undefined') { %} {%=className%}{% } %}">
+		  <input name="{%=key%}" class="form-check-input" type="checkbox" id="{%=key%}_check">
+		  <label class="form-check-label" for="{%=key%}_check">{% if (typeof text !== 'undefined') { %} {%=text%} {% } %}</label>
+	</div>
+	
+</script>
+
+<script id="vvveb-input-radioinput" type="text/html">
+
+	<div>
+	
+		{% for ( var i = 0; i < options.length; i++ ) { %}
+
+		<label class="form-check-input  {% if (typeof inline !== 'undefined' && inline == true) { %}custom-control-inline{% } %}"  title="{%=options[i].title%}">
+		  <input name="{%=key%}" class="form-check-input" type="radio" value="{%=options[i].value%}" id="{%=key%}{%=i%}" {%if (options[i].checked) { %}checked="{%=options[i].checked%}"{% } %}>
+		  <label class="form-check-label" for="{%=key%}{%=i%}">{%=options[i].text%}</label>
+		</label>
+
+		{% } %}
+
+	</div>
+	
+</script>
+
+<script id="vvveb-input-radiobuttoninput" type="text/html">
+
+	<div class="btn-group btn-group-sm {%if (extraclass) { %}{%=extraclass%}{% } %}" role="group">
+		{% var namespace = 'rb-' + Math.floor(Math.random() * 100); %}
+	
+		{% for ( var i = 0; i < options.length; i++ ) { %}
+
+		<input name="{%=key%}" class="btn-check" type="radio" value="{%=options[i].value%}" id="{%=namespace%}{%=key%}{%=i%}" {%if (options[i].checked) { %}checked="{%=options[i].checked%}"{% } %} autocomplete="off">
+		<label class="btn btn-outline-secondary {%if (options[i].extraclass) { %}{%=options[i].extraclass%}{% } %}" for="{%=namespace%}{%=key%}{%=i%}" title="{%=options[i].title%}">
+		  {%if (options[i].icon) { %}<i class="{%=options[i].icon%}"></i>{% } %}
+		  {%=options[i].text%}
+		</label>
+
+		{% } %}
+				
+	</div>
+	
+</script>
+
+<script id="vvveb-input-toggle" type="text/html">
+
+    <div class="form-check form-switch {% if (typeof className !== 'undefined') { %} {%=className%}{% } %}">
+        <input 
+		type="checkbox" 
+		name="{%=key%}" 
+		value="{% if (typeof on !== 'undefined') { %}{%=on%}{% } else { %}true{% } %}" 
+		{% if (typeof off !== 'undefined' && off !== null) { %} data-value-off="{%=off%}" {% } else { %} data-value-off="false" {% } %}
+		{% if (typeof on !== 'undefined' && on !== null) { %} data-value-on="{%=on%}" {% } else { %} data-value-on="true" {% } %} 
+		class="form-check-input" type="checkbox" role="switch"
+		id="{%=key%}">
+        <label class="form-check-label" for="{%=key%}">
+        </label>
+    </div>
+	
+</script>
+
+<script id="vvveb-input-header" type="text/html">
+
+		<h6 class="header">{%=header%}</h6>
+	
+</script>
+
+<script id="vvveb-input-dateinput" type="text/html">
+
+	<div>
+		<input name="{%=key%}" type="date" class="form-control" 
+			{% if (typeof min_date === 'undefined') { %} min="{%=min_date%}" {% } %} {% if (typeof max_date === 'undefined') { %} max="{%=max_date%}" {% } %}
+		/>
+	</div>
+	
+</script>

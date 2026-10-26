@@ -1,0 +1,229 @@
+/* =========================================================================
+   SEO Score & Real-Time Checklist Component
+   ========================================================================= */
+
+.align-seo-score-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    margin: 8px 12px 14px;
+    overflow: hidden;
+    transition: border-color 0.2s ease;
+}
+
+.align-seo-score-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.align-seo-score-badge {
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.align-seo-score-badge.good {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.align-seo-score-badge.fair {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.align-seo-score-badge.poor {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.align-seo-score-badge .score-total {
+    font-size: 10px;
+    opacity: 0.7;
+}
+
+.align-seo-score-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.align-seo-score-info .score-status {
+    font-size: 11px;
+    font-weight: 600;
+    color: #cbd5e1;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.score-progress-bar {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.score-progress-fill {
+    height: 100%;
+    transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.score-progress-fill.good {
+    background: #10b981;
+}
+
+.score-progress-fill.fair {
+    background: #f59e0b;
+}
+
+.score-progress-fill.poor {
+    background: #ef4444;
+}
+
+.align-seo-checklist-toggle {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 2px 4px;
+    transition: transform 0.2s ease, color 0.15s ease;
+}
+
+.align-seo-checklist-toggle:hover {
+    color: #cbd5e1;
+}
+
+.align-seo-score-card.open .align-seo-checklist-toggle {
+    transform: rotate(180deg);
+}
+
+.align-seo-checklist {
+    padding: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* RankMath Group Accordions */
+.align-seo-group {
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.02);
+    overflow: hidden;
+}
+
+.align-seo-group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 9px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.03);
+    user-select: none;
+    transition: background 0.15s ease;
+}
+
+.align-seo-group-header:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.align-seo-group-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #e2e8f0;
+}
+
+.align-seo-group-arrow {
+    font-size: 10px;
+    color: #64748b;
+    transition: transform 0.2s ease;
+}
+
+.align-seo-group:not(.open) .align-seo-group-arrow {
+    transform: rotate(-90deg);
+}
+
+.align-seo-group-badge {
+    font-size: 9px;
+    font-weight: 600;
+    padding: 1.5px 6px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.align-seo-group-badge.error {
+    background: rgba(239, 68, 68, 0.18);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+.align-seo-group-badge.pass {
+    background: rgba(16, 185, 129, 0.18);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.align-seo-group-items {
+    padding: 8px 9px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.align-seo-group:not(.open) .align-seo-group-items {
+    display: none;
+}
+
+.align-seo-check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    font-size: 10.5px;
+    line-height: 1.4;
+}
+
+.align-seo-check-item i {
+    font-size: 13px;
+    margin-top: 1px;
+    flex-shrink: 0;
+}
+
+.align-seo-check-item.passed {
+    color: #cbd5e1;
+}
+
+.align-seo-check-item.passed i {
+    color: #34d399;
+}
+
+.align-seo-check-item.failed {
+    color: #94a3b8;
+}
+
+.align-seo-check-item.failed i {
+    color: #f87171;
+}
+
+.align-seo-check-item .check-text {
+    flex: 1;
+}

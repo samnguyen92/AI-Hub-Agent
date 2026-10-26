@@ -1,0 +1,173 @@
+<!-- Align Builder - Media, Colors & Unit Input Templates -->
+
+<script id="vvveb-input-rangeinput" type="text/html">
+
+	<div class="input-range">
+		
+		<input name="{%=key%}" type="range" min="{%=min%}" max="{%=max%}" step="{%=step%}" class="form-range" data-input-value/>
+		<input name="{%=key%}" type="number" min="{%=min%}" max="{%=max%}" step="{%=step%}" class="form-control" data-input-value/>
+	</div>
+	
+</script>
+
+<script id="vvveb-input-imageinput" type="text/html">
+
+	<div>
+		<input name="{%=key%}" type="text" class="form-control"/>
+		<input name="file" type="file" class="form-control"/>
+	</div>
+	
+</script>
+
+<script id="vvveb-input-imageinput-gallery" type="text/html">
+
+	<div class="vvveb-media-input-wrapper position-relative">
+		<div class="img-preview-container" style="width: 100%; height: 140px; border-radius: 6px; border: 1px dashed #4a5568; overflow: hidden; background: #1a202c; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;">
+			<img id="thumb-{%=key%}" class="img-thumbnail p-0 border-0" data-target-input="#input-{%=key%}" data-target-thumb="#thumb-{%=key%}" style="cursor:pointer; max-width: 100%; max-height: 100%; object-fit: contain; background: transparent;" src="" width="140" height="140">
+		</div>
+
+		<!-- Unlocked State: Manual URL Input -->
+		<div class="media-unlocked-container" {% if (typeof is_locked !== 'undefined' && is_locked) { %} style="display:none;" {% } %}>
+			<input name="{%=key%}" type="text" class="form-control mt-1 media-url-input" id="input-{%=key%}"/>
+		</div>
+
+		<!-- Locked State: Media ID Badge, Title & Disconnect button -->
+		<div class="media-locked-container mt-1" {% if (typeof is_locked === 'undefined' || !is_locked) { %} style="display:none;" {% } %}>
+			<div class="media-locked-card d-flex align-items-center justify-content-between">
+				<div class="d-flex align-items-center gap-1 min-w-0 flex-grow-1 text-truncate me-1">
+					<span class="badge media-locked-id-badge flex-shrink-0" title="Media ID">#<span class="locked-id-value">{% if (typeof mediaId !== 'undefined') { %}{%=mediaId%}{% } %}</span></span>
+					<span class="fw-medium text-truncate locked-media-title" title="{% if (typeof mediaTitle !== 'undefined') { %}{%=mediaTitle%}{% } %}">{% if (typeof mediaTitle !== 'undefined') { %}{%=mediaTitle%}{% } %}</span>
+				</div>
+				<button type="button" class="btn btn-link btn-media-disconnect p-0 flex-shrink-0" title="Disconnect media" aria-label="Disconnect">
+					<i class="la la-unlink"></i>
+				</button>
+			</div>
+		</div>
+
+		<button type="button" name="button" class="btn btn-outline-primary btn-sm btn-icon mt-2 w-100 btn-set-media" data-target-input="#input-{%=key%}" data-target-thumb="#thumb-{%=key%}"><i class="la la-image la-lg me-1"></i><span>Set image</span></button>
+	</div>
+	
+</script>
+
+<script id="vvveb-input-svginput-gallery" type="text/html">
+
+	<div>
+		<div class="svg-preview-container" style="width: 100%; height: 140px; border-radius: 6px; border: 1px dashed #4a5568; overflow: hidden; background: #1a202c; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;">
+			<svg id="thumb-{%=key%}" class="img-thumbnail p-0 border-0" data-target-input="#input-{%=key%}" data-target-thumb="#thumb-{%=key%}" style="cursor:pointer; max-width: 100%; max-height: 100%;" src="" width="140" height="140"></svg>
+		</div>
+		<input name="{%=key%}" type="text" class="form-control mt-1 d-none" id="input-{%=key%}"/>
+		<button name="button" class="btn btn-outline-primary btn-sm btn-icon mt-2 w-100" data-target-input="#input-{%=key%}" data-target-thumb="#thumb-{%=key%}"><i class="la la-image la-lg me-1"></i><span>Set image</span></button>
+	</div>
+	
+</script>
+
+<script id="vvveb-input-videoinput-gallery" type="text/html">
+
+	<div class="vvveb-media-input-wrapper position-relative">
+		<div class="video-preview-container" style="width: 100%; height: 140px; border-radius: 6px; border: 1px dashed #4a5568; overflow: hidden; background: #1a202c; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;">
+			<video id="thumb-v{%=key%}" class="img-thumbnail p-0 border-0" data-target-input="#input-v{%=key%}" data-target-thumb="#thumb-v{%=key%}" style="cursor:pointer; max-width: 100%; max-height: 100%; object-fit: contain; background: transparent;" src="" playsinline loop muted controls></video>
+		</div>
+
+		<!-- Unlocked State: Manual URL Input -->
+		<div class="media-unlocked-container" {% if (typeof is_locked !== 'undefined' && is_locked) { %} style="display:none;" {% } %}>
+			<input name="v{%=key%}" type="text" class="form-control mt-1 media-url-input" id="input-v{%=key%}"/>
+		</div>
+
+		<!-- Locked State: Media ID Badge, Title & Disconnect button -->
+		<div class="media-locked-container mt-1" {% if (typeof is_locked === 'undefined' || !is_locked) { %} style="display:none;" {% } %}>
+			<div class="media-locked-card d-flex align-items-center justify-content-between">
+				<div class="d-flex align-items-center gap-1 min-w-0 flex-grow-1 text-truncate me-1">
+					<span class="badge media-locked-id-badge flex-shrink-0" title="Media ID">#<span class="locked-id-value">{% if (typeof mediaId !== 'undefined') { %}{%=mediaId%}{% } %}</span></span>
+					<span class="fw-medium text-truncate locked-media-title" title="{% if (typeof mediaTitle !== 'undefined') { %}{%=mediaTitle%}{% } %}">{% if (typeof mediaTitle !== 'undefined') { %}{%=mediaTitle%}{% } %}</span>
+				</div>
+				<button type="button" class="btn btn-link btn-media-disconnect p-0 flex-shrink-0" title="Disconnect media" aria-label="Disconnect">
+					<i class="la la-unlink"></i>
+				</button>
+			</div>
+		</div>
+
+		<button type="button" name="button" class="btn btn-secondary btn-sm btn-icon mt-2 w-100 btn-set-media" data-target-input="#input-v{%=key%}" data-target-thumb="#thumb-v{%=key%}"><i class="la la-video la-lg me-1"></i><span>Set video</span></button>
+	</div>
+	
+</script>
+
+<script id="vvveb-input-colorinput-native" type="text/html">
+
+	<div>
+		<input name="{%=key%}" {%  if (typeof palette !== 'undefined') { %} list="{%=key%}-color-palette" {% } %} type="color" {% if (typeof value !== 'undefined' && value != false) { %} value="{%=value%}" {% } %}  pattern="#[a-f0-9]{6}" class="form-control form-control-color" placeholder="#000000"/>
+		{%  if (typeof palette !== 'undefined') { %}
+		<datalist id="{%=key%}-color-palette">
+			{% for (const color in palette) { %}
+				<option>{%=palette[color]%}</option>
+			{% } %}		
+		{% } %}
+	</div>
+	
+</script>
+
+<script id="vvveb-input-colorinput" type="text/html">
+
+	<div class="clr-field" style="{% if (typeof value !== 'undefined' && value != false) { %}color: {%=value%}" {% } %}">
+		<button type="button" aria-labelledby="clr-open-label"></button>
+		<input name="{%=key%}" type="text" {% if (typeof value !== 'undefined' && value != false) { %} value="{%=value%}" {% } %} class="coloris form-control"/>		
+	</div>
+	
+</script>
+
+<script id="vvveb-input-bootstrap-color-picker-input" type="text/html">
+
+	<div>
+		<div id="cp2" class="input-group" title="Using input value">
+		  <input name="{%=key%}" type="text" {% if (typeof value !== 'undefined' && value != false) { %} value="{%=value%}" {% } %}	 class="form-control"/>
+		  <span class="input-group-append">
+			<span class="input-group-text colorpicker-input-addon"><i></i></span>
+		  </span>
+		</div>
+	</div>
+	
+</script>
+
+<script id="vvveb-input-numberinput" type="text/html">
+	<div>
+		<input name="{%=key%}" type="number" value="{%=value%}" 
+			  {% if (typeof min !== 'undefined' && min != false) { %}min="{%=min%}"{% } %} 
+			  {% if (typeof max !== 'undefined' && max != false) { %}max="{%=max%}"{% } %} 
+			  {% if (typeof step !== 'undefined' && step != false) { %}step="{%=step%}"{% } %} 
+		class="form-control"/>
+	</div>
+</script>
+
+<script id="vvveb-input-button" type="text/html">
+	<div>
+		<button class="btn btn-sm btn-icon {% if (typeof className !== 'undefined') { %} {%=className%} {% } else { %}btn-outline-primary{% } %}">
+			<i class="la  {% if (typeof icon !== 'undefined') { %} {%=icon%} {% } else { %} la-plus {% } %} la-lg"></i> {%=text%}
+		</button>
+	</div>		
+</script>
+
+<script id="vvveb-input-cssunitinput" type="text/html">
+	<div class="input-group css-unit" id="cssunit-{%=key%}">
+		<input name="number" type="number"  {% if (typeof value !== 'undefined' && value != false) { %} value="{%=value%}" {% } %} 
+			  {% if (typeof min !== 'undefined' && min != false) { %}min="{%=min%}"{% } %} 
+			  {% if (typeof max !== 'undefined' && max != false) { %}max="{%=max%}"{% } %} 
+			  {% if (typeof step !== 'undefined' && step != false) { %}step="{%=step%}"{% } %} 
+		class="form-control"/>
+		<select class="form-select small-arrow" name="unit">
+			<option value="em">em</option>
+			<option value="rem">rem</option>
+			<option value="px">px</option>
+			<option value="%">%</option>
+			<option value="vw">vw</option>
+			<option value="vh">vh</option>
+			<option value="ex">ex</option>
+			<option value="ch">ch</option>
+			<option value="cm">cm</option>
+			<option value="mm">mm</option>
+			<option value="in">in</option>
+			<option value="pt">pt</option>
+			<option value="auto">auto</option>
+			<option value="">-</option>
+		</select>
+	</div>
+	
+</script>

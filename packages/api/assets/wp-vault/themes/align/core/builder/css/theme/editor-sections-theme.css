@@ -1,0 +1,277 @@
+/**
+ * Align Theme Builder CSS - Section Presets & Block Components Theme
+ * @package Align
+ */
+
+.components .drag-elements-sidepane li[data-type] a,
+.components .drag-elements-sidepane li[data-type] span {
+  min-height: 20px;
+  white-space: break-spaces;
+  display: block;
+  line-height: 1.2;
+}
+
+html[data-bs-theme="dark"] .components .drag-elements-sidepane li[data-type][data-drag-type="component"] {
+  border-color: var(--bs-border-color);
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+
+html[data-bs-theme="dark"] .components .drag-elements-sidepane li[data-type][data-drag-type="component"] a {
+  color: var(--bs-body-color);
+}
+
+.components .drag-elements-sidepane li[data-type]:hover {
+  box-shadow: 0px 0px 1px 0px var(--bs-primary);
+  background-color: rgba(var(--bs-primary-rgb), 0.05) !important;
+  border-color: rgba(var(--bs-primary-rgb), 0.5) !important;
+}
+
+.components .drag-elements-sidepane li[data-type]:hover a {
+  color: var(--bs-primary);
+}
+
+.header-arrow {
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  position: absolute;
+  right: 15px;
+  top: 0.5rem;
+  transition: transform 0.2s ease;
+}
+
+label.header {
+  font-size: 11px;
+  font-weight: 600;
+  height: auto;
+  margin: 0;
+  width: 100%;
+  line-height: 30px;
+  text-align: left;
+  padding: 0.3rem 0.8rem;
+  border-top: 1px solid var(--bs-border-color);
+  color: var(--bs-body-color);
+  cursor: pointer;
+  position: relative;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.component-properties .tab-pane div:first-child>label.header {
+  margin-top: 0rem !important;
+  border-top: none;
+}
+
+label.header :checked {
+  color: red;
+}
+
+input.header_check {
+  position: absolute;
+  left: 0;
+  margin-left: 0;
+  opacity: 0;
+  z-index: 2;
+  cursor: pointer;
+  height: 1em;
+  width: 1em;
+  top: 0;
+}
+
+input.header_check:checked+div.section,
+li.header>input.header_check:checked+ol {
+  opacity: 1;
+  padding: 0 1rem;
+  height: auto;
+}
+
+div.section,
+.header>ol {
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: height, opacity 0.5s;
+}
+
+#right-panel label.header .header-arrow {
+  right: 0px;
+}
+
+.toggle {
+  position: relative;
+  width: 65px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.toggle-checkbox {
+  display: none;
+}
+
+.toggle-label {
+  display: block;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid var(--bs-body-bg);
+  border-radius: 30px;
+}
+
+.toggle-inner {
+  display: block;
+  width: 200%;
+  margin-left: -100%;
+  transition: margin 0.3s ease-in 0s;
+}
+
+.toggle-inner:before,
+.toggle-inner:after {
+  display: block;
+  float: left;
+  width: 50%;
+  height: 20px;
+  padding: 0;
+  line-height: 20px;
+  font-size: 12px;
+  color: white;
+  font-family: Trebuchet, Arial, sans-serif;
+  font-weight: bold;
+  box-sizing: border-box;
+}
+
+.toggle-inner:before {
+  content: "ON";
+  padding-left: 14px;
+  background-color: var(--bs-link-color);
+}
+
+.toggle-inner:after {
+  content: "OFF";
+  padding-right: 14px;
+  background-color: #999999;
+  color: var(--bs-body-color);
+  text-align: right;
+}
+
+.toggle-switch {
+  display: block;
+  width: 18px;
+  margin: 4px;
+  background: var(--bs-body-bg);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 39px;
+  border: 2px solid var(--bs-body-bg);
+  border-radius: 30px;
+  transition: all 0.3s ease-in 0s;
+}
+
+.toggle-checkbox:checked+.toggle-label .toggle-inner {
+  margin-left: 0;
+}
+
+.toggle-checkbox:checked+.toggle-label .toggle-switch {
+  right: 0px;
+}
+
+.form-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  box-shadow: rgba(var(--bs-body-color-rgb), 0.05) 0px 1px 2px 0px;
+}
+
+/*
+input[type="number"] {
+	-moz-appearance: textfield;
+	-webkit-appearance: textfield;
+	appearance: textfield;
+	padding-right: 0.5rem;
+	padding-left: 0.5rem;
+}
+
+input[type="number"]:hover,
+input[type="number"]:focus {
+	-moz-appearance: auto;
+	-webkit-appearance: auto;
+	appearance: auto;
+}
+*/
+.form-select.small-arrow {
+  background-position: right .5rem center;
+  background-size: 10px 8px;
+}
+
+.input-group.css-unit input[type="number"] {
+  flex-grow: 5;
+}
+
+.input-group.css-unit .form-select.small-arrow {
+  padding-left: 0.5rem;
+  padding-right: 1.2em;
+  min-width: 3rem;
+}
+
+.input-group.auto input[type="number"] {
+  display: none;
+}
+
+.input-group.auto .input-group-append {
+  width: 100%;
+}
+
+.input-group.auto .input-group-append .form-select.small-arrow {
+  max-width: 100%;
+}
+
+.btn-group.btn-group-fullwidth {
+  display: flex;
+  width: 100%;
+}
+
+.btn-group.btn-group-fullwidth .btn {
+  flex: 1 1 auto;
+  align-content: center;
+}
+
+.btn-group-sm>.btn {
+  font-size: 12px;
+}
+
+.btn-group .btn.btn-gray.active {
+  background-color: var(--bs-border-color);
+}
+
+.form-control::placeholder {
+  opacity: 0.7;
+}
+
+.form-control {
+  font-size: inherit;
+}
+
+.btn-link:hover {
+  text-decoration: none;
+}
+
+/* autocomplete */
+input.autocomplete-loading {
+  background-image: url(../../libs/autocomplete/autocomplete.gif);
+  background-position: center right;
+  background-repeat: no-repeat;
+}
+
+ul.autocomplete {
+  position: absolute;
+  overflow: hidden;
+  background-color: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
+  border-top: none;
+  margin-top: -1px;
+  margin: 0px;
+  padding: 0px;
+  list-style: none;
+  color: #000;
+  display: none;
+  z-index: 1000;
+}

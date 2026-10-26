@@ -1,0 +1,21 @@
+{
+    "apiVersion": 3,
+    "name": "align/slide",
+    "title": "Slide",
+    "icon": "columns",
+    "category": "align-category",
+    "parent": ["align/query-builder", "align/marquee"],
+    "description": "A single slide for the Splide Slider.",
+    "textdomain": "align-function",
+    "attributes": {
+        "className": {
+            "type": "string",
+            "default": ""
+        }
+    },
+    "supports": {
+        "html": false,
+        "customClassName": false
+    },
+    "editorScript": "align-swiper-slider-editor"
+}
