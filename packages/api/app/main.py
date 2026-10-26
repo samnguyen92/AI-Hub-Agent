@@ -49,14 +49,18 @@ import app.tools.wp_tools  # noqa: F401 - register wordpress agent tools
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan manager initializing db schema on startup."""
     from app.services.agent_loader import agent_loader
-    if len(settings.auth_secret_key) < 32 or settings.auth_secret_key.startswith("replace"):
-        raise RuntimeError("AUTH_SECRET_KEY must be configured with at least 32 characters.")
     hosted = bool(os.getenv("VERCEL") or os.getenv("VERCEL_API_PREFIX"))
+    if len(settings.auth_secret_key) < 32 or settings.auth_secret_key.startswith("replace"):
+        if not hosted:
+            import secrets
+            settings.auth_secret_key = secrets.token_urlsafe(32)
+        else:
+            raise RuntimeError("AUTH_SECRET_KEY must be configured with at least 32 characters.")
     if hosted:
         _validate_hosted_configuration()
     agent_loader.validate_agents()
 
-    if not hosted and settings.environment.lower() in ("development", "dev", "test"):
+    if not hosted:
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
     async with async_session_maker() as db:
