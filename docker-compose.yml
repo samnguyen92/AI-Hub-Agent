@@ -37,6 +37,7 @@ services:
       - ./agents:/app/agents
       - ./skills:/app/skills
       - workspace_data:/workspaces
+      - /var/run/docker.sock:/var/run/docker.sock
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 10s
@@ -64,6 +65,7 @@ services:
       - ./agents:/app/agents
       - ./skills:/app/skills
       - workspace_data:/workspaces
+      - /var/run/docker.sock:/var/run/docker.sock
 
   web:
     build:
@@ -102,6 +104,24 @@ services:
       timeout: 5s
       retries: 3
 
+  mariadb:
+    image: mariadb:10.11
+    container_name: hub_ai_mariadb
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-wp_secure_pass}
+      MARIADB_DATABASE: wp_default
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
 volumes:
   postgres_data:
   workspace_data:
+  mariadb_data:

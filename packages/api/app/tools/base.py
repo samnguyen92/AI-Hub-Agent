@@ -166,6 +166,25 @@ class ToolRegistry:
                 "list_notes",
                 "learn_rule",
             ],
+            "wordpress-builder": [
+                "wp_create_environment",
+                "wp_import_html_package",
+                "wp_tune_seo_and_meta",
+                "wp_edit_content",
+                "wp_patch_template",
+                "wp_generate_aiowp_backup",
+                "list_library",
+                "read_item",
+                "save_artifact",
+                "read_file",
+                "write_file",
+                "list_files",
+                "load_skill",
+                "request_input",
+                "propose_note",
+                "list_notes",
+                "learn_rule",
+            ],
         }
 
     def register(self, tool: BaseTool) -> None:

@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     build-essential \
     libpq-dev \
+    docker.io \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .

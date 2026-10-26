@@ -1,0 +1,28 @@
+key: wordpress-builder
+name: WordPress Builder Agent
+description: "Chuyên gia quản lý và tự động hóa website WordPress: khởi tạo container, nạp theme Align & plugins, import HTML ZIP, tinh chỉnh SEO/nội dung, và xuất backup All-in-One WP Migration."
+model: openai/gpt-6-luna
+rules_path: agents/wordpress-builder/rules.md
+skills:
+  - shared/align-style
+tools:
+  - wp_create_environment
+  - wp_import_html_package
+  - wp_tune_seo_and_meta
+  - wp_edit_content
+  - wp_patch_template
+  - wp_generate_aiowp_backup
+  - list_library
+  - read_item
+  - save_artifact
+  - read_file
+  - write_file
+  - list_files
+  - load_skill
+  - request_input
+  - propose_note
+  - list_notes
+  - learn_rule
+config:
+  max_steps: 15
+  max_cost_usd: 1.0

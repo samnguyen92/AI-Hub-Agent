@@ -42,6 +42,12 @@ DEFAULT_AGENTS = [
         "config": {"max_steps": 15, "max_cost_usd": 1.0},
     },
     {
+        "key": "wordpress-builder",
+        "model": "openai/gpt-6-luna",
+        "rules_path": "agents/wordpress-builder/rules.md",
+        "config": {"max_steps": 15, "max_cost_usd": 1.0},
+    },
+    {
         "key": "router",
         "model": "openai/gpt-6-luna",
         "rules_path": "agents/router/rules.md",

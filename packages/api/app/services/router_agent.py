@@ -15,6 +15,7 @@ DANH MỤC AGENTS:
 5. 'seo-auditor': Chuyên kiểm định SEO, phân tích file Search Console/GA4, rà soát noindex, canonical, nội dung mỏng.
 6. 'quality-auditor': Chuyên kiểm tra độc lập chất lượng giao diện, accessibility, responsive và tuân thủ tiêu chuẩn.
 7. 'image-generator': Tạo ảnh, minh họa, logo, poster hoặc hình sản phẩm theo brief người dùng.
+8. 'wordpress-builder': Chuyên khởi tạo container WordPress, cài theme Align & plugins, import HTML ZIP, tinh chỉnh SEO/nội dung, và xuất backup All-in-One WP Migration.
 
 QUY TẮC:
 - Nếu yêu cầu là trò chuyện, chào hỏi, tư vấn chung, giải thích -> luôn giao cho 'assistant' với confidence 1.0.
@@ -26,7 +27,16 @@ ROUTER_SCHEMA = {
     "properties": {
         "agent": {
             "type": "string",
-            "enum": ["assistant", "design", "code-builder", "site-analyzer", "seo-auditor", "quality-auditor", "image-generator"],
+            "enum": [
+                "assistant",
+                "design",
+                "code-builder",
+                "site-analyzer",
+                "seo-auditor",
+                "quality-auditor",
+                "image-generator",
+                "wordpress-builder",
+            ],
         },
         "skill_hint": {"type": "string"},
         "confidence": {"type": "number", "minimum": 0.0, "maximum": 1.0},
@@ -61,6 +71,7 @@ class RouterAgent:
             (("@seo", "@seo-auditor"), "seo-auditor", "gsc-audit"),
             (("@quality", "@quality-auditor"), "quality-auditor", None),
             (("@image-generator",), "image-generator", None),
+            (("@wp", "@wordpress", "@wordpress-builder"), "wordpress-builder", None),
         ]
         for tags, agent, skill in routes:
             if any(tag in prompt for tag in tags):
@@ -144,6 +155,13 @@ class RouterAgent:
                 agent="quality-auditor",
                 confidence=0.91,
                 reason="Yêu cầu kiểm định chất lượng và khả năng truy cập",
+            )
+
+        if any(w in prompt for w in ["wordpress", "wp", "wpress", "all-in-one", "ai1wm", "dựng wordpress", "tạo wordpress", "backup wordpress", "import html"]):
+            return RouterDecision(
+                agent="wordpress-builder",
+                confidence=0.96,
+                reason="Yêu cầu quản lý hoặc vận hành website WordPress",
             )
 
         return RouterDecision(

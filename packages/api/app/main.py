@@ -24,6 +24,7 @@ from app.db.seed import seed_agents
 from app.db.session import Base, async_session_maker, engine
 import app.db.models  # noqa: F401 - register all tables to Base.metadata
 import app.db.reference_models  # noqa: F401 - register design reference table
+import app.db.wp_models  # noqa: F401 - register wordpress sites table
 import app.tools.library_tools  # noqa: F401 - register library tools
 import app.tools.file_tools  # noqa: F401 - register file tools
 import app.tools.render_tools  # noqa: F401 - register render tools
@@ -41,6 +42,7 @@ import app.tools.design_package_tools  # noqa: F401 - register design packaging 
 import app.tools.vision_tools  # noqa: F401 - register optional screenshot vision tool
 import app.tools.quality_review_tools  # noqa: F401 - register quality delegation tool
 import app.tools.chat_attachment_tools  # noqa: F401 - register chat attachment analysis tool
+import app.tools.wp_tools  # noqa: F401 - register wordpress agent tools
 
 
 @asynccontextmanager
