@@ -149,6 +149,7 @@ function ChatInner() {
 
   const agentBadges = [
     { tag: '@assistant', color: '#818CF8', desc: t('badge.assistant') },
+    { tag: '@wordpress-builder', color: '#06B6D4', desc: t('badge.wordpress_builder') },
     { tag: '@design', color: '#EC4899', desc: t('badge.design') },
     { tag: '@code-builder', color: '#10B981', desc: t('badge.code_builder') },
     { tag: '@site-analyzer', color: '#3B82F6', desc: t('badge.site_analyzer') },

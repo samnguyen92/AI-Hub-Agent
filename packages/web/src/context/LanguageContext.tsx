@@ -44,6 +44,7 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Badges
     'badge.assistant': 'Trợ lý Hội thoại',
+    'badge.wordpress_builder': 'Khởi tạo WordPress & Theme',
     'badge.design': 'Thiết kế Mockup & Ảnh',
     'badge.code_builder': 'Lập trình Code',
     'badge.site_analyzer': 'Phân tích Website',
@@ -138,6 +139,7 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Badges
     'badge.assistant': 'Chat Assistant',
+    'badge.wordpress_builder': 'WordPress Builder',
     'badge.design': 'Design & Images',
     'badge.code_builder': 'Code Builder',
     'badge.site_analyzer': 'Site Analyzer',
