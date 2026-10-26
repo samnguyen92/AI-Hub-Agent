@@ -61,10 +61,19 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     agent_loader.validate_agents()
 
     if not hosted:
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-    async with async_session_maker() as db:
-        await seed_agents(db)
+        import asyncio
+        for attempt in range(5):
+            try:
+                async with engine.begin() as conn:
+                    await conn.run_sync(Base.metadata.create_all)
+                async with async_session_maker() as db:
+                    await seed_agents(db)
+                break
+            except Exception as exc:
+                if attempt == 4:
+                    print(f"ERROR: Database initialization failed: {exc}", flush=True)
+                    raise
+                await asyncio.sleep(2)
     yield
     await engine.dispose()
 

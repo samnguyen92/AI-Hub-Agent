@@ -91,4 +91,7 @@ async def seed_agents(db: AsyncSession) -> None:
             existing.rules_path = rules_path
             if not existing.config:
                 existing.config = config
-    await db.commit()
+    try:
+        await db.commit()
+    except Exception:
+        await db.rollback()
