@@ -106,6 +106,15 @@ class RouterAgent:
         if has_image and image_edit and not has_html:
             return RouterDecision(agent="image-generator", confidence=0.97, reason="Chỉnh sửa ảnh đã có trong cuộc trò chuyện")
 
+        has_wp = any(term in history_text for term in ["wordpress", "wp", "theme align", "align-child", "wpress", "môi trường wordpress"])
+        continue_wp = any(term in prompt for term in ["tiến hành", "bắt đầu", "tạo đi", "làm đi", "triển khai", "đồng ý", "okay", "ok", "tiếp tục", "làm cho tôi"])
+        if has_wp and continue_wp:
+            return RouterDecision(
+                agent="wordpress-builder",
+                confidence=0.96,
+                reason="Tiếp tục triển khai môi trường WordPress theo ngữ cảnh hội thoại",
+            )
+
         continue_terms = ["tiếp tục", "chỉnh tiếp", "sửa trang", "hoàn thiện", "gửi file", "đổi màu"]
         if has_html and any(term in prompt for term in continue_terms):
             return RouterDecision(agent="code-builder", skill_hint="align-style", confidence=0.94, reason="Tiếp tục chỉnh sửa website trong ngữ cảnh cuộc trò chuyện")

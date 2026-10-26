@@ -68,6 +68,12 @@ async def test_router_agent_wordpress_builder_routing():
     dec_backup = await router_agent.classify("Site này đẹp rồi, hãy backup wordpress ra file all-in-one cho tôi")
     assert dec_backup.agent == "wordpress-builder"
 
+    dec_context = await router_agent.classify(
+        "okay tiến hành cho tôi",
+        recent_history=[{"role": "assistant", "content": "Bạn muốn tạo môi trường WordPress chứ?"}],
+    )
+    assert dec_context.agent == "wordpress-builder"
+
 
 def test_tool_registry_wordpress_builder():
     """Verify that all WordPress tools are properly registered and allowed."""
