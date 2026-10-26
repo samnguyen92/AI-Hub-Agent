@@ -25,24 +25,9 @@ from app.db.session import Base, async_session_maker, engine
 import app.db.models  # noqa: F401 - register all tables to Base.metadata
 import app.db.reference_models  # noqa: F401 - register design reference table
 import app.db.wp_models  # noqa: F401 - register wordpress sites table
-import app.tools.library_tools  # noqa: F401 - register library tools
-import app.tools.file_tools  # noqa: F401 - register file tools
-import app.tools.render_tools  # noqa: F401 - register render tools
-import app.tools.image_tools  # noqa: F401 - register image generation tools
-import app.tools.skill_tools  # noqa: F401 - register skill tools
-import app.tools.web_tools  # noqa: F401 - register web tools
-import app.tools.seo_tools  # noqa: F401 - register seo tools
-import app.tools.design_tools  # noqa: F401 - register design & a11y tools
-import app.tools.gate_tools  # noqa: F401 - register gate tools
-import app.tools.report_tools  # noqa: F401 - register report tools
-import app.tools.memory_tools  # noqa: F401 - register memory tools
-import app.tools.reference_tools  # noqa: F401 - register design reference tool
-import app.tools.reference_proposal_tools  # noqa: F401 - register reference selection tool
-import app.tools.design_package_tools  # noqa: F401 - register design packaging tool
-import app.tools.vision_tools  # noqa: F401 - register optional screenshot vision tool
-import app.tools.quality_review_tools  # noqa: F401 - register quality delegation tool
-import app.tools.chat_attachment_tools  # noqa: F401 - register chat attachment analysis tool
-import app.tools.wp_tools  # noqa: F401 - register wordpress agent tools
+from app.tools import register_all_tools
+
+register_all_tools()
 
 
 @asynccontextmanager

@@ -194,8 +194,16 @@ class ToolRegistry:
         """Register a tool instance."""
         self._tools[tool.name] = tool
 
+    def _ensure_tools_loaded(self) -> None:
+        """Lazily load and register all tool modules if registry is empty."""
+        if not self._tools:
+            from app.tools import register_all_tools
+
+            register_all_tools()
+
     def get(self, name: str) -> Optional[BaseTool]:
         """Retrieve a tool by name."""
+        self._ensure_tools_loaded()
         return self._tools.get(name)
 
     def get_allowed_tool_names(self, agent_key: str) -> List[str]:
@@ -209,6 +217,7 @@ class ToolRegistry:
 
     def get_tools_for_agent(self, agent_key: str) -> List[BaseTool]:
         """Return list of allowed tools for a specific agent."""
+        self._ensure_tools_loaded()
         allowed_names = self.get_allowed_tool_names(agent_key)
         return [self._tools[name] for name in allowed_names if name in self._tools]
 

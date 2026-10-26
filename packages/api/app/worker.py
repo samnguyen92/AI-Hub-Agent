@@ -102,7 +102,10 @@ async def _notify_telegram_if_needed(run_id: str, result: Dict[str, Any], db: As
 
 async def run_worker_loop(poll_interval: float = 1.0) -> None:
     """Continuous polling worker loop with periodic stale run reaping."""
+    from app.tools import register_all_tools
+
     _validate_deployment_config()
+    register_all_tools()
     logger.info("Hub AI Agent Worker started...")
     iteration = 0
     while True:
