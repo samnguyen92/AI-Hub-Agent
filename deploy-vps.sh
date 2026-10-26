@@ -66,7 +66,7 @@ PUBLIC_IP=$(curl -s -4 ifconfig.me || curl -s icanhazip.com || echo "IP_VPS_CỦ
 echo -e "\n${GREEN}======================================================${NC}"
 echo -e "${GREEN}           TRIỂN KHAI HOÀN TẤT THÀNH CÔNG!            ${NC}"
 echo -e "${GREEN}======================================================${NC}"
-echo -e "Truy cập giao diện Hub ngay tại: ${BLUE}http://${PUBLIC_IP}${NC}"
+echo -e "Truy cập giao diện Hub ngay tại: ${BLUE}http://${PUBLIC_IP}:3100${NC} (hoặc ${BLUE}https://hub.align.vn${NC} qua NPM)"
 echo -e "Tài khoản đăng nhập mặc định:"
 echo -e "  - Email:    ${YELLOW}dev@align.vn${NC}"
 echo -e "  - Password: ${YELLOW}admin123456${NC} (hoặc theo mật khẩu trong .env)"
