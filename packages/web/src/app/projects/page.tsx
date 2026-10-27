@@ -2,15 +2,17 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { FolderKanban, Plus, ExternalLink, MessageSquare, Library, Trash2 } from 'lucide-react';
+import { FolderKanban, Plus, ExternalLink, MessageSquare, Library, Trash2, Settings } from 'lucide-react';
 import { createProject, deleteProject, fetchProjects, Project } from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
+import ProjectSettingsModal from '@/components/projects/ProjectSettingsModal';
 
 export default function ProjectsPage() {
   const { t } = useLanguage();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [settingsProject, setSettingsProject] = useState<Project | null>(null);
   const [name, setName] = useState('');
   const [sourceUrl, setSourceUrl] = useState('');
   const [creating, setCreating] = useState(false);
@@ -165,6 +167,27 @@ export default function ProjectsPage() {
                   {t('projects.library')}
                 </Link>
                 <button
+                  onClick={() => setSettingsProject(p)}
+                  title="Cài đặt dự án"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    background: 'rgba(56, 189, 248, 0.1)',
+                    color: '#38bdf8',
+                    border: '1px solid rgba(56, 189, 248, 0.2)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <Settings size={14} />
+                  Cài đặt
+                </button>
+                <button
                   onClick={() => handleDelete(p.id, p.name)}
                   disabled={deletingId === p.id}
                   title={t('projects.delete')}
@@ -188,6 +211,15 @@ export default function ProjectsPage() {
         </div>
       )}
       {errorMessage && projects.length > 0 && <p role="alert" style={{ color: '#f87171', marginTop: '16px' }}>{errorMessage}</p>}
+
+      {/* Project Settings Modal */}
+      {settingsProject && (
+        <ProjectSettingsModal
+          projectId={settingsProject.id}
+          projectName={settingsProject.name}
+          onClose={() => setSettingsProject(null)}
+        />
+      )}
 
       {/* Create Modal */}
       {showModal && (

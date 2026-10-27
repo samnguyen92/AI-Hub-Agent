@@ -29,6 +29,7 @@ class WordPressSite(Base):
     )
     container_name: Mapped[str] = mapped_column(String(100), unique=True, index=True)
     container_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    site_type: Mapped[str] = mapped_column(String(20), default="internal")  # "internal" or "external"
     site_url: Mapped[str] = mapped_column(String(255), default="")
     admin_url: Mapped[str] = mapped_column(String(255), default="")
     admin_user: Mapped[str] = mapped_column(String(50), default="admin")

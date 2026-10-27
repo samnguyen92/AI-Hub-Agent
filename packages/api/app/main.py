@@ -16,6 +16,7 @@ from app.api.library import router as library_router
 from app.api.library_references import router as library_references_router
 from app.api.notes import router as notes_router
 from app.api.projects import router as projects_router
+from app.api.project_settings import router as project_settings_router
 from app.api.router import router as router_api
 from app.api.telegram import router as telegram_router
 from app.api.threads import router as threads_router
@@ -25,6 +26,7 @@ from app.db.session import Base, async_session_maker, engine
 import app.db.models  # noqa: F401 - register all tables to Base.metadata
 import app.db.reference_models  # noqa: F401 - register design reference table
 import app.db.wp_models  # noqa: F401 - register wordpress sites table
+import app.db.member_models  # noqa: F401 - register project members table
 from app.tools import register_all_tools
 
 register_all_tools()
@@ -51,6 +53,11 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
             try:
                 async with engine.begin() as conn:
                     await conn.run_sync(Base.metadata.create_all)
+                    from sqlalchemy import text
+                    try:
+                        await conn.execute(text("ALTER TABLE wordpress_sites ADD COLUMN IF NOT EXISTS site_type VARCHAR(20) DEFAULT 'internal'"))
+                    except Exception:
+                        pass
                 async with async_session_maker() as db:
                     await seed_agents(db)
                 break
@@ -122,6 +129,7 @@ def create_app() -> FastAPI:
     app.include_router(health_router)
     app.include_router(auth_router)
     app.include_router(projects_router)
+    app.include_router(project_settings_router)
     app.include_router(notes_router)
     app.include_router(threads_router)
     app.include_router(library_router)

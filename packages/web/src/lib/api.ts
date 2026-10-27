@@ -239,3 +239,72 @@ export async function fetchProjectNotes(projectId: string = 'global'): Promise<P
   const res = await fetchWithAuth(`${API_BASE}/projects/${projectId}/notes`, { cache: 'no-store' });
   return handleResponse<ProjectNoteItem[]>(res);
 }
+
+export interface ProjectSettingsData {
+  project: { id: string; name: string; created_at: string };
+  wordpress: {
+    connected: boolean;
+    site_type: string;
+    site_url: string;
+    admin_url: string;
+    admin_user: string;
+    status: string;
+    port?: number;
+  };
+  telegram: { is_linked: boolean; telegram_id?: string | null };
+  members: Array<{ id: string; email: string; role: string; status: string; created_at: string }>;
+  progress: {
+    total_runs: number;
+    milestones: Array<{ phase: number; name: string; status: 'completed' | 'pending' }>;
+    recent_runs: Array<{ id: string; agent_key: string; status: string; created_at: string }>;
+  };
+}
+
+export async function fetchProjectSettings(projectId: string): Promise<ProjectSettingsData> {
+  const res = await fetchWithAuth(`${API_BASE}/projects/${projectId}/settings`, { cache: 'no-store' });
+  return handleResponse<ProjectSettingsData>(res);
+}
+
+export async function connectProjectWordPress(
+  projectId: string,
+  data: { site_type: string; site_url: string; admin_user: string; admin_password: string }
+): Promise<{ success: boolean; message: string; site_url?: string }> {
+  const res = await fetchWithAuth(`${API_BASE}/projects/${projectId}/settings/wordpress`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  return handleResponse<{ success: boolean; message: string; site_url?: string }>(res);
+}
+
+export async function addProjectMember(
+  projectId: string,
+  data: { email: string; role: string }
+): Promise<{ success: boolean; member: any }> {
+  const res = await fetchWithAuth(`${API_BASE}/projects/${projectId}/settings/members`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  return handleResponse<{ success: boolean; member: any }>(res);
+}
+
+export async function removeProjectMember(
+  projectId: string,
+  memberId: string
+): Promise<{ success: boolean; message: string }> {
+  const res = await fetchWithAuth(`${API_BASE}/projects/${projectId}/settings/members/${memberId}`, {
+    method: 'DELETE',
+  });
+  return handleResponse<{ success: boolean; message: string }>(res);
+}
+
+export async function generateProjectTelegramCode(
+  projectId: string
+): Promise<{ link_code: string; command: string; instructions: string }> {
+  const res = await fetchWithAuth(`${API_BASE}/projects/${projectId}/settings/telegram/link-code`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  return handleResponse<{ link_code: string; command: string; instructions: string }>(res);
+}
