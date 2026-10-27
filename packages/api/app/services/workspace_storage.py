@@ -29,12 +29,30 @@ class WorkspaceStorage:
         key = settings.supabase_service_role_key
         return {"Authorization": f"Bearer {key}", "apikey": key}
 
+    @staticmethod
+    def _is_not_found(response: httpx.Response) -> bool:
+        """Check if Supabase Storage returned an object not found response."""
+        if response.status_code == 404:
+            return True
+        if response.status_code == 400:
+            try:
+                data = response.json()
+                return (
+                    str(data.get("statusCode")) == "404"
+                    or data.get("error") == "not_found"
+                    or data.get("code") == "NoSuchKey"
+                    or "not found" in str(data.get("message", "")).lower()
+                )
+            except Exception:
+                return False
+        return False
+
     def download(self, project_id: str, target_dir: str) -> bool:
         """Restore a workspace snapshot into its local scratch directory."""
         if not self.enabled:
             return False
         response = httpx.get(self._url(project_id), headers=self._headers(), timeout=60)
-        if response.status_code == 404:
+        if self._is_not_found(response):
             return False
         response.raise_for_status()
         with zipfile.ZipFile(io.BytesIO(response.content)) as archive:
@@ -82,8 +100,9 @@ class WorkspaceStorage:
         if not self.enabled:
             return
         response = httpx.delete(self._url(project_id), headers=self._headers(), timeout=30)
-        if response.status_code not in (200, 204, 404):
-            response.raise_for_status()
+        if response.status_code in (200, 204) or self._is_not_found(response):
+            return
+        response.raise_for_status()
 
 
 workspace_storage = WorkspaceStorage()
