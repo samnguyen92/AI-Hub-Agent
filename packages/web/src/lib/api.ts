@@ -10,10 +10,14 @@ export type {
   LibraryItem, LibrarySummary, Message, Project, ProjectNoteItem, RouterDecision, Thread,
 } from './types';
 
-const API_BASE =
-  typeof window !== 'undefined'
-    ? process.env.NEXT_PUBLIC_API_URL || '/api/backend'
-    : process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const isBrowser = typeof window !== 'undefined';
+const isRemoteHost = isBrowser && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+
+const API_BASE = isBrowser
+  ? (isRemoteHost && (!process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL.includes('localhost'))
+      ? '/api/backend'
+      : (process.env.NEXT_PUBLIC_API_URL || '/api/backend'))
+  : process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 const DEV_SESSION_KEY = 'hub_dev_session_token_v2';
 const DEV_AUTH_ENABLED = process.env.NEXT_PUBLIC_AUTH_MODE === 'dev';
@@ -72,7 +76,14 @@ export async function fetchWithAuth(input: RequestInfo | URL, init: RequestInit 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
     const errorText = await res.text();
-    throw new Error(errorText || `HTTP Error ${res.status}`);
+    let message = errorText;
+    try {
+      const errJson = JSON.parse(errorText);
+      message = errJson.detail || errJson.error || errJson.message || errorText;
+    } catch {
+      // not JSON format
+    }
+    throw new Error(message || `HTTP Error ${res.status}`);
   }
   return res.json();
 }
