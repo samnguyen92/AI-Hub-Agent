@@ -21,6 +21,7 @@ import ChatComposer from '@/components/chat/ChatComposer';
 import { useLanguage } from '@/context/LanguageContext';
 
 function ChatInner() {
+  const { t } = useLanguage();
   const searchParams = useSearchParams();
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
@@ -115,13 +116,13 @@ function ChatInner() {
             setMessages((prev) => [...prev, {
               id: `run-error-${res.run_id}`,
               role: 'assistant',
-              content: '⚠️ Agent gặp lỗi khi xử lý yêu cầu. Hãy thử gửi lại; quản trị viên có thể xem chi tiết trong log của run.',
+              content: t('chat.error_run'),
             }]);
           } else if ((status === 'queued' || status === 'running') && res.thread_id === activeThreadIdRef.current) {
             setMessages((prev) => [...prev, {
               id: `run-timeout-${res.run_id}`,
               role: 'assistant',
-              content: 'Yêu cầu vẫn đang chạy nền. Bạn có thể mở lại cuộc trò chuyện sau để xem kết quả.',
+              content: t('chat.timeout_run'),
             }]);
           }
           await loadThreads(selectedProjectId);
@@ -145,8 +146,6 @@ function ChatInner() {
     }
   };
 
-  const { t } = useLanguage();
-
   const agentBadges = [
     { tag: '@assistant', color: '#818CF8', desc: t('badge.assistant') },
     { tag: '@wordpress-builder', color: '#06B6D4', desc: t('badge.wordpress_builder') },
@@ -154,7 +153,7 @@ function ChatInner() {
     { tag: '@code-builder', color: '#10B981', desc: t('badge.code_builder') },
     { tag: '@site-analyzer', color: '#3B82F6', desc: t('badge.site_analyzer') },
     { tag: '@seo-auditor', color: '#F59E0B', desc: t('badge.seo_auditor') },
-    { tag: '@quality-auditor', color: '#A78BFA' },
+    { tag: '@quality-auditor', color: '#A78BFA', desc: t('badge.quality_auditor') },
   ];
 
   return (

@@ -12,6 +12,10 @@ tools:
   - wp_edit_content
   - wp_patch_template
   - wp_generate_aiowp_backup
+  - wp_check_site
+  - wp_manage_posts
+  - wp_manage_plugins
+  - wp_manage_themes
   - list_library
   - read_item
   - save_artifact

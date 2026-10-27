@@ -20,3 +20,4 @@ def register_all_tools() -> None:
     import app.tools.quality_review_tools  # noqa: F401
     import app.tools.chat_attachment_tools  # noqa: F401
     import app.tools.wp_tools  # noqa: F401
+    import app.tools.wp_manage_tools  # noqa: F401

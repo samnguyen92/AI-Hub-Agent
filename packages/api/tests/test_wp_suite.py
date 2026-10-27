@@ -96,6 +96,10 @@ def test_tool_registry_wordpress_builder():
         "wp_edit_content",
         "wp_patch_template",
         "wp_generate_aiowp_backup",
+        "wp_check_site",
+        "wp_manage_posts",
+        "wp_manage_plugins",
+        "wp_manage_themes",
     ]
     for tool_name in expected_tools:
         tool = tool_registry.get(tool_name)
@@ -105,6 +109,10 @@ def test_tool_registry_wordpress_builder():
     agent_tool_names = [t.name for t in agent_tools]
     for tool_name in expected_tools:
         assert tool_name in agent_tool_names
+
+    assistant_tools = [t.name for t in tool_registry.get_tools_for_agent("assistant")]
+    assert "wp_check_site" in assistant_tools
+    assert "wp_manage_posts" in assistant_tools
 
 
 @pytest.mark.asyncio

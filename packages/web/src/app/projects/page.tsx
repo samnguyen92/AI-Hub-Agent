@@ -168,7 +168,7 @@ export default function ProjectsPage() {
                 </Link>
                 <button
                   onClick={() => setSettingsProject(p)}
-                  title="Cài đặt dự án"
+                  title={t('settings.title')}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -185,7 +185,7 @@ export default function ProjectsPage() {
                   }}
                 >
                   <Settings size={14} />
-                  Cài đặt
+                  {t('projects.settings')}
                 </button>
                 <button
                   onClick={() => handleDelete(p.id, p.name)}
@@ -237,19 +237,19 @@ export default function ProjectsPage() {
           }}
         >
           <div className="glass-panel" style={{ width: '100%', maxWidth: '440px', padding: '28px', background: '#101623' }}>
-            <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '20px' }}>Tạo dự án mới</h2>
+            <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '20px' }}>{t('projects.modal.create_title')}</h2>
             <form onSubmit={handleCreate}>
               <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px', color: 'var(--text-muted)' }}>Tên dự án *</label>
-                <input id="input-project-name" type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="Ví dụ: align.vn landing page" style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border-subtle)', background: 'rgba(255,255,255,0.03)', color: '#fff', fontSize: '14px', outline: 'none' }} />
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px', color: 'var(--text-muted)' }}>{t('projects.modal.name_label')}</label>
+                <input id="input-project-name" type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder={t('projects.modal.name_placeholder')} style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border-subtle)', background: 'rgba(255,255,255,0.03)', color: '#fff', fontSize: '14px', outline: 'none' }} />
               </div>
               <div style={{ marginBottom: '24px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px', color: 'var(--text-muted)' }}>URL tham chiếu (tùy chọn)</label>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px', color: 'var(--text-muted)' }}>{t('projects.modal.url_label')}</label>
                 <input id="input-project-url" type="url" value={sourceUrl} onChange={(e) => setSourceUrl(e.target.value)} placeholder="https://example.com" style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border-subtle)', background: 'rgba(255,255,255,0.03)', color: '#fff', fontSize: '14px', outline: 'none' }} />
               </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                <button type="button" onClick={() => setShowModal(false)} style={{ padding: '8px 16px', borderRadius: '6px', background: 'transparent', border: '1px solid var(--border-subtle)', color: 'var(--text-muted)', cursor: 'pointer' }}>Hủy</button>
-                <button id="btn-submit-project" type="submit" className="btn-primary" disabled={creating}>{creating ? 'Đang tạo...' : 'Tạo dự án'}</button>
+                <button type="button" onClick={() => setShowModal(false)} style={{ padding: '8px 16px', borderRadius: '6px', background: 'transparent', border: '1px solid var(--border-subtle)', color: 'var(--text-muted)', cursor: 'pointer' }}>{t('projects.modal.btn_cancel')}</button>
+                <button id="btn-submit-project" type="submit" className="btn-primary" disabled={creating}>{creating ? t('projects.modal.btn_creating') : t('projects.modal.btn_create')}</button>
               </div>
             </form>
           </div>

@@ -86,12 +86,12 @@ export default function ChatComposer({ busy, enabled, agents, onSend }: ChatComp
       {error && <p role="alert" style={{ color: 'var(--danger)', fontSize: 12, marginBottom: 8 }}>{error}</p>}
       <input ref={picker} type="file" accept={ACCEPTED} multiple hidden onChange={(event) => { if (event.target.files) addFiles(event.target.files); event.target.value = ''; }} />
       <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end' }}>
-        <button type="button" aria-label="Attach image or file" title="Đính kèm ảnh hoặc file" onClick={() => picker.current?.click()} disabled={!enabled || busy} style={{ ...iconButton, width: 46, height: 46, border: '1px solid var(--border-subtle)', borderRadius: 9 }}><Paperclip size={18} /></button>
+        <button type="button" aria-label="Attach image or file" title={t('chat.attach_title')} onClick={() => picker.current?.click()} disabled={!enabled || busy} style={{ ...iconButton, width: 46, height: 46, border: '1px solid var(--border-subtle)', borderRadius: 9 }}><Paperclip size={18} /></button>
         <textarea
           id="input-chat-message" rows={2} value={content}
           onChange={(event) => setContent(event.target.value)}
           onKeyDown={(event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); void submit(); } }}
-          placeholder={`${t('chat.placeholder')} · kéo thả hoặc dán ảnh/file vào đây`}
+          placeholder={`${t('chat.placeholder')} · ${t('chat.drag_hint')}`}
           style={{ flex: 1, minWidth: 0, padding: '12px 14px', borderRadius: 8, background: 'var(--bg-card)', color: '#fff', border: '1px solid var(--border-subtle)', fontSize: 14, resize: 'none' }}
           disabled={!enabled || busy}
         />

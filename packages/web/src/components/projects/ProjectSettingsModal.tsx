@@ -6,6 +6,7 @@ import {
   fetchProjectSettings, connectProjectWordPress, addProjectMember,
   removeProjectMember, generateProjectTelegramCode, ProjectSettingsData
 } from '@/lib/api';
+import { useLanguage } from '@/context/LanguageContext';
 import WordPressTab from './tabs/WordPressTab';
 import TelegramTab from './tabs/TelegramTab';
 import MembersTab from './tabs/MembersTab';
@@ -18,6 +19,7 @@ interface ProjectSettingsModalProps {
 }
 
 export default function ProjectSettingsModal({ projectId, projectName, onClose }: ProjectSettingsModalProps) {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'wordpress' | 'members' | 'progress' | 'telegram'>('wordpress');
   const [data, setData] = useState<ProjectSettingsData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,7 +37,7 @@ export default function ProjectSettingsModal({ projectId, projectName, onClose }
       const res = await fetchProjectSettings(projectId);
       setData(res);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Không thể tải cài đặt dự án.');
+      setError(err instanceof Error ? err.message : t('settings.load_error'));
     } finally {
       setLoading(false);
     }
@@ -56,10 +58,10 @@ export default function ProjectSettingsModal({ projectId, projectName, onClose }
         admin_user: user,
         admin_password: pass,
       });
-      setSuccess(res.message || 'Kết nối WordPress thành công!');
+      setSuccess(res.message || t('settings.wp_success'));
       await loadSettings();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Kết nối thất bại.');
+      setError(err instanceof Error ? err.message : t('settings.wp_fail'));
     } finally {
       setWpConnecting(false);
     }
@@ -70,23 +72,23 @@ export default function ProjectSettingsModal({ projectId, projectName, onClose }
     setError('');
     try {
       await addProjectMember(projectId, { email, role });
-      setSuccess('Đã thêm thành viên vào dự án!');
+      setSuccess(t('settings.member_added'));
       await loadSettings();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Không thể thêm thành viên.');
+      setError(err instanceof Error ? err.message : t('settings.member_add_fail'));
     } finally {
       setMemberAdding(false);
     }
   };
 
   const handleRemoveMember = async (memberId: string) => {
-    if (!window.confirm('Bạn có chắc muốn xóa thành viên này khỏi dự án?')) return;
+    if (!window.confirm(t('settings.member_remove_confirm'))) return;
     try {
       await removeProjectMember(projectId, memberId);
-      setSuccess('Đã xóa thành viên.');
+      setSuccess(t('settings.member_removed'));
       await loadSettings();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Không thể xóa thành viên.');
+      setError(err instanceof Error ? err.message : t('settings.member_remove_fail'));
     }
   };
 
@@ -96,7 +98,7 @@ export default function ProjectSettingsModal({ projectId, projectName, onClose }
       const res = await generateProjectTelegramCode(projectId);
       setTgCode(res.command);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Không thể tạo mã Telegram.');
+      setError(err instanceof Error ? err.message : t('settings.tg_code_fail'));
     } finally {
       setTgLoading(false);
     }
@@ -109,7 +111,9 @@ export default function ProjectSettingsModal({ projectId, projectName, onClose }
         {/* Header */}
         <div style={{ padding: '20px 24px', borderBottom: '1px solid #1e293b', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#f8fafc', margin: 0 }}>Cài đặt Dự án: {projectName}</h2>
+            <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#f8fafc', margin: 0 }}>
+              {t('settings.title')}: {projectName}
+            </h2>
             <p style={{ fontSize: '12px', color: '#94a3b8', margin: '4px 0 0 0' }}>ID: {projectId}</p>
           </div>
           <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '4px' }}>
@@ -120,10 +124,10 @@ export default function ProjectSettingsModal({ projectId, projectName, onClose }
         {/* Tab Nav */}
         <div style={{ display: 'flex', borderBottom: '1px solid #1e293b', background: '#0b1120', padding: '0 16px' }}>
           {[
-            { id: 'wordpress', label: 'WordPress', icon: Globe },
-            { id: 'members', label: 'Thành viên', icon: Users },
-            { id: 'progress', label: 'Tiến độ', icon: BarChart3 },
-            { id: 'telegram', label: 'Telegram', icon: Send },
+            { id: 'wordpress', label: t('settings.tab_wordpress'), icon: Globe },
+            { id: 'members', label: t('settings.tab_members'), icon: Users },
+            { id: 'progress', label: t('settings.tab_progress'), icon: BarChart3 },
+            { id: 'telegram', label: t('settings.tab_telegram'), icon: Send },
           ].map(tab => {
             const Icon = tab.icon;
             const active = activeTab === tab.id;
