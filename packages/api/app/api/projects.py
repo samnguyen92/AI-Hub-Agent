@@ -196,7 +196,7 @@ async def _serve_project_file(
         project = await verify_project_ownership(project_id, user, db)
 
     try:
-        workspace_service.init_project_workspace(project.id, refresh=True)
+        workspace_service.init_project_workspace(project.id, refresh=False)
         workspace_path = workspace_service.get_project_path(project.id)
         full_path = _resolve_project_file_path(workspace_path, path)
         if full_path.lower().endswith((".html", ".htm")):

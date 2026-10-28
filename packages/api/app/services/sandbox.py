@@ -20,14 +20,14 @@ class SandboxClient:
         return {"X-Sandbox-Secret": settings.sandbox_shared_secret}
 
     def _restore_workspace(self, path: str, commit_message: Optional[str] = None) -> None:
-        """Pull sandbox output back into this API instance's scratch workspace."""
+        """Commit sandbox output to Git and persist to workspace storage."""
         root = os.path.realpath(settings.workspaces_root)
         resolved = os.path.realpath(path)
         if os.path.commonpath((root, resolved)) != root:
             return
         relative = os.path.relpath(resolved, root).split(os.sep, 1)
         if relative and relative[0] not in (".", ".."):
-            workspace_service.init_project_workspace(relative[0], refresh=True)
+            workspace_service.init_project_workspace(relative[0], refresh=False)
             if commit_message:
                 workspace_service.commit_step(relative[0], commit_message)
 

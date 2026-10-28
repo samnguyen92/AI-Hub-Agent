@@ -26,11 +26,9 @@ class WorkspaceService:
     def init_project_workspace(self, project_id: str, refresh: bool = False) -> str:
         """Create workspace directory and initialize a Git repository."""
         project_path = self.get_project_path(project_id)
-        if refresh and workspace_storage.enabled and os.path.isdir(project_path):
-            shutil.rmtree(project_path)
         os.makedirs(project_path, exist_ok=True)
 
-        if (refresh and workspace_storage.enabled) or not os.listdir(project_path):
+        if not os.listdir(project_path):
             workspace_storage.download(project_id, project_path)
 
         git_dir = os.path.join(project_path, ".git")
