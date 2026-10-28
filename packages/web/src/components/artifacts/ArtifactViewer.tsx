@@ -11,6 +11,7 @@ import {
   Layers,
   Image as ImageIcon,
 } from 'lucide-react';
+import ImageLightboxModal from '@/components/chat/ImageLightboxModal';
 
 export interface ArtifactData {
   id?: string;
@@ -32,6 +33,7 @@ interface ArtifactViewerProps {
 export default function ArtifactViewer({ artifact, onClose }: ArtifactViewerProps) {
   const [activeTab, setActiveTab] = useState<'preview' | 'screenshots' | 'checklist'>('preview');
   const [viewport, setViewport] = useState<'desktop' | 'mobile'>('desktop');
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
 
   const getFileUrl = (path?: string) => {
     if (!path) return '';
@@ -114,7 +116,12 @@ export default function ArtifactViewer({ artifact, onClose }: ArtifactViewerProp
         </div>
         <div style={{ borderRadius: '10px', overflow: 'hidden', border: '1px solid var(--border-subtle)', background: '#000' }}>
           {artifact.desktopPng ? (
-            <img src={getFileUrl(artifact.desktopPng)} alt="Desktop Screenshot" style={{ width: '100%', display: 'block' }} />
+            <img
+              src={getFileUrl(artifact.desktopPng)}
+              alt="Desktop Screenshot"
+              onClick={() => setLightboxSrc(getFileUrl(artifact.desktopPng))}
+              style={{ width: '100%', display: 'block', cursor: 'zoom-in' }}
+            />
           ) : (
             <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '12px' }}>Chưa có screenshot Desktop</div>
           )}
@@ -127,7 +134,12 @@ export default function ArtifactViewer({ artifact, onClose }: ArtifactViewerProp
         </div>
         <div style={{ borderRadius: '10px', overflow: 'hidden', border: '1px solid var(--border-subtle)', background: '#000', maxWidth: '320px', margin: '0 auto' }}>
           {artifact.mobilePng ? (
-            <img src={getFileUrl(artifact.mobilePng)} alt="Mobile Screenshot" style={{ width: '100%', display: 'block' }} />
+            <img
+              src={getFileUrl(artifact.mobilePng)}
+              alt="Mobile Screenshot"
+              onClick={() => setLightboxSrc(getFileUrl(artifact.mobilePng))}
+              style={{ width: '100%', display: 'block', cursor: 'zoom-in' }}
+            />
           ) : (
             <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '12px' }}>Chưa có screenshot Mobile</div>
           )}
@@ -242,6 +254,7 @@ export default function ArtifactViewer({ artifact, onClose }: ArtifactViewerProp
       {activeTab === 'preview' && renderPreviewTab()}
       {activeTab === 'screenshots' && renderScreenshotsTab()}
       {activeTab === 'checklist' && renderChecklistTab()}
+      <ImageLightboxModal src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
     </div>
   );
 }

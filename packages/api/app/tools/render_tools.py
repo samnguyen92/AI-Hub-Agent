@@ -2,6 +2,7 @@
 
 import os
 from typing import Any, Dict
+from urllib.parse import quote
 from app.services.sandbox import sandbox_client
 from app.tools.base import BaseTool, ToolContext, tool_registry
 from app.tools.file_tools import safe_resolve_path
@@ -43,10 +44,16 @@ class RenderHtmlToPngTool(BaseTool):
             full_mobile = safe_resolve_path(context.workspace_path, mobile_rel)
 
             res = await sandbox_client.render_workspace_html(full_html, full_desktop, full_mobile)
+            desktop_url = f"/api/backend/projects/{context.project_id}/files?path={quote(desktop_rel, safe='')}"
+            mobile_url = f"/api/backend/projects/{context.project_id}/files?path={quote(mobile_rel, safe='')}"
+            html_preview_url = f"/api/backend/projects/{context.project_id}/files/{quote(html_rel.lstrip('/'), safe='/')}"
             return {
                 "status": "rendered",
                 "desktop_png": desktop_rel,
                 "mobile_png": mobile_rel,
+                "desktop_url": desktop_url,
+                "mobile_url": mobile_url,
+                "html_preview_url": html_preview_url,
                 "raw": res,
             }
         except Exception as exc:
@@ -77,11 +84,15 @@ class TakeScreenshotTool(BaseTool):
             full_mobile = safe_resolve_path(context.workspace_path, mobile_rel)
 
             res = await sandbox_client.take_screenshot(url, full_desktop, full_mobile)
+            desktop_url = f"/api/backend/projects/{context.project_id}/files?path={quote(desktop_rel, safe='')}"
+            mobile_url = f"/api/backend/projects/{context.project_id}/files?path={quote(mobile_rel, safe='')}"
             return {
                 "status": "captured",
                 "url": url,
                 "desktop_png": desktop_rel,
                 "mobile_png": mobile_rel,
+                "desktop_url": desktop_url,
+                "mobile_url": mobile_url,
                 "raw": res,
             }
         except Exception as exc:

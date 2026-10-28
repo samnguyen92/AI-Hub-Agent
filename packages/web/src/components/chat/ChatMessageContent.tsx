@@ -1,15 +1,18 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { ExternalLink, Maximize2, X, Globe, Copy, Check } from 'lucide-react';
+import { ExternalLink, Maximize2, Globe, Copy, Check, Image as ImageIcon } from 'lucide-react';
 import StructuredDataCard from './StructuredDataCard';
+import ImageLightboxModal from './ImageLightboxModal';
 
 interface ChatMessageContentProps {
   content: string;
   projectId: string;
 }
+
+const WORKSPACE_FOLDER_PREFIXES = ['screenshots/', 'mockups/', 'exports/', 'generated/', 'attachments/', 'assets/'];
 
 export default function ChatMessageContent({ content, projectId }: ChatMessageContentProps) {
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
@@ -21,26 +24,91 @@ export default function ChatMessageContent({ content, projectId }: ChatMessageCo
     return `${apiBase}/projects/${projectId}/files/${safePath}`;
   };
 
-  const projectFilePath = (rawUrl: string): string => {
-    const parsed = new URL(rawUrl, 'http://hub.local');
-    const queryPath = parsed.searchParams.get('path');
-    if (queryPath) return queryPath;
-    const marker = `/projects/${projectId}/files/`;
-    const index = parsed.pathname.indexOf(marker);
-    return index >= 0 ? decodeURIComponent(parsed.pathname.slice(index + marker.length)) : '';
+  const extractWorkspaceRelPath = (rawUrl: string): string => {
+    if (!rawUrl) return '';
+    try {
+      const parsed = new URL(rawUrl, 'http://hub.local');
+      const queryPath = parsed.searchParams.get('path');
+      if (queryPath) return queryPath.replace(/^\/+/, '');
+
+      const marker = `/projects/${projectId}/files/`;
+      const idx = parsed.pathname.indexOf(marker);
+      if (idx >= 0) {
+        return decodeURIComponent(parsed.pathname.slice(idx + marker.length)).replace(/^\/+/, '');
+      }
+
+      const anyProjMatch = parsed.pathname.match(/\/projects\/[^/]+\/files\/(.+)$/);
+      if (anyProjMatch) {
+        return decodeURIComponent(anyProjMatch[1]).replace(/^\/+/, '');
+      }
+
+      const cleanPath = decodeURIComponent(parsed.pathname).replace(/^\/+/, '');
+      if (
+        WORKSPACE_FOLDER_PREFIXES.some((prefix) => cleanPath.startsWith(prefix)) ||
+        /\.(png|jpe?g|webp|gif|svg|html?|zip|wpress)$/i.test(cleanPath)
+      ) {
+        // Avoid treating app routes like /chat, /projects, /approvals as workspace files
+        const firstSeg = cleanPath.split('/')[0].toLowerCase();
+        if (!['chat', 'projects', 'approvals', 'library', 'agents', 'reports', 'login', 'api'].includes(firstSeg)) {
+          return cleanPath;
+        }
+      }
+    } catch {
+      // Ignore malformed URLs
+    }
+    return '';
   };
 
   const resolveMediaUrl = (rawUrl: string): string => {
     if (!rawUrl) return '';
-    if (rawUrl.startsWith('http://') || rawUrl.startsWith('https://')) return rawUrl;
     if (rawUrl.startsWith('/api/backend/')) {
       return `${apiBase}${rawUrl.replace('/api/backend', '')}`;
     }
     if (rawUrl.startsWith('sandbox:')) {
       return projectFileUrl(rawUrl.replace(/^sandbox:\/\/?/, ''));
     }
+
+    const wsRelPath = extractWorkspaceRelPath(rawUrl);
+    if (wsRelPath) {
+      return `${apiBase}/projects/${projectId}/files?path=${encodeURIComponent(wsRelPath)}`;
+    }
+
+    if (rawUrl.startsWith('http://') || rawUrl.startsWith('https://')) {
+      return rawUrl;
+    }
+
     const clean = rawUrl.replace(/^\.?\//, '');
     return `${apiBase}/projects/${projectId}/files?path=${encodeURIComponent(clean)}`;
+  };
+
+  // Collect actual embedded markdown image URLs in this message so preview links can snap to real rendered screenshots
+  const embeddedImages = useMemo(() => {
+    const imgs: string[] = [];
+    const regex = /!\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g;
+    let match: RegExpExecArray | null;
+    while ((match = regex.exec(content)) !== null) {
+      const resolved = resolveMediaUrl(match[1]);
+      if (resolved) imgs.push(resolved);
+    }
+    return imgs;
+  }, [content, projectId, apiBase]);
+
+  const resolveSmartLinkUrl = (rawUrl: string): string => {
+    const resolved = resolveMediaUrl(rawUrl);
+    const lowerRaw = rawUrl.toLowerCase();
+    // If the LLM wrote a raw /screenshots/... link that differs from the actual embedded screenshot in the same message
+    if (!lowerRaw.includes('/projects/') && /\.(png|jpe?g|webp|gif)$/i.test(lowerRaw)) {
+      if (lowerRaw.includes('desktop')) {
+        const desktopImg = embeddedImages.find((u) => u.toLowerCase().includes('desktop'));
+        if (desktopImg) return desktopImg;
+      } else if (lowerRaw.includes('mobile')) {
+        const mobileImg = embeddedImages.find((u) => u.toLowerCase().includes('mobile'));
+        if (mobileImg) return mobileImg;
+      } else if (embeddedImages.length === 1) {
+        return embeddedImages[0];
+      }
+    }
+    return resolved;
   };
 
   const copyToClipboard = (text: string, idx: number) => {
@@ -76,23 +144,41 @@ export default function ChatMessageContent({ content, projectId }: ChatMessageCo
             li: ({ ...props }) => <li style={{ margin: '2px 0' }} {...props} />,
             a: ({ href, children, ...props }) => {
               const url = href || '';
-              const filePath = projectFilePath(url);
-              const fileUrl = (filePath || url.split('?')[0]).toLowerCase();
-              if (
-                url.startsWith('/api/backend/projects/') &&
-                (fileUrl.endsWith('.zip') || fileUrl.endsWith('.html'))
-              ) {
-                const downloadUrl = fileUrl.endsWith('.html')
-                  ? projectFileUrl(filePath)
-                  : `${apiBase}${url.replace('/api/backend', '')}`;
+              const wsPath = extractWorkspaceRelPath(url);
+              const lowerTarget = (wsPath || url.split('?')[0]).toLowerCase();
+
+              // 1. Image preview links (.png, .jpg, .webp, .gif, .svg)
+              if (/\.(png|jpe?g|webp|gif|svg)$/i.test(lowerTarget)) {
+                const imgUrl = resolveSmartLinkUrl(url);
                 return (
-                  <a href={downloadUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--accent-primary)', textDecoration: 'underline' }} {...props}>
-                    {children || (fileUrl.endsWith('.zip') ? 'Tải file ZIP' : 'Mở file HTML')} <ExternalLink size={11} style={{ display: 'inline' }} />
+                  <a
+                    href={imgUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(e) => {
+                      if (!e.metaKey && !e.ctrlKey) {
+                        e.preventDefault();
+                        setLightboxSrc(imgUrl);
+                      }
+                    }}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      color: 'var(--accent-primary)',
+                      textDecoration: 'underline',
+                      cursor: 'pointer',
+                    }}
+                    {...props}
+                  >
+                    <ImageIcon size={13} style={{ display: 'inline' }} /> {children || 'Mở ảnh preview'} <ExternalLink size={11} style={{ display: 'inline' }} />
                   </a>
                 );
               }
-              if (url.startsWith('sandbox:') || url.endsWith('.html')) {
-                const filePath = projectFilePath(url) || url.replace(/^sandbox:\/\/?/, '') || 'index.html';
+
+              // 2. HTML preview links
+              if (url.startsWith('sandbox:') || lowerTarget.endsWith('.html') || lowerTarget.endsWith('.htm')) {
+                const filePath = wsPath || url.replace(/^sandbox:\/\/?/, '') || 'index.html';
                 const liveUrl = projectFileUrl(filePath);
                 return (
                   <a
@@ -118,6 +204,17 @@ export default function ChatMessageContent({ content, projectId }: ChatMessageCo
                   </a>
                 );
               }
+
+              // 3. ZIP / WPRESS / workspace file downloads
+              if (wsPath || url.startsWith('/api/backend/projects/')) {
+                const downloadUrl = resolveMediaUrl(url);
+                return (
+                  <a href={downloadUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--accent-primary)', textDecoration: 'underline' }} {...props}>
+                    {children || 'Tải file'} <ExternalLink size={11} style={{ display: 'inline' }} />
+                  </a>
+                );
+              }
+
               return (
                 <a href={url} target="_blank" rel="noreferrer" style={{ color: 'var(--accent-primary)', textDecoration: 'underline' }} {...props}>
                   {children} <ExternalLink size={11} style={{ display: 'inline' }} />
@@ -128,10 +225,10 @@ export default function ChatMessageContent({ content, projectId }: ChatMessageCo
               const resolved = resolveMediaUrl(src || '');
               return (
                 <div style={{ margin: '12px 0', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-subtle)', background: 'rgba(0, 0, 0, 0.3)', maxWidth: '560px' }}>
-                  <div style={{ position: 'relative', cursor: 'pointer' }} onClick={() => setLightboxSrc(resolved)}>
+                  <div style={{ position: 'relative', cursor: 'zoom-in' }} onClick={() => setLightboxSrc(resolved)}>
                     <img src={resolved} alt={alt || 'Image'} style={{ width: '100%', maxHeight: '420px', objectFit: 'contain', display: 'block', background: '#0d1117' }} {...props} />
-                    <button type="button" style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(0,0,0,0.6)', border: 'none', borderRadius: '6px', padding: '6px', color: '#fff', cursor: 'pointer' }} title="Toàn màn hình">
-                      <Maximize2 size={14} />
+                    <button type="button" style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(0,0,0,0.65)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', padding: '6px 8px', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px' }} title="Phóng to & Zoom">
+                      <Maximize2 size={13} /> Zoom
                     </button>
                   </div>
                   {alt && <div style={{ padding: '8px 12px', fontSize: '12px', color: 'var(--text-dim)', borderTop: '1px solid var(--border-subtle)' }}>🖼️ {alt}</div>}
@@ -176,16 +273,7 @@ export default function ChatMessageContent({ content, projectId }: ChatMessageCo
         </ReactMarkdown>
       </div>
 
-      {lightboxSrc && (
-        <div onClick={() => setLightboxSrc(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-          <div style={{ position: 'relative', maxWidth: '90vw', maxHeight: '90vh' }} onClick={(e) => e.stopPropagation()}>
-            <img src={lightboxSrc} alt="Preview" style={{ maxWidth: '100%', maxHeight: '85vh', borderRadius: '8px', display: 'block', boxShadow: '0 20px 40px rgba(0,0,0,0.8)' }} />
-            <button onClick={() => setLightboxSrc(null)} style={{ position: 'absolute', top: '-40px', right: '0', background: 'rgba(255,255,255,0.2)', border: 'none', color: '#fff', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-              <X size={18} />
-            </button>
-          </div>
-        </div>
-      )}
+      <ImageLightboxModal src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
     </>
   );
 }
