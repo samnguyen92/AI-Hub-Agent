@@ -14,7 +14,7 @@ from app.db.models import Project, User
 from app.db.session import get_db
 from app.services.auth_service import auth_service
 from app.services.workspace import workspace_service
-from app.tools.file_tools import safe_resolve_path
+from app.tools.file_tools import perform_export, safe_resolve_path
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 
@@ -96,17 +96,74 @@ async def get_project(
     )
 
 
-def _resolve_project_file_path(workspace_path: str, path: str) -> str:
-    """Resolve file path within workspace or common asset subdirectories."""
-    full_path = safe_resolve_path(workspace_path, path)
-    if not os.path.exists(full_path) or not os.path.isfile(full_path):
-        for sub in ("mockups", "images", "screenshots"):
-            candidate = safe_resolve_path(workspace_path, f"{sub}/{path}")
-            if os.path.exists(candidate) and os.path.isfile(candidate):
-                return candidate
-    if not os.path.exists(full_path) or not os.path.isfile(full_path):
-        raise HTTPException(status_code=404, detail=f"File not found: {path}")
-    return full_path
+def _find_matching_workspace_files(workspace_path: str, ext_tuple: tuple[str, ...]) -> List[str]:
+    """Return workspace files matching extensions sorted by newest modification time."""
+    matches: List[str] = []
+    ignored = {".git", "node_modules", "__pycache__", ".next"}
+    for root, dirs, files in os.walk(workspace_path):
+        dirs[:] = [d for d in dirs if d not in ignored and not d.startswith(".")]
+        for fname in files:
+            if fname.lower().endswith(ext_tuple):
+                matches.append(os.path.join(root, fname))
+    matches.sort(key=lambda p: os.path.getmtime(p), reverse=True)
+    return matches
+
+
+def _resolve_project_file_path(
+    workspace_path: str, path: str, project_id: Optional[str] = None
+) -> str:
+    """Resolve file path within workspace or common asset subdirectories with smart fallbacks."""
+    clean_req = path.strip().lstrip("/")
+    full_path = safe_resolve_path(workspace_path, clean_req)
+    if os.path.exists(full_path) and os.path.isfile(full_path):
+        return full_path
+
+    for sub in ("mockups", "images", "screenshots", "exports", "site", "public", "dist"):
+        candidate = safe_resolve_path(workspace_path, f"{sub}/{clean_req}")
+        if os.path.exists(candidate) and os.path.isfile(candidate):
+            return candidate
+
+    target_base = os.path.basename(clean_req).lower()
+    if target_base:
+        for root, dirs, files in os.walk(workspace_path):
+            dirs[:] = [d for d in dirs if d not in {".git", "node_modules", "__pycache__"}]
+            for fname in files:
+                if fname.lower() == target_base:
+                    return os.path.join(root, fname)
+
+    lower_req = clean_req.lower()
+    if lower_req.endswith((".html", ".htm")):
+        html_files = _find_matching_workspace_files(workspace_path, (".html", ".htm"))
+        non_sitemap = [f for f in html_files if "sitemap" not in os.path.basename(f).lower()]
+        if non_sitemap:
+            return non_sitemap[0]
+        if html_files:
+            return html_files[0]
+
+    if lower_req.endswith((".png", ".jpg", ".jpeg", ".webp")):
+        img_files = _find_matching_workspace_files(workspace_path, (".png", ".jpg", ".jpeg", ".webp"))
+        if "desktop" in lower_req:
+            desk = [f for f in img_files if "desktop" in os.path.basename(f).lower()]
+            if desk:
+                return desk[0]
+        if "mobile" in lower_req:
+            mob = [f for f in img_files if "mobile" in os.path.basename(f).lower()]
+            if mob:
+                return mob[0]
+
+    if lower_req.endswith(".zip"):
+        zip_files = _find_matching_workspace_files(workspace_path, (".zip",))
+        if zip_files:
+            return zip_files[0]
+        if project_id:
+            arch_name = os.path.basename(clean_req) or "site-package.zip"
+            export_res = perform_export(workspace_path, arch_name, project_id)
+            if export_res.get("archive_path"):
+                created_zip = safe_resolve_path(workspace_path, export_res["archive_path"])
+                if os.path.isfile(created_zip):
+                    return created_zip
+
+    raise HTTPException(status_code=404, detail=f"File not found: {path}")
 
 
 @router.get("/{project_id}/files")
@@ -152,8 +209,8 @@ async def get_project_preview_file(
         raise HTTPException(status_code=401, detail="Preview link expired or invalid.")
     project = await _get_preview_project(project_id, db)
     workspace_path = workspace_service.get_project_path(project.id)
-    workspace_service.init_project_workspace(project.id)
-    full_path = _resolve_project_file_path(workspace_path, file_path)
+    workspace_service.init_project_workspace(project.id, refresh=False)
+    full_path = _resolve_project_file_path(workspace_path, file_path, project_id=project_id)
     return FileResponse(full_path, headers=_preview_headers())
 
 
@@ -198,13 +255,25 @@ async def _serve_project_file(
     try:
         workspace_service.init_project_workspace(project.id, refresh=False)
         workspace_path = workspace_service.get_project_path(project.id)
-        full_path = _resolve_project_file_path(workspace_path, path)
+        full_path = _resolve_project_file_path(workspace_path, path, project_id=project.id)
+        rel_path = os.path.relpath(full_path, workspace_path).replace(os.sep, "/")
         if full_path.lower().endswith((".html", ".htm")):
             token = auth_service.create_preview_token(project_id)
-            safe_path = quote(path.lstrip("/"), safe="/")
-            api_prefix = "/api/backend" if os.getenv("VERCEL_API_PREFIX") else ""
+            safe_path = quote(rel_path.lstrip("/"), safe="/")
+            api_prefix = (
+                "/api/backend"
+                if (os.getenv("VERCEL_API_PREFIX") or os.getenv("NEXT_PUBLIC_API_URL") == "/api/backend")
+                else ""
+            )
             return RedirectResponse(
                 f"{api_prefix}/projects/{project_id}/preview/{token}/{safe_path}", status_code=302
+            )
+        if full_path.lower().endswith(".zip"):
+            return FileResponse(
+                full_path,
+                media_type="application/zip",
+                filename=os.path.basename(full_path),
+                headers=_preview_headers(),
             )
         return FileResponse(
             full_path,

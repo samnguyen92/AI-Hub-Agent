@@ -162,10 +162,9 @@ def perform_export(workspace_path: str, arch_name: str, project_id: str) -> Dict
 
         with zipfile.ZipFile(full_zip, "w", zipfile.ZIP_DEFLATED) as zf:
             for root, dirs, files in os.walk(workspace_path):
-                if ".git" in dirs:
-                    dirs.remove(".git")
-                if "exports" in dirs:
-                    dirs.remove("exports")
+                for excluded in (".git", "exports", "node_modules", "__pycache__"):
+                    if excluded in dirs:
+                        dirs.remove(excluded)
                 for file in files:
                     full_f = os.path.join(root, file)
                     rel_f = os.path.relpath(full_f, workspace_path)
@@ -174,7 +173,7 @@ def perform_export(workspace_path: str, arch_name: str, project_id: str) -> Dict
         return {
             "status": "exported",
             "archive_path": rel_zip,
-            "download_url": f"/projects/{project_id}/files?path={rel_zip}",
+            "download_url": f"/api/backend/projects/{project_id}/files?path={rel_zip}",
         }
     except Exception as exc:
         return {"error": f"Lỗi đóng gói ZIP: {str(exc)}"}

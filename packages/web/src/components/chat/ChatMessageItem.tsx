@@ -5,7 +5,7 @@ import ChatMessageContent from '@/components/chat/ChatMessageContent';
 import ArtifactViewer, { ArtifactData } from '@/components/artifacts/ArtifactViewer';
 import { Eye, Layers, Lightbulb, Check, Sparkles } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
-import type { Message } from '@/lib/api';
+import { API_BASE, type Message } from '@/lib/api';
 
 interface ChatMessageItemProps {
   message: Message;
@@ -54,7 +54,7 @@ export default function ChatMessageItem({ message, projectId }: ChatMessageItemP
 
   const isUser = message.role === 'user';
   const artifact = !isUser ? parseArtifactFromMessage(message.content, projectId) : null;
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || '/api/backend';
+  const apiBase = API_BASE;
 
   const handleTeachRule = async (e: React.FormEvent) => {
     e.preventDefault();

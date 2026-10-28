@@ -4,6 +4,7 @@ import React, { useMemo, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ExternalLink, Maximize2, Globe, Copy, Check, Image as ImageIcon } from 'lucide-react';
+import { API_BASE } from '@/lib/api';
 import StructuredDataCard from './StructuredDataCard';
 import ImageLightboxModal from './ImageLightboxModal';
 
@@ -17,7 +18,7 @@ const WORKSPACE_FOLDER_PREFIXES = ['screenshots/', 'mockups/', 'exports/', 'gene
 export default function ChatMessageContent({ content, projectId }: ChatMessageContentProps) {
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   const [copiedCodeIdx, setCopiedCodeIdx] = useState<number | null>(null);
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || '/api/backend';
+  const apiBase = API_BASE;
 
   const projectFileUrl = (path: string): string => {
     const safePath = path.split('/').filter(Boolean).map(encodeURIComponent).join('/');

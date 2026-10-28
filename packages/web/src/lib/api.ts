@@ -13,7 +13,7 @@ export type {
 const isBrowser = typeof window !== 'undefined';
 const isRemoteHost = isBrowser && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
 
-const API_BASE = isBrowser
+export const API_BASE = isBrowser
   ? (isRemoteHost && (!process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL.includes('localhost'))
       ? '/api/backend'
       : (process.env.NEXT_PUBLIC_API_URL || '/api/backend'))

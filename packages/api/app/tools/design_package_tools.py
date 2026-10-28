@@ -64,13 +64,16 @@ class PackageDesignTool(BaseTool):
             for path in files
             if path.lower().endswith(".html") and os.path.realpath(path) != os.path.realpath(sitemap_path)
         ]
+        workspace_entry = (
+            os.path.relpath(entry_path, context.workspace_path).replace(os.sep, "/")
+        )
         workspace_sitemap = (
             os.path.relpath(sitemap_path, context.workspace_path).replace(os.sep, "/")
         )
         return {
             "status": "packaged",
-            "html_file_path": kwargs["html_path"],
-            "html_file_url": self._file_url(context.project_id, kwargs["html_path"]),
+            "html_file_path": workspace_entry,
+            "html_file_url": self._file_url(context.project_id, workspace_entry),
             "page_file_paths": page_paths,
             "page_file_urls": [
                 {"path": path, "url": self._file_url(context.project_id, path)}
@@ -101,6 +104,8 @@ class PackageDesignTool(BaseTool):
     def _resolve_site_file(context: ToolContext, site_root: str, relative_path: str) -> str:
         """Resolve a required HTML file and ensure it belongs to the site folder."""
         full_path = safe_resolve_path(context.workspace_path, str(relative_path))
+        if not os.path.isfile(full_path):
+            full_path = safe_resolve_path(site_root, str(relative_path))
         if os.path.commonpath((site_root, full_path)) != site_root or not os.path.isfile(full_path):
             raise ValueError(f"File không tồn tại trong site_root: {relative_path}")
         return full_path

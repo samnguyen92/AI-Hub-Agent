@@ -23,6 +23,18 @@ const nextConfig = {
         source: '/api/backend/:path*',
         destination: `${apiHost}/:path*`,
       },
+      {
+        source: '/projects/:projectId/preview/:token/:path*',
+        destination: `${apiHost}/projects/:projectId/preview/:token/:path*`,
+      },
+      {
+        source: '/projects/:projectId/files/:path*',
+        destination: `${apiHost}/projects/:projectId/files/:path*`,
+      },
+      {
+        source: '/projects/:projectId/files',
+        destination: `${apiHost}/projects/:projectId/files`,
+      },
     ];
   },
 };
