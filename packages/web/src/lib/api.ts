@@ -262,7 +262,12 @@ export interface ProjectSettingsData {
     status: string;
     port?: number;
   };
-  telegram: { is_linked: boolean; telegram_id?: string | null };
+  telegram: {
+    is_linked: boolean;
+    telegram_id?: string | null;
+    bot_configured?: boolean;
+    bot_username?: string | null;
+  };
   members: Array<{ id: string; email: string; role: string; status: string; created_at: string }>;
   progress: {
     total_runs: number;
@@ -312,10 +317,10 @@ export async function removeProjectMember(
 
 export async function generateProjectTelegramCode(
   projectId: string
-): Promise<{ link_code: string; command: string; instructions: string }> {
+): Promise<{ link_code: string; command: string; instructions: string; bot_configured?: boolean; bot_username?: string | null }> {
   const res = await fetchWithAuth(`${API_BASE}/projects/${projectId}/settings/telegram/link-code`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
   });
-  return handleResponse<{ link_code: string; command: string; instructions: string }>(res);
+  return handleResponse<{ link_code: string; command: string; instructions: string; bot_configured?: boolean; bot_username?: string | null }>(res);
 }

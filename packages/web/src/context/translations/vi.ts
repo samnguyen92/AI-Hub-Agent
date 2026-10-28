@@ -154,6 +154,10 @@ export const vi: Record<string, string> = {
   'settings.tg.btn_copied': 'Đã copy',
   'settings.tg.btn_copy': 'Sao chép',
   'settings.tg.code_expire': 'Mã xác thực có hiệu lực trong vòng 15 phút.',
+  'settings.tg.bot_unconfigured': '⚠️ Telegram Bot chưa được kích hoạt trên hệ thống (Chưa cấu hình TELEGRAM_BOT_TOKEN trong file .env trên máy chủ). Vui lòng cập nhật biến môi trường để kích hoạt.',
+  'settings.tg.bot_label': 'Bot Telegram của hệ thống:',
+  'settings.tg.open_bot': 'Mở Chat với Bot trên Telegram',
+  'settings.tg.bot_warning': '⚠️ Chú ý: Hãy chắc chắn bạn gửi lệnh cho đúng Bot của hệ thống bên trên. Không gửi mã vào các Bot khác (ví dụ: Align Social Media Bot) vì chúng thuộc dự án khác và sẽ không phản hồi mã này.',
 
   // Status
   'status.agent_list_title': 'DANH SÁCH AGENTS TRONG HUB',

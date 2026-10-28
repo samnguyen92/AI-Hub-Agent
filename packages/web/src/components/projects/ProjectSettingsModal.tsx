@@ -29,6 +29,7 @@ export default function ProjectSettingsModal({ projectId, projectName, onClose }
   const [wpConnecting, setWpConnecting] = useState(false);
   const [memberAdding, setMemberAdding] = useState(false);
   const [tgCode, setTgCode] = useState<string | null>(null);
+  const [tgBotUsername, setTgBotUsername] = useState<string | null>(null);
   const [tgLoading, setTgLoading] = useState(false);
 
   const loadSettings = async () => {
@@ -36,6 +37,9 @@ export default function ProjectSettingsModal({ projectId, projectName, onClose }
     try {
       const res = await fetchProjectSettings(projectId);
       setData(res);
+      if (res.telegram?.bot_username) {
+        setTgBotUsername(res.telegram.bot_username);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : t('settings.load_error'));
     } finally {
@@ -97,6 +101,9 @@ export default function ProjectSettingsModal({ projectId, projectName, onClose }
     try {
       const res = await generateProjectTelegramCode(projectId);
       setTgCode(res.command);
+      if (res.bot_username) {
+        setTgBotUsername(res.bot_username);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : t('settings.tg_code_fail'));
     } finally {
@@ -148,7 +155,7 @@ export default function ProjectSettingsModal({ projectId, projectName, onClose }
           {activeTab === 'wordpress' && <WordPressTab data={data} onConnect={handleConnectWp} connecting={wpConnecting} />}
           {activeTab === 'members' && <MembersTab data={data} onAddMember={handleAddMember} onRemoveMember={handleRemoveMember} adding={memberAdding} />}
           {activeTab === 'progress' && <ProgressTab data={data} />}
-          {activeTab === 'telegram' && <TelegramTab data={data} onGetCode={handleGetTelegramCode} loading={tgLoading} code={tgCode} />}
+          {activeTab === 'telegram' && <TelegramTab data={data} onGetCode={handleGetTelegramCode} loading={tgLoading} code={tgCode} botUsername={tgBotUsername || data?.telegram?.bot_username || null} />}
         </div>
       </div>
     </div>

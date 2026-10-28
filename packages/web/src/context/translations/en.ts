@@ -154,6 +154,10 @@ export const en: Record<string, string> = {
   'settings.tg.btn_copied': 'Copied',
   'settings.tg.btn_copy': 'Copy',
   'settings.tg.code_expire': 'Verification code expires in 15 minutes.',
+  'settings.tg.bot_unconfigured': '⚠️ Telegram Bot is not configured on the server (TELEGRAM_BOT_TOKEN is missing in .env). Please set the environment variable to enable it.',
+  'settings.tg.bot_label': 'Official Telegram Bot:',
+  'settings.tg.open_bot': 'Open Chat with Bot on Telegram',
+  'settings.tg.bot_warning': '⚠️ Note: Please make sure you send the command to the official Bot above. Do not send this code to other bots (e.g. Align Social Media Bot) as they are completely separate.',
 
   // Status
   'status.agent_list_title': 'AGENTS IN HUB',

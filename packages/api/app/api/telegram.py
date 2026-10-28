@@ -47,6 +47,49 @@ async def generate_link_code(
     )
 
 
+async def get_bot_info() -> Dict[str, Any]:
+    """Fetch current bot identity and configuration status from Telegram."""
+    token = getattr(settings, "telegram_bot_token", None)
+    if not token or token == "dummy":
+        return {"configured": False, "username": None, "first_name": None}
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            resp = await client.get(f"https://api.telegram.org/bot{token}/getMe")
+            if resp.status_code == 200 and resp.json().get("ok"):
+                res = resp.json()["result"]
+                return {
+                    "configured": True,
+                    "username": res.get("username"),
+                    "first_name": res.get("first_name"),
+                }
+    except Exception:
+        pass
+    return {"configured": True, "username": None, "first_name": None}
+
+
+@router.post("/setup-webhook")
+async def setup_webhook(
+    webhook_url: str,
+    user: User = Depends(get_current_user),
+) -> Dict[str, Any]:
+    """Utility endpoint to register or test the Telegram webhook URL."""
+    token = getattr(settings, "telegram_bot_token", None)
+    if not token or token == "dummy":
+        raise HTTPException(status_code=400, detail="Chưa cấu hình TELEGRAM_BOT_TOKEN trong .env")
+
+    clean_url = webhook_url.strip()
+    payload: Dict[str, Any] = {"url": clean_url}
+    if settings.telegram_webhook_secret:
+        payload["secret_token"] = settings.telegram_webhook_secret
+
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.post(f"https://api.telegram.org/bot{token}/setWebhook", json=payload)
+            return resp.json()
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Không thể kết nối Telegram API: {str(exc)}")
+
+
 async def send_telegram_message(chat_id: str, text: str, reply_markup: Optional[Dict[str, Any]] = None) -> None:
     """Send message to Telegram via Bot API if token configured."""
     token = getattr(settings, "telegram_bot_token", None)
@@ -69,8 +112,9 @@ async def telegram_webhook(
 ) -> Dict[str, Any]:
     """Handle incoming Telegram webhook updates."""
     expected_secret = settings.telegram_webhook_secret
-    if not expected_secret or not x_telegram_bot_api_secret_token or not hmac.compare_digest(
-        x_telegram_bot_api_secret_token, expected_secret
+    if expected_secret and (
+        not x_telegram_bot_api_secret_token
+        or not hmac.compare_digest(x_telegram_bot_api_secret_token, expected_secret)
     ):
         raise HTTPException(status_code=401, detail="Invalid Telegram webhook secret")
     data = await request.json()

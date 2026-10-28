@@ -9,6 +9,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.auth import get_current_user
+from app.api.telegram import get_bot_info
 from app.db.member_models import ProjectMember
 from app.db.models import Project, Run, TelegramLink, Thread, User
 from app.db.session import get_db
@@ -74,9 +75,12 @@ async def get_project_settings(
         TelegramLink.user_id == project.owner_id, TelegramLink.is_confirmed.is_(True)
     )
     tg_link = (await db.execute(tg_q)).scalars().first()
+    bot_info = await get_bot_info()
     tg_data = {
         "is_linked": bool(tg_link),
         "telegram_id": tg_link.telegram_id if tg_link else None,
+        "bot_configured": bot_info.get("configured", False),
+        "bot_username": bot_info.get("username"),
     }
 
     # 3. Members
@@ -266,7 +270,7 @@ async def generate_telegram_code(
     project_id: str,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> Dict[str, str]:
+) -> Dict[str, Any]:
     """Generate Telegram linking code for the project owner."""
     await _get_project(project_id, user, db)
     alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
@@ -279,8 +283,16 @@ async def generate_telegram_code(
     )
     db.add(link_record)
     await db.commit()
+    bot_info = await get_bot_info()
+    bot_user = bot_info.get("username")
     return {
         "link_code": code,
         "command": f"/link {code}",
-        "instructions": f"Mở Telegram bot của hệ thống và gửi lệnh: /link {code} để kích hoạt nhận thông báo dự án.",
+        "bot_configured": bot_info.get("configured", False),
+        "bot_username": bot_user,
+        "instructions": (
+            f"Mở Telegram bot @{bot_user} và gửi lệnh: /link {code} để kích hoạt nhận thông báo dự án."
+            if bot_user
+            else f"Mở Telegram bot của hệ thống và gửi lệnh: /link {code} để kích hoạt nhận thông báo dự án."
+        ),
     }
