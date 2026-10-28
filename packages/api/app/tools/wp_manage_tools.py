@@ -90,6 +90,11 @@ class WPManagePostsTool(BaseTool):
             return {"success": False, "error": "Chưa có website WordPress nào được liên kết với dự án."}
 
         action = kwargs.get("action", "create")
+        if context.agent_key == "assistant" and action != "list":
+            return {
+                "success": False,
+                "error": "Agent assistant chỉ có quyền xem danh sách bài viết (action='list'). Để tạo hoặc sửa bài viết, vui lòng chuyển sang @wordpress-builder.",
+            }
         if site.site_type == "external":
             if action == "create":
                 return await wp_external_service.create_post(

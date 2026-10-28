@@ -112,11 +112,14 @@ async def telegram_webhook(
 ) -> Dict[str, Any]:
     """Handle incoming Telegram webhook updates."""
     expected_secret = settings.telegram_webhook_secret
-    if expected_secret and (
-        not x_telegram_bot_api_secret_token
-        or not hmac.compare_digest(x_telegram_bot_api_secret_token, expected_secret)
-    ):
-        raise HTTPException(status_code=401, detail="Invalid Telegram webhook secret")
+    # In production or whenever configured, secret token is strictly required
+    if settings.environment == "production" or expected_secret:
+        if (
+            not expected_secret
+            or not x_telegram_bot_api_secret_token
+            or not hmac.compare_digest(x_telegram_bot_api_secret_token, expected_secret)
+        ):
+            raise HTTPException(status_code=401, detail="Invalid Telegram webhook secret token")
     data = await request.json()
 
     # 1. Handle Inline Button Callback (Approvals)

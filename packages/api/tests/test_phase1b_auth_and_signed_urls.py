@@ -101,7 +101,7 @@ async def test_signed_url_file_preview(api_client: AsyncClient) -> None:
         signed_url = auth_service.create_signed_file_url(proj.id, "preview.html", expires_in=300)
 
     # 1. Fetch with signed URL (no auth header/cookie)
-    res = await api_client.get(signed_url)
+    res = await api_client.get(signed_url, follow_redirects=True)
     assert res.status_code == 200
     assert "<h1>Preview Test</h1>" in res.text
     assert res.headers.get("content-security-policy") == "sandbox allow-scripts"

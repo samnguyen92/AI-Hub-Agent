@@ -104,11 +104,16 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
+    # Disallow wildcard origin with credentials to prevent CSRF / credential theft
+    cors_origins = [o for o in settings.allowed_origins if o != "*"]
+    if not cors_origins:
+        cors_origins = ["http://localhost:3000", "http://localhost:3100"]
+
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.allowed_origins,
+        allow_origins=cors_origins,
         allow_credentials=True,
-        allow_methods=["*"],
+        allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allow_headers=["*"],
     )
 

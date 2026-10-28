@@ -5,7 +5,7 @@ import pytest
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import Approval, Message, Project, ProjectNote, Run, Thread, User
+from app.db.models import Approval, Message, Project, ProjectNote, Run, Step, Thread, User
 from app.db.session import async_session_maker
 from app.services.approval_service import approval_service
 from app.services.gate_service import gate_service
@@ -16,6 +16,8 @@ import app.tools.gate_tools  # noqa: F401
 @pytest.mark.asyncio
 async def test_gate_design_lifecycle_and_approval() -> None:
     """Test Gate 1 (Design Gate) opening, pause behavior, and approval resolution."""
+    import uuid
+
     async with async_session_maker() as db:
         user = User(github_login=f"gate_user_{os.urandom(4).hex()}", role="member")
         db.add(user)
@@ -31,6 +33,26 @@ async def test_gate_design_lifecycle_and_approval() -> None:
 
         run = Run(thread_id=th.id, agent_key="design", status="running")
         db.add(run)
+        await db.commit()
+
+        # Seed passing quality audit required for design gate
+        step_visual = Step(
+            run_id=run.id,
+            seq=1,
+            tool="inspect_screenshots",
+            result={"status": "analyzed"},
+        )
+        step_audit = Step(
+            run_id=run.id,
+            seq=2,
+            tool="run_quality_review",
+            result={
+                "run_id": run.id,
+                "report": '{"verdict": "pass", "summary": "Design passes quality review."}',
+            },
+        )
+        db.add(step_visual)
+        db.add(step_audit)
         await db.commit()
 
         ctx = ToolContext(

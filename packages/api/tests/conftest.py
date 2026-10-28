@@ -1,8 +1,18 @@
 import pytest
 from sqlalchemy import delete, select
+from app.config import Settings
 from app.db.models import Project, User
 from app.db.session import async_session_maker, engine
 from app.services.project_service import project_service
+
+settings = Settings()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def guard_test_environment() -> None:
+    """Refuse to run tests against production database."""
+    if settings.environment == "production":
+        raise RuntimeError("CRITICAL: Pytest suite is configured with environment='production'. Aborting to protect data.")
 
 
 @pytest.fixture(autouse=True)
@@ -18,16 +28,21 @@ async def cleanup_test_data() -> None:
     """Track and automatically clean up any Project and User records created during each test."""
     initial_proj_ids = set()
     initial_user_ids = set()
+    query_success = False
     try:
         async with async_session_maker() as db:
             res_p = await db.execute(select(Project.id))
             initial_proj_ids = set(res_p.scalars().all())
             res_u = await db.execute(select(User.id))
             initial_user_ids = set(res_u.scalars().all())
+            query_success = True
     except Exception:
-        pass
+        query_success = False
 
     yield
+
+    if not query_success:
+        return
 
     try:
         async with async_session_maker() as db:
@@ -48,3 +63,4 @@ async def cleanup_test_data() -> None:
             await db.commit()
     except Exception:
         pass
+

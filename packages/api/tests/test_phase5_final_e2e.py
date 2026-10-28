@@ -6,7 +6,7 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import Approval, Message, Project, Run, Thread, User
+from app.db.models import Approval, Message, Project, Run, Step, Thread, User
 from app.db.session import async_session_maker
 from app.main import app as fastapi_app
 from app.services.approval_service import approval_service
@@ -54,6 +54,26 @@ async def test_complete_design_to_gate_e2e_flow(api_client: AsyncClient) -> None
 
         run = Run(thread_id=th.id, agent_key="design", status="running")
         db.add(run)
+        await db.commit()
+
+        # Seed passing quality audit required for design gate
+        step_visual = Step(
+            run_id=run.id,
+            seq=1,
+            tool="inspect_screenshots",
+            result={"status": "analyzed"},
+        )
+        step_audit = Step(
+            run_id=run.id,
+            seq=2,
+            tool="run_quality_review",
+            result={
+                "run_id": run.id,
+                "report": '{"verdict": "pass", "summary": "Design passes quality review."}',
+            },
+        )
+        db.add(step_visual)
+        db.add(step_audit)
         await db.commit()
 
         ctx = ToolContext(

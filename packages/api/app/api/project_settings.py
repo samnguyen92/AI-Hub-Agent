@@ -31,20 +31,32 @@ class MemberInviteRequest(BaseModel):
     role: str = "editor"  # "editor" or "viewer"
 
 
-async def _get_project(project_id: str, user: User, db: AsyncSession) -> Project:
-    """Verify project exists and user has permission to access."""
+async def _get_project(
+    project_id: str, user: User, db: AsyncSession, min_role: str = "viewer"
+) -> Project:
+    """Verify project exists and user has required role (viewer or editor)."""
     q = select(Project).where(Project.id == project_id)
     project = (await db.execute(q)).scalars().first()
     if not project:
         raise HTTPException(status_code=404, detail="Dự án không tồn tại.")
-    if user.role != "admin" and project.owner_id != user.id:
-        member_q = select(ProjectMember).where(
-            ProjectMember.project_id == project_id,
-            ProjectMember.email == user.github_login,
+
+    if user.role == "admin" or project.owner_id == user.id:
+        return project
+
+    member_q = select(ProjectMember).where(
+        ProjectMember.project_id == project_id,
+        ProjectMember.email == user.github_login,
+    )
+    member = (await db.execute(member_q)).scalars().first()
+    if not member or member.status != "active":
+        raise HTTPException(status_code=403, detail="Không có quyền truy cập cài đặt dự án.")
+
+    if min_role == "editor" and member.role != "editor":
+        raise HTTPException(
+            status_code=403,
+            detail="Vai trò chỉ xem (Viewer) không có quyền thay đổi cài đặt hoặc quản lý thành viên."
         )
-        member = (await db.execute(member_q)).scalars().first()
-        if not member:
-            raise HTTPException(status_code=403, detail="Không có quyền truy cập cài đặt dự án.")
+
     return project
 
 
@@ -162,7 +174,7 @@ async def connect_wordpress(
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
     """Connect an external WordPress site using REST API Application Password."""
-    await _get_project(project_id, user, db)
+    await _get_project(project_id, user, db, min_role="editor")
 
     clean_url = req.site_url.strip().rstrip("/")
     if not clean_url.startswith("http://") and not clean_url.startswith("https://"):
@@ -217,7 +229,7 @@ async def add_member(
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
     """Add a member/collaborator to the project."""
-    await _get_project(project_id, user, db)
+    await _get_project(project_id, user, db, min_role="editor")
 
     # Check if already added
     chk_q = select(ProjectMember).where(
@@ -255,7 +267,7 @@ async def remove_member(
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
     """Remove a member from the project."""
-    await _get_project(project_id, user, db)
+    await _get_project(project_id, user, db, min_role="editor")
     m_q = select(ProjectMember).where(ProjectMember.id == member_id, ProjectMember.project_id == project_id)
     member = (await db.execute(m_q)).scalars().first()
     if not member:
@@ -272,7 +284,7 @@ async def generate_telegram_code(
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
     """Generate Telegram linking code for the project owner."""
-    await _get_project(project_id, user, db)
+    await _get_project(project_id, user, db, min_role="editor")
     alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
     code = "ALIGN-" + "".join(secrets.choice(alphabet) for _ in range(8))
     link_record = TelegramLink(

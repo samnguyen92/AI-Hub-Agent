@@ -105,7 +105,7 @@ class ApprovalService:
             approval.decided_by = decided_user_id
             if approval.status == "approved":
                 if approval.action_type == "export_zip":
-                    ws_path = workspace_service.init_project_workspace(thread.project_id, refresh=True)
+                    ws_path = workspace_service.init_project_workspace(thread.project_id, refresh=False)
                     arch_name = approval.payload.get("archive_name") or "project_export.zip"
                     approval.payload["result"] = perform_export(ws_path, arch_name, thread.project_id)
                 run.status = "queued" if run.checkpoint_state else "completed"
@@ -129,11 +129,12 @@ class ApprovalService:
 
     @staticmethod
     def _approval_continuation(approval: Approval, comment: Optional[str]) -> str:
-        """Pass the user's selected reference IDs into the resumed agent context."""
-        message = f"[CỔNG ĐÃ DUYỆT]: Phê duyệt cổng '{approval.payload.get('title', '')}'."
+        """Pass the user's decision and comments into the resumed agent context."""
+        title = approval.payload.get("title", "")
+        comment_suffix = f' Kèm góp ý/chỉ đạo của người duyệt: "{comment}".' if comment else ""
         if approval.action_type == "gate_reference":
-            return f"{message} Người dùng đã chọn {comment}. Hãy capture các reference được chọn và tiếp tục."
-        return f"{message} Tiếp tục thực hiện."
+            return f"[CỔNG ĐÃ DUYỆT]: Phê duyệt cổng '{title}'. Người dùng đã chọn {comment}. Hãy capture các reference được chọn và tiếp tục."
+        return f"[CỔNG ĐÃ DUYỆT]: Phê duyệt cổng '{title}'.{comment_suffix} Tiếp tục thực hiện dựa trên quyết định này."
 
 
 approval_service = ApprovalService()

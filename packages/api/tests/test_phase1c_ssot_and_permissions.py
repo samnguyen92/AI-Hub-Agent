@@ -86,7 +86,7 @@ async def test_runtime_permission_enforcement_blocks_unauthorized_tool() -> None
         # Simulate LLM trying to call 'export_zip' (which router is never allowed to call)
         tool_calls = [ToolCallResult(id="tc-1", name="export_zip", arguments={"archive_name": "hacked.zip"})]
 
-        paused, err_count = await runner._execute_tool_calls(
+        paused, err_count, _ = await runner._execute_tool_calls(
             tool_calls=tool_calls,
             step_idx=1,
             run_id=run.id,

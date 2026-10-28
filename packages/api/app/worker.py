@@ -51,6 +51,7 @@ async def pick_and_execute_job(db: AsyncSession) -> bool:
     run_id = run.id
     logger.info(f"Claiming queued run {run_id} for agent '{run.agent_key}'")
     run.status = "running"
+    run.created_at = datetime.now(timezone.utc)
     await db.commit()
 
     try:

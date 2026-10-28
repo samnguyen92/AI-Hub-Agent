@@ -16,7 +16,17 @@ class AuthService:
     """Provides cryptographic tokens for sessions and signed preview URLs."""
 
     def __init__(self, secret_key: Optional[str] = None) -> None:
-        self.secret_key = (secret_key or settings.auth_secret_key).encode("utf-8")
+        self._custom_secret = secret_key
+
+    @property
+    def secret_key(self) -> bytes:
+        raw = self._custom_secret or settings.auth_secret_key
+        if not raw:
+            import secrets
+            generated = secrets.token_urlsafe(32)
+            settings.auth_secret_key = generated
+            raw = generated
+        return raw.encode("utf-8")
 
     def create_session_token(self, user_id: str, role: str = "member", expires_in: int = 86400 * 7) -> str:
         """Create an HMAC-signed session token containing user id and expiration."""
@@ -63,6 +73,14 @@ class AuthService:
             return hmac.compare_digest(actual, expected_bytes)
         except (ValueError, TypeError):
             return False
+
+    def hash_password(self, password: str, rounds: int = 600000) -> str:
+        """Generate PBKDF2-SHA256 password hash."""
+        salt_bytes = os.urandom(16)
+        salt_b64 = base64.urlsafe_b64encode(salt_bytes).decode().rstrip("=")
+        hash_bytes = hashlib.pbkdf2_hmac("sha256", password.encode(), salt_bytes, rounds)
+        hash_b64 = base64.urlsafe_b64encode(hash_bytes).decode().rstrip("=")
+        return f"pbkdf2_sha256:{rounds}:{salt_b64}:{hash_b64}"
 
     def create_signed_file_url(self, project_id: str, path: str, expires_in: int = 900) -> str:
         """Generate a short-lived HMAC signed URL for sandboxed preview of HTML/images."""

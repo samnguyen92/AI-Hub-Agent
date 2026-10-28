@@ -31,6 +31,7 @@ else
 fi
 
 # 2. Khởi tạo file .env nếu chưa tồn tại
+NEW_ENV_CREATED=false
 if [ ! -f ".env" ]; then
     echo -e "\n${YELLOW}[2/4] Chưa tìm thấy file .env. Đang tự động tạo từ mẫu production...${NC}"
     cp .env.production.example .env
@@ -40,13 +41,24 @@ if [ ! -f ".env" ]; then
     AUTH_SECRET=$(openssl rand -hex 24)
     ADMIN_TOKEN=$(openssl rand -hex 24)
     SANDBOX_SECRET=$(openssl rand -hex 24)
+    ADMIN_PASS=$(openssl rand -base64 12 | tr -dc 'a-zA-Z0-9' | head -c 16)
+
+    # Sinh PBKDF2-SHA256 password hash an toàn
+    ADMIN_HASH=$(python3 -c "import hashlib, os, base64; salt=os.urandom(16); h=hashlib.pbkdf2_hmac('sha256', b'$ADMIN_PASS', salt, 600000); print(f'pbkdf2_sha256:600000:{base64.urlsafe_b64encode(salt).decode().rstrip(\"=\")}:{base64.urlsafe_b64encode(h).decode().rstrip(\"=\")}')" 2>/dev/null || echo "")
 
     sed -i "s/replace_with_a_secure_db_password/$DB_PASS/g" .env
     sed -i "s/replace_with_a_random_secret_at_least_32_chars/$AUTH_SECRET/g" .env
     sed -i "s/replace_with_a_long_random_admin_token/$ADMIN_TOKEN/g" .env
     sed -i "s/replace_with_a_random_sandbox_secret_at_least_32_chars/$SANDBOX_SECRET/g" .env
 
-    echo -e "${GREEN}✓ Đã tự sinh các khóa bảo mật ngẫu nhiên trong file .env.${NC}"
+    if [ -n "$ADMIN_HASH" ]; then
+        sed -i "s/replace_with_generated_hash/$ADMIN_HASH/g" .env
+        sed -i "s/admin@yourdomain.com/admin@align.vn/g" .env
+    fi
+
+    chmod 600 .env
+    NEW_ENV_CREATED=true
+    echo -e "${GREEN}✓ Đã tự sinh các khóa bảo mật ngẫu nhiên và gán quyền chmod 600 cho file .env.${NC}"
     echo -e "${YELLOW}⚠️  LƯU Ý: Vui lòng mở file .env để điền OPENROUTER_API_KEY nếu chưa có.${NC}"
 else
     echo -e "\n${GREEN}[2/4] File .env đã tồn tại.${NC}"
@@ -67,9 +79,16 @@ echo -e "\n${GREEN}======================================================${NC}"
 echo -e "${GREEN}           TRIỂN KHAI HOÀN TẤT THÀNH CÔNG!            ${NC}"
 echo -e "${GREEN}======================================================${NC}"
 echo -e "Truy cập giao diện Hub ngay tại: ${BLUE}http://${PUBLIC_IP}:3100${NC} (hoặc ${BLUE}https://hub.align.vn${NC} qua NPM)"
-echo -e "Tài khoản đăng nhập mặc định:"
-echo -e "  - Email:    ${YELLOW}dev@align.vn${NC}"
-echo -e "  - Password: ${YELLOW}admin123456${NC} (hoặc theo mật khẩu trong .env)"
+
+if [ "$NEW_ENV_CREATED" = true ] && [ -n "$ADMIN_PASS" ]; then
+    echo -e "\n${YELLOW}Tài khoản quản trị vừa được tự động khởi tạo trong .env:${NC}"
+    echo -e "  - Email:    ${GREEN}admin@align.vn${NC}"
+    echo -e "  - Password: ${GREEN}${ADMIN_PASS}${NC}"
+    echo -e "  (Mật khẩu đã được mã hóa PBKDF2 an toàn và lưu trong .env)"
+else
+    echo -e "\nThông tin đăng nhập được quản lý trong file ${YELLOW}.env${NC} (LOCAL_LOGIN_EMAIL / LOCAL_LOGIN_PASSWORD_HASH)."
+fi
+
 echo -e "\nCác lệnh hữu ích khi quản trị VPS:"
 echo -e "  - Xem log:         ${YELLOW}docker compose -f docker-compose.prod.yml logs -f${NC}"
 echo -e "  - Khởi động lại:   ${YELLOW}docker compose -f docker-compose.prod.yml restart${NC}"

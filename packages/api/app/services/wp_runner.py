@@ -58,7 +58,20 @@ class WordPressRunnerService:
     async def run_wp_cli(
         self, container_name: str, args: List[str], timeout: int = 120
     ) -> Tuple[int, str, str]:
-        """Execute WP-CLI inside the container as www-data user."""
+        """Execute WP-CLI inside the container as www-data user with strict sanitization."""
+        import re
+        if not re.match(r"^[a-zA-Z0-9_\-]+$", container_name):
+            return (-1, "", f"Tên container không hợp lệ: {container_name}")
+
+        blocked_prefixes = ("--exec", "--require", "--eval", "--ssh", "--http")
+        for arg in args:
+            if any(c in arg for c in ("\x00", "\n", "\r")):
+                return (-1, "", "Tham số chứa ký tự không hợp lệ.")
+            arg_lower = arg.lower()
+            for prefix in blocked_prefixes:
+                if arg_lower == prefix or arg_lower.startswith(f"{prefix}="):
+                    return (-1, "", f"Tham số WP-CLI '{prefix}' bị từ chối vì lý do bảo mật.")
+
         cmd = ["docker", "exec", "-u", "www-data", container_name, "wp"] + args
         return await self.run_cmd(cmd, timeout=timeout)
 
@@ -116,22 +129,39 @@ class WordPressRunnerService:
                 return False
         return True
 
-    async def _init_database(self, db_name: str) -> bool:
-        """Create database inside hub_ai_mariadb if not already present."""
+    async def _init_database(
+        self, db_name: str, db_user: Optional[str] = None, db_pass: Optional[str] = None
+    ) -> bool:
+        """Create isolated database and user inside hub_ai_mariadb if not already present."""
+        root_pass = os.getenv("MARIADB_ROOT_PASSWORD", "wp_secure_pass")
         sql = f"CREATE DATABASE IF NOT EXISTS `{db_name}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-        cmd = ["docker", "exec", "hub_ai_mariadb", "mariadb", "-u", "root", "-pwp_secure_pass", "-e", sql]
+        if db_user and db_pass:
+            sql += (
+                f" CREATE USER IF NOT EXISTS '{db_user}'@'%' IDENTIFIED BY '{db_pass}';"
+                f" ALTER USER '{db_user}'@'%' IDENTIFIED BY '{db_pass}';"
+                f" GRANT ALL PRIVILEGES ON `{db_name}`.* TO '{db_user}'@'%';"
+                " FLUSH PRIVILEGES;"
+            )
+        cmd = ["docker", "exec", "hub_ai_mariadb", "mariadb", "-u", "root", f"-p{root_pass}", "-e", sql]
         code, _, _ = await self.run_cmd(cmd)
         return code == 0
 
     async def _launch_container(
-        self, container_name: str, port: int, db_name: str
+        self,
+        container_name: str,
+        port: int,
+        db_name: str,
+        db_user: Optional[str] = None,
+        db_pass: Optional[str] = None,
     ) -> bool:
-        """Run standard WordPress docker container connected to MariaDB."""
+        """Run standard WordPress docker container connected to MariaDB with least-privilege DB user."""
         net_code, net_out, _ = await self.run_cmd([
             "docker", "inspect", "hub_ai_mariadb",
             "--format", "{{range $k, $v := .NetworkSettings.Networks}}{{$k}}{{end}}"
         ])
         network = net_out.strip() or "aihubagent_default"
+        wp_db_user = db_user or "root"
+        wp_db_pass = db_pass or os.getenv("MARIADB_ROOT_PASSWORD", "wp_secure_pass")
 
         run_cmd = [
             "docker", "run", "-d",
@@ -139,8 +169,8 @@ class WordPressRunnerService:
             "--network", network,
             "-p", f"{port}:80",
             "-e", "WORDPRESS_DB_HOST=hub_ai_mariadb:3306",
-            "-e", "WORDPRESS_DB_USER=root",
-            "-e", "WORDPRESS_DB_PASSWORD=wp_secure_pass",
+            "-e", f"WORDPRESS_DB_USER={wp_db_user}",
+            "-e", f"WORDPRESS_DB_PASSWORD={wp_db_pass}",
             "-e", f"WORDPRESS_DB_NAME={db_name}",
             "wordpress:php8.2-apache"
         ]
@@ -237,7 +267,23 @@ class WordPressRunnerService:
             }
 
         container_name = f"hub_ai_wp_{slug}"
+        # Check if container_name/slug is already used by another project
+        conflict = (
+            await db.execute(
+                select(WordPressSite).where(
+                    WordPressSite.container_name == container_name,
+                    WordPressSite.project_id != project_id,
+                )
+            )
+        ).scalars().first()
+        if conflict:
+            short_id = project_id[:6].lower()
+            slug = f"{slug[:17]}-{short_id}"
+            container_name = f"hub_ai_wp_{slug}"
+
         db_name = f"wp_{slug.replace('-', '_')}"
+        db_user = f"wpu_{slug.replace('-', '_')[:24]}"
+        db_pass = secrets.token_hex(16)
         port = self.find_available_port(8501)
         site_url = self.format_site_url(slug)
 
@@ -245,9 +291,10 @@ class WordPressRunnerService:
         admin_pass = secrets.token_urlsafe(12)
 
         # 1. Setup database & launch container
-        await self._init_database(db_name)
+        await self._init_database(db_name, db_user=db_user, db_pass=db_pass)
+        # Only remove if it belongs to this project
         await self.run_cmd(["docker", "rm", "-f", container_name])
-        await self._launch_container(container_name, port, db_name)
+        await self._launch_container(container_name, port, db_name, db_user=db_user, db_pass=db_pass)
 
         # 2. Configure WP instance
         await self._configure_wp_instance(container_name, site_url, site_title, admin_user, admin_pass)

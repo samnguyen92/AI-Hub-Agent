@@ -16,6 +16,10 @@ tools:
   - wp_manage_posts
   - wp_manage_plugins
   - wp_manage_themes
+  - take_screenshot
+  - inspect_screenshots
+  - run_checks
+  - open_gate
   - list_library
   - read_item
   - save_artifact

@@ -65,10 +65,35 @@ class WPImportHtmlPackageTool(BaseTool):
             return {"success": False, "error": "Môi trường WordPress chưa được tạo hoặc đang dừng."}
 
         target_zip = kwargs.get("zip_path")
-        if not target_zip:
-            default_zip = os.path.join(context.workspace_path, "site-package.zip")
-            alt_zip = os.path.join(settings.workspaces_root, context.project_id, "site-package.zip")
-            target_zip = default_zip if os.path.exists(default_zip) else alt_zip
+        ws_root = context.workspace_path or os.path.join(settings.workspaces_root, context.project_id)
+        if target_zip and not os.path.isabs(target_zip):
+            candidate = os.path.join(ws_root, target_zip.lstrip("/"))
+            if os.path.exists(candidate):
+                target_zip = candidate
+
+        if not target_zip or not os.path.exists(target_zip):
+            candidates = [
+                os.path.join(ws_root, "site-package.zip"),
+                os.path.join(settings.workspaces_root, context.project_id, "site-package.zip"),
+            ]
+            exports_dir = os.path.join(ws_root, "exports")
+            if os.path.isdir(exports_dir):
+                export_zips = sorted(
+                    [
+                        os.path.join(exports_dir, f)
+                        for f in os.listdir(exports_dir)
+                        if f.endswith(".zip")
+                    ],
+                    key=lambda p: os.path.getmtime(p),
+                    reverse=True,
+                )
+                candidates.extend(export_zips)
+            for c in candidates:
+                if os.path.exists(c):
+                    target_zip = c
+                    break
+            else:
+                target_zip = candidates[0]
 
         if not os.path.exists(target_zip):
             return {"success": False, "error": f"Không tìm thấy gói ZIP tại {target_zip}"}

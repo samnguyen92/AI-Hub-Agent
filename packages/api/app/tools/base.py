@@ -47,6 +47,7 @@ class ToolRegistry:
 
     def __init__(self) -> None:
         self._tools: Dict[str, BaseTool] = {}
+        self._all_loaded: bool = False
         # Mapping of allowed tools per agent
         self._agent_permissions: Dict[str, List[str]] = {
             "router": [],  # Router has no action tools
@@ -58,14 +59,8 @@ class ToolRegistry:
                 "analyze_chat_attachments",
                 "write_file",
                 "generate_image",
-                "wp_create_environment",
-                "wp_import_html_package",
-                "wp_generate_aiowp_backup",
                 "wp_check_site",
                 "wp_manage_posts",
-                "wp_manage_plugins",
-                "wp_manage_themes",
-                "wp_edit_content",
                 "propose_note",
                 "list_notes",
                 "learn_rule",
@@ -185,6 +180,10 @@ class ToolRegistry:
                 "wp_manage_posts",
                 "wp_manage_plugins",
                 "wp_manage_themes",
+                "take_screenshot",
+                "inspect_screenshots",
+                "run_checks",
+                "open_gate",
                 "list_library",
                 "read_item",
                 "save_artifact",
@@ -204,8 +203,9 @@ class ToolRegistry:
         self._tools[tool.name] = tool
 
     def _ensure_tools_loaded(self) -> None:
-        """Lazily load and register all tool modules if registry is empty."""
-        if not self._tools:
+        """Lazily load and register all tool modules if not already loaded."""
+        if not self._all_loaded:
+            self._all_loaded = True
             from app.tools import register_all_tools
 
             register_all_tools()

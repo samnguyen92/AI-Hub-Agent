@@ -98,6 +98,17 @@ class AgentRunner:
             start_step = int(run.checkpoint_state.get("step_idx", 0)) + 1
             total_cost = float(run.checkpoint_state.get("total_cost", 0.0))
             run.checkpoint_state = None
+
+            # Append any recent messages added to the thread (such as approval comments or rework orders)
+            msg_q = select(Message).where(Message.thread_id == thread.id).order_by(Message.created_at.desc()).limit(3)
+            recent_msgs = (await db.execute(msg_q)).scalars().all()
+            for m in reversed(recent_msgs):
+                formatted = format_message_content(m.content, m.attachments or [])
+                if not any(existing.get("content") == formatted for existing in messages[-4:]):
+                    messages.append({
+                        "role": m.role,
+                        "content": formatted,
+                    })
         else:
             start_step = 1
             total_cost = 0.0

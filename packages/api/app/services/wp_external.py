@@ -1,8 +1,8 @@
-"""Service for communicating with external WordPress sites via REST API."""
-
 import base64
 from typing import Any, Dict, List, Optional
 import httpx
+
+from app.utils.ip_guard import is_safe_public_url
 
 
 class ExternalWordPressService:
@@ -20,6 +20,10 @@ class ExternalWordPressService:
     ) -> Dict[str, Any]:
         """Verify REST API credentials against external WordPress site."""
         clean_url = site_url.rstrip("/")
+        safe, err = is_safe_public_url(clean_url)
+        if not safe:
+            return {"success": False, "error": f"Bảo mật chặn (SSRF Protection): {err}"}
+
         endpoint = f"{clean_url}/wp-json/wp/v2/users/me"
         headers = self._get_auth_header(username, app_password)
 
